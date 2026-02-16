@@ -180,10 +180,21 @@ app.post('/faq/ask', async (req, res) => {
   try {
     // Normalisasi pertanyaan untuk membuat hasil tidak sensitif huruf besar/kecil dan tanda baca
     const normalizeSpaces = s => (s || '').replace(/\s+/g, ' ').trim();
-    const stripPunct = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}]/g, '');
-    const toLower = s => (s || '').toLowerCase();
+    // Replace punctuation/hyphens with spaces so tokens like "langkah-langkah" become "langkah langkah"
+    const stripPunct = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}\/\-\u2013\u2014]/g, ' ');
+    const toLower = s => String(s ?? '').toLowerCase();
     const canonicalize = s => s
       // Sinonim & typo umum
+      .replace(/\b(buat|untuk) apa\b/g, 'apa fungsi')
+      // Stemming ringan untuk kata kerja umum
+      .replace(/\bmenghapus(kan)?\b/g, 'hapus')
+      .replace(/\b(pengen|mau)\b/g, 'ingin')
+      .replace(/\b(nggak|ga|gak|gk)\b/g, 'tidak')
+      .replace(/\blihat laporan\b/g, 'akses laporan')
+      .replace(/\b(admin|sales|kasir|owner|spv|supervisor)\b/g, 'user')
+      .replace(/\beod\b/g, 'laporan eod')
+      // Konsistensi istilah user (singular vs plural)
+      .replace(/\busers\b/g, 'user')
       .replace(/\bstock\b/g, 'stok')
       .replace(/\bmargin penjualan\b/g, 'penjualan margin')
       .replace(/\bmelihat\b/g, 'lihat')
@@ -196,6 +207,24 @@ app.post('/faq/ask', async (req, res) => {
       .replace(/\bpenjualn\b/g, 'penjualan')
       .replace(/\bgimana\b/g, 'bagaimana');
     const normalizeFull = s => canonicalize(normalizeSpaces(stripPunct(toLower(s))));
+
+    // Token-overlap match (order-insensitive) untuk pertanyaan yang diparafrase
+    const stopTokens = new Set([
+      'yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara',
+      'buat','menu','nya','dong','sih','tuh','kah','lah','tolong','mohon',
+      'ingin','pengen','mau','agar','supaya','biar','tidak','bisa','boleh'
+    ]);
+    const tokenize = (s) => normalizeFull(s)
+      .split(' ')
+      .map(t => t.trim())
+      .filter(t => t.length >= 3 && !stopTokens.has(t));
+    const tokenContainmentScore = (userTokens, faqTokens) => {
+      if (!userTokens.length) return 0;
+      const faqSet = new Set(faqTokens);
+      let hit = 0;
+      for (const t of userTokens) if (faqSet.has(t)) hit++;
+      return hit / userTokens.length;
+    };
 
     const normalizedQuestion = normalizeSpaces(toLower(pertanyaan || ''));
 
@@ -251,6 +280,30 @@ app.post('/faq/ask', async (req, res) => {
         const formatted = formatAnswer(exact.jawaban);
         return res.json({ pertanyaan: exact.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' });
       }
+
+      // Order-insensitive token match (cocok untuk query singkat: "setting nota buat apa")
+      try {
+        const userTokens = tokenize(pertanyaan);
+        const isSingleAcronym = userTokens.length === 1 && /^[a-z]+$/.test(userTokens[0]) && userTokens[0].length <= 4;
+        if (userTokens.length >= 2 || isSingleAcronym) {
+          let best = null;
+          let bestScore = 0;
+          for (const f of katObj.faq) {
+            const faqTokens = tokenize(f.pertanyaan);
+            const score = tokenContainmentScore(userTokens, faqTokens);
+            if (score > bestScore) {
+              bestScore = score;
+              best = f;
+            }
+          }
+          const thresholdTok = isSingleAcronym ? 1.0 : 0.9;
+          if (best && bestScore >= thresholdTok) {
+            const formatted = formatAnswer(best.jawaban);
+            return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, mode: 'token-match' });
+          }
+        }
+      } catch (_) { /* ignore and continue */ }
+
       // Local fuzzy fallback before semantic search
       try {
         const candidates = katObj.faq.map(f => ({ item: f, norm: normalizeFull(f.pertanyaan) }));
@@ -274,9 +327,17 @@ app.post('/faq/ask', async (req, res) => {
       if (e.response && e.response.status === 400 && katObj2 && Array.isArray(katObj2.faq)) {
         // Fallback: local fuzzy search within category
         const normalizeSpaces2 = s => (s || '').replace(/\s+/g, ' ').trim();
-        const stripPunct2 = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}]/g, '');
-        const toLower2 = s => (s || '').toLowerCase();
+        const stripPunct2 = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}\/\-\u2013\u2014]/g, ' ');
+        const toLower2 = s => String(s ?? '').toLowerCase();
         const canonicalize2 = s => s
+          .replace(/\b(buat|untuk) apa\b/g, 'apa fungsi')
+          .replace(/\bmenghapus(kan)?\b/g, 'hapus')
+          .replace(/\b(pengen|mau)\b/g, 'ingin')
+          .replace(/\b(nggak|ga|gak|gk)\b/g, 'tidak')
+          .replace(/\blihat laporan\b/g, 'akses laporan')
+          .replace(/\b(admin|sales|kasir|owner|spv|supervisor)\b/g, 'user')
+          .replace(/\beod\b/g, 'laporan eod')
+          .replace(/\busers\b/g, 'user')
           .replace(/\bstock\b/g, 'stok')
           .replace(/\bmargin penjualan\b/g, 'penjualan margin')
           .replace(/\bmelihat\b/g, 'lihat')
@@ -289,6 +350,42 @@ app.post('/faq/ask', async (req, res) => {
           .replace(/\bpenjualn\b/g, 'penjualan');
         const normalizeFull2 = s => canonicalize2(normalizeSpaces2(stripPunct2(toLower2(s))));
         const normQ2 = normalizeFull2(pertanyaan);
+
+        // Token-overlap fallback (order-insensitive)
+        try {
+          const stopTokens2 = new Set([
+            'yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara',
+            'buat','menu','nya','dong','sih','tuh','kah','lah','tolong','mohon',
+            'ingin','pengen','mau','agar','supaya','biar','tidak','bisa','boleh'
+          ]);
+          const tokenize2 = (s) => normalizeFull2(s)
+            .split(' ')
+            .map(t => t.trim())
+            .filter(t => t.length >= 3 && !stopTokens2.has(t));
+          const userTokens2 = tokenize2(pertanyaan);
+          const isSingleAcronym2 = userTokens2.length === 1 && /^[a-z]+$/.test(userTokens2[0]) && userTokens2[0].length <= 4;
+          if (userTokens2.length >= 2 || isSingleAcronym2) {
+            let bestTok = null;
+            let bestTokScore = 0;
+            for (const f of katObj2.faq) {
+              const faqTokens2 = tokenize2(f.pertanyaan);
+              const faqSet2 = new Set(faqTokens2);
+              let hit2 = 0;
+              for (const t of userTokens2) if (faqSet2.has(t)) hit2++;
+              const score2 = hit2 / userTokens2.length;
+              if (score2 > bestTokScore) {
+                bestTokScore = score2;
+                bestTok = f;
+              }
+            }
+            const thresholdTok2 = isSingleAcronym2 ? 1.0 : 0.9;
+            if (bestTok && bestTokScore >= thresholdTok2) {
+              const formatted = formatAnswer(bestTok.jawaban);
+              return res.json({ pertanyaan: bestTok.pertanyaan, score: bestTokScore, jawaban: formatted.jawaban, mode: 'fallback-token' });
+            }
+          }
+        } catch (_) { /* ignore */ }
+
         const candidates = katObj2.faq.map(f => ({
           item: f,
           norm: normalizeFull2(f.pertanyaan)

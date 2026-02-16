@@ -6,7 +6,7 @@ import { Coins, Moon, Sun } from 'lucide-react';
 import { ThemeProvider, useTheme, getAvailableThemes } from './theme';
 
 function HeaderControls() {
-  const { theme, setTheme, dark, toggleDark, classes } = useTheme();
+  const { theme, setTheme, dark, toggleDark } = useTheme();
   const themes = getAvailableThemes();
   const swatchMap: Record<string, string> = {
     amber: 'from-amber-500 to-yellow-500',
@@ -52,7 +52,7 @@ function AppInner() {
         <div className="fixed right-2 top-2 md:right-3 md:top-3 z-50">
           <HeaderControls />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-stretch flex-1 min-h-0 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-0 items-stretch flex-1 min-h-0 overflow-hidden">
           {/* Left illustration (hidden on small screens) */}
           <div className="hidden md:block h-full">
             <IllustrationPanel />
@@ -62,37 +62,38 @@ function AppInner() {
             <div className="flex-1 min-h-0 w-full md:w-[92%] lg:w-[88%] xl:w-[84%] mx-auto flex flex-col">
               <header className="relative text-center mb-3 pt-2">
                 <div className="flex items-center justify-center gap-3 mb-2">
-                  <div className={`${classes.brandIconBg} p-3 rounded-2xl shadow-lg`}>
-                    <Coins className="w-8 h-8 text-white" />
+                  <div className={`${classes.brandIconBg} p-3 rounded-2xl shadow-lg flex items-center justify-center shrink-0`}>
+                    <Coins className="w-8 h-8 text-white translate-y-[4px]" />
                   </div>
-                  <h1 className={`text-3xl md:text-4xl font-bold tracking-tight font-display ${classes.titleTextGradient}`}>
+                  <h1 className={`text-3xl md:text-4xl font-bold tracking-tight leading-none font-display ${classes.titleTextGradient}`}>
                     NAVA CARE
                   </h1>
                 </div>
-                <p className="text-gray-600 dark:text-slate-300">Jewelry Virtual Assistant</p>
               </header>
 
-              <div className="flex justify-center gap-2 mb-4">
-                <button
-                  onClick={() => setActiveTab('chat')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                    activeTab === 'chat'
-                      ? classes.tabActiveBtn
-                      : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-                  }`}
-                >
-                  Chat
-                </button>
-                <button
-                  onClick={() => setActiveTab('admin')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                    activeTab === 'admin'
-                      ? classes.tabActiveBtn
-                      : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-                  }`}
-                >
-                  Admin Panel
-                </button>
+              <div className="px-6 mb-3">
+                <div className="flex justify-center gap-2">
+                  <button
+                    onClick={() => setActiveTab('chat')}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      activeTab === 'chat'
+                        ? classes.tabActiveBtn
+                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
+                    }`}
+                  >
+                    Chat
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('admin')}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      activeTab === 'admin'
+                        ? classes.tabActiveBtn
+                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
+                    }`}
+                  >
+                    Admin Panel
+                  </button>
+                </div>
               </div>
 
               <div className="flex-1 min-h-0">

@@ -44,7 +44,7 @@
         "jawaban": "di google crome ada popup bloked pilih always Allow popup setalah di allow coba lagi print nanti akan download kembali faktur nya,itu biasa nya terjadi ada update dari google crome nya atau windows nya"
       },
       {
-        "pertanyaan": "selisih laporan tranasaksi penjualan",
+        "pertanyaan": "selisih laporan transaksi penjualan",
         "jawaban": "Pertama cek laporan penjualan metode pembayaran Cash ,debet ,tranfer dll lalu nanti disamakan dengan laporan keuangan cash dan non cash , jika sama tidak ada selisih , dan jika selilsih di laporan keungan bisa cek detail laporan nya untuk mengetahui faktur mana yang tidak update ke laporan keuangan"
       },
       {
@@ -510,6 +510,14 @@
       {
         "pertanyaan": "Laporan penjualan margin buat apa?",
         "jawaban": "Laporan Penjualan Margin berfungsi untuk pencatatan transaksi penjualan beserta margin/keuntungan yang di dapat dari transaksi tersebut."
+      },
+      {
+        "pertanyaan": "saya ingin setelah simpan transaksi penjualan, semua data otomatis tersimpan ke laporan tanpa validasi dulu. apakah bisa?",
+        "jawaban": "Jika memang SOP di toko Anda tidak diharuskan ada validasi data terlebih dahulu sebelum data masuk ke Laporan, fitur validasi dapat dimatikan oleh tim kami. Oleh karena itu, silakan Anda hubungi tim kami untuk menon aktifkan fitur tersebut."
+      },
+      {
+        "pertanyaan": "transaksi penjualan bisa skip validasi tidak?",
+        "jawaban": "Jika memang SOP di toko Anda tidak diharuskan ada validasi data terlebih dahulu sebelum data masuk ke Laporan, fitur validasi dapat dimatikan oleh tim kami. Oleh karena itu, silakan Anda hubungi tim kami untuk menon aktifkan fitur tersebut."
       }
     ]
   },
@@ -2278,7 +2286,7 @@
         "jawaban": "1. Buka sub menu Data User spada menu Manage Users"
       },
       {
-        "pertanyaan": "Bagaumana caranya agar sales saya tidak bisa akses laporan di program?",
+        "pertanyaan": "Bagaimana caranya agar sales saya tidak bisa akses laporan di program?",
         "jawaban": "Menu Hak Akses berfungsi untuk mengatur dan mengendalikan hak akses atau izin untuk setiap user selain level Owner, terhadap berbagai fitur, modul, data yang sensitif dalam program. Jadi, jika Anda ingin membatasi akses user, Anda bisa menggunakan menu Hak Akses untuk mengaturnya."
       },
       {
