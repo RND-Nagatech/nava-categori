@@ -61,6 +61,11 @@ Prasyarat tambahan:
   - `OLLAMA_EMBED_MODEL` (default `nomic-embed-text`)
   - `OLLAMA_URL` (default `http://127.0.0.1:11434`)
 
+- Frontend (Vite):
+  - File env di FE ada di `chatbot-fe/.env` (di-ignore Git)
+  - Template: `chatbot-fe/.env.sample` → copy menjadi `.env`
+  - Variabel yang dipakai: `VITE_API_BASE_URL`, `VITE_ILLUSTRATION_IMG`, `VITE_ILLUSTRATION_VERSION`
+
 ## Spesifikasi API Backend (untuk FE)
 Base URL: `http://localhost:3000`
 
