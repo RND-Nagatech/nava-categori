@@ -7,7 +7,6 @@ import json
 import requests
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
-from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
 # Konfigurasi Qdrant
@@ -48,6 +47,10 @@ def embed_with_ollama(texts):
 
 model = None
 if not USE_OLLAMA_EMBED:
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ModuleNotFoundError:
+        raise RuntimeError('sentence-transformers tidak terpasang. Install: pip install sentence-transformers')
     # Load model embedding (IndoBERT atau multilingual)
     model = SentenceTransformer('distiluse-base-multilingual-cased-v2')
 

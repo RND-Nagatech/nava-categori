@@ -7,6 +7,15 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
+// Basic CORS for local dev (Vite @ http://localhost:5173)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 const DATA_PATH = path.join(__dirname, 'data', 'faq.json');
 
 // Helper: load & save JSON
@@ -27,18 +36,41 @@ function formatAnswer(text) {
 
 // Endpoint: tambah pertanyaan ke kategori
 app.post('/faq/add', (req, res) => {
-  const { kategori, pertanyaan, jawaban } = req.body;
-  if (!kategori || !pertanyaan || !jawaban) {
-    return res.status(400).json({ error: 'kategori, pertanyaan, dan jawaban wajib diisi' });
+  try {
+    const { kategori, pertanyaan, jawaban } = req.body;
+    const katTrim = (kategori || '').trim();
+    const qTrim = (pertanyaan || '').trim();
+    const aTrim = (jawaban || '').trim();
+    if (!katTrim || !qTrim || !aTrim) {
+      return res.status(400).json({ error: 'kategori, pertanyaan, dan jawaban wajib diisi' });
+    }
+
+    // Pastikan file ada dan bisa ditulis
+    try {
+      fs.accessSync(DATA_PATH, fs.constants.R_OK | fs.constants.W_OK);
+    } catch (e) {
+      return res.status(500).json({ error: 'File data tidak bisa diakses untuk tulis/baca', file: DATA_PATH });
+    }
+
+    let data = loadFaq();
+    let kat = data.find(k => (k.kategori || '').toLowerCase() === katTrim.toLowerCase());
+    if (!kat) {
+      return res.status(404).json({ error: 'Kategori tidak ditemukan', kategori: katTrim });
+    }
+    if (!Array.isArray(kat.faq)) kat.faq = [];
+    kat.faq.push({ pertanyaan: qTrim, jawaban: aTrim });
+
+    // Tulis perubahan ke disk
+    try {
+      saveFaq(data);
+    } catch (e) {
+      return res.status(500).json({ error: 'Gagal menyimpan perubahan ke file', file: DATA_PATH, detail: e.message });
+    }
+
+    res.json({ success: true, message: 'FAQ berhasil ditambahkan', file: DATA_PATH, totalFaq: kat.faq.length });
+  } catch (err) {
+    res.status(500).json({ error: 'Terjadi kesalahan saat menambah FAQ', detail: err && err.message ? err.message : String(err) });
   }
-  let data = loadFaq();
-  let kat = data.find(k => k.kategori.toLowerCase() === kategori.toLowerCase());
-  if (!kat) {
-    return res.status(404).json({ error: 'Kategori tidak ditemukan' });
-  }
-  kat.faq.push({ pertanyaan, jawaban });
-  saveFaq(data);
-  res.json({ success: true, message: 'FAQ berhasil ditambahkan' });
 });
 
 // Endpoint: ambil list kategori
@@ -59,6 +91,15 @@ const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:1.7b';
 const OLLAMA_TIMEOUT = parseInt(process.env.OLLAMA_TIMEOUT || '20000', 10);
 const USE_LLM_DEFAULT = (process.env.USE_LLM || '0') === '1';
+
+function decideUseLlm(req) {
+  // FE override: if use_llm explicitly provided, honor it (true/false)
+  if (typeof req.body?.use_llm === 'boolean') return req.body.use_llm;
+  // Query override: ?llm=1 forces LLM
+  if (req.query?.llm === '1') return true;
+  // Fallback to server default
+  return USE_LLM_DEFAULT;
+}
 
 async function generateWithOllama(prompt) {
   const url = `${OLLAMA_URL}/api/generate`;
@@ -142,9 +183,17 @@ app.post('/faq/ask', async (req, res) => {
     const stripPunct = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}]/g, '');
     const toLower = s => (s || '').toLowerCase();
     const canonicalize = s => s
+      // Sinonim & typo umum
       .replace(/\bstock\b/g, 'stok')
       .replace(/\bmargin penjualan\b/g, 'penjualan margin')
       .replace(/\bmelihat\b/g, 'lihat')
+      .replace(/\bliat\b/g, 'lihat')
+      .replace(/\bdiliat\b/g, 'lihat')
+      .replace(/\bdilihat\b/g, 'lihat')
+      .replace(/\binfo\b/g, 'informasi')
+      .replace(/\baja\b/g, 'saja')
+      .replace(/\bpenjuana\b/g, 'penjualan')
+      .replace(/\bpenjualn\b/g, 'penjualan')
       .replace(/\bgimana\b/g, 'bagaimana');
     const normalizeFull = s => canonicalize(normalizeSpaces(stripPunct(toLower(s))));
 
@@ -155,7 +204,7 @@ app.post('/faq/ask', async (req, res) => {
     const katObj = dataAll.find(k => k.kategori.toLowerCase() === kategori.toLowerCase());
     // Jika kategori tidak ditemukan, langsung fallback sesuai instruksi prompt
     if (!katObj) {
-      const useLlmCat = USE_LLM_DEFAULT || req.query.llm === '1' || req.body.use_llm === true;
+      const useLlmCat = decideUseLlm(req);
       if (useLlmCat) {
         try {
           const prompt = buildOllamaPrompt(pertanyaan, []);
@@ -173,7 +222,17 @@ app.post('/faq/ask', async (req, res) => {
       const stopEarly = new Set(['yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara']);
       const allTokensEarly = normalizeFull(normalizedQuestion).split(' ');
       const qTokensEarly = allTokensEarly.filter(t => t.length >= 3 && !stopEarly.has(t));
-      const wantsInfoEarly = allTokensEarly.includes('lihat') || allTokensEarly.includes('informasi') || allTokensEarly.includes('ditampilkan');
+      const wantsInfoEarly = (
+        allTokensEarly.includes('lihat') ||
+        allTokensEarly.includes('informasi') ||
+        allTokensEarly.includes('ditampilkan') ||
+        // dukung variasi bahasa tidak baku
+        allTokensEarly.includes('liat') ||
+        allTokensEarly.includes('diliat') ||
+        allTokensEarly.includes('dilihat') ||
+        // frasa "apa saja" sebagai indikator daftar/informasi
+        (allTokensEarly.includes('apa') && allTokensEarly.includes('saja'))
+      );
       if (wantsInfoEarly && qTokensEarly.length) {
         const preferredEarly = katObj.faq.find(f => {
           const qn = normalizeFull(f.pertanyaan);
@@ -219,7 +278,15 @@ app.post('/faq/ask', async (req, res) => {
         const toLower2 = s => (s || '').toLowerCase();
         const canonicalize2 = s => s
           .replace(/\bstock\b/g, 'stok')
-          .replace(/\bmargin penjualan\b/g, 'penjualan margin');
+          .replace(/\bmargin penjualan\b/g, 'penjualan margin')
+          .replace(/\bmelihat\b/g, 'lihat')
+          .replace(/\bliat\b/g, 'lihat')
+          .replace(/\bdiliat\b/g, 'lihat')
+          .replace(/\bdilihat\b/g, 'lihat')
+          .replace(/\binfo\b/g, 'informasi')
+          .replace(/\baja\b/g, 'saja')
+          .replace(/\bpenjuana\b/g, 'penjualan')
+          .replace(/\bpenjualn\b/g, 'penjualan');
         const normalizeFull2 = s => canonicalize2(normalizeSpaces2(stripPunct2(toLower2(s))));
         const normQ2 = normalizeFull2(pertanyaan);
         const candidates = katObj2.faq.map(f => ({
@@ -237,7 +304,7 @@ app.post('/faq/ask', async (req, res) => {
       }
       if (e.response && e.response.status === 400) {
         // Jika 400 tapi kategori tidak valid/atau tidak ada fallback lokal, gunakan LLM/atau balasan default
-        const useLlmErr = USE_LLM_DEFAULT || req.query.llm === '1' || req.body.use_llm === true;
+        const useLlmErr = decideUseLlm(req);
         if (useLlmErr) {
           try {
             const prompt = buildOllamaPrompt(pertanyaan, []);
@@ -254,7 +321,7 @@ app.post('/faq/ask', async (req, res) => {
       throw e;
     }
     if (!results.length) {
-      const useLlm = USE_LLM_DEFAULT || req.query.llm === '1' || req.body.use_llm === true;
+      const useLlm = decideUseLlm(req);
       if (useLlm) {
         try {
           const prompt = buildOllamaPrompt(pertanyaan, []);
@@ -287,7 +354,16 @@ app.post('/faq/ask', async (req, res) => {
     }
 
     // Rule-based override (umum): prefer Q 'informasi/ditampilkan' yang memuat semua token topik dari query
-    const queryWantsInfo = queryTokens.includes('lihat') || queryTokens.includes('informasi') || queryTokens.includes('ditampilkan');
+    const queryWantsInfo = (
+      queryTokens.includes('lihat') ||
+      queryTokens.includes('informasi') ||
+      queryTokens.includes('ditampilkan') ||
+      queryTokens.includes('liat') ||
+      queryTokens.includes('diliat') ||
+      queryTokens.includes('dilihat') ||
+      // cek bigram secara kasar: hadirkan boost jika ada kata kunci 'saja' dan konteks daftar
+      (queryTokens.includes('saja') && (queryTokens.includes('informasi') || queryTokens.includes('lihat')))
+    );
     if (queryWantsInfo && queryTokens.length && katObj && Array.isArray(katObj.faq)) {
       const preferred = katObj.faq.find(f => {
         const qn = normalize(f.pertanyaan);
@@ -335,11 +411,11 @@ app.post('/faq/ask', async (req, res) => {
       let infoBoost = 0;
       if (queryWantsInfo) {
         if (candQ.includes('informasi apa saja') || candQ.startsWith('informasi')) {
-          infoBoost += 0.35;
-        } else if (candQ.includes('informasi') || candQ.includes('ditampilkan')) {
-          infoBoost += 0.20;
+          infoBoost += 0.40;
+        } else if (candQ.includes('informasi') || candQ.includes('ditampilkan') || candQ.includes('lihat')) {
+          infoBoost += 0.22;
         } else if (candQ.includes('fungsi') || candQ.includes('buat apa')) {
-          infoBoost -= 0.25;
+          infoBoost -= 0.30;
         }
       }
       const composite = (0.60 * c.qdrantScore) + (0.28 * sim) + (0.12 * overlap) + keyword + infoBoost;
@@ -354,7 +430,7 @@ app.post('/faq/ask', async (req, res) => {
     }
     const formatted = formatAnswer(best.item.jawaban);
 
-    const useLlm = USE_LLM_DEFAULT || req.query.llm === '1' || req.body.use_llm === true;
+    const useLlm = decideUseLlm(req);
     if (useLlm) {
       try {
         // Pakai konteks dari gabungan kandidat terbaik (ambil 5 teratas)
@@ -382,7 +458,7 @@ app.post('/faq/ask', async (req, res) => {
     // Default: return retrieved answer only
     res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban });
   } catch (err) {
-    const useLlmAny = USE_LLM_DEFAULT || req.query.llm === '1' || req.body.use_llm === true;
+    const useLlmAny = decideUseLlm(req);
     if (useLlmAny) {
       try {
         const prompt = buildOllamaPrompt(pertanyaan, []);

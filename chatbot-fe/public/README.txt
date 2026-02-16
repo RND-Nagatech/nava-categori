@@ -1,0 +1,1 @@
+Place static assets here. To show your illustration, copy aset.jpg into this folder and ensure VITE_ILLUSTRATION_IMG=/aset.jpg in .env. Vite will serve files in /public at the project root.

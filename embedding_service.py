@@ -1,7 +1,6 @@
 import os
 import requests
 from flask import Flask, request, jsonify
-from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
 
@@ -13,6 +12,12 @@ OLLAMA_EMBED_MODEL = os.environ.get('OLLAMA_EMBED_MODEL', 'nomic-embed-text')
 # Local embedding model (used when USE_OLLAMA_EMBED=0)
 st_model = None
 if not USE_OLLAMA_EMBED:
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ModuleNotFoundError:
+        raise RuntimeError(
+            'sentence-transformers tidak terpasang. Install dulu: pip install sentence-transformers'
+        )
     # Ganti model di sini jika ingin model Indo lain
     st_model = SentenceTransformer('distiluse-base-multilingual-cased-v2')
 

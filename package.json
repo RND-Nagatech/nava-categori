@@ -5,12 +5,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node faq_backend.js",
-    "start:qwen": "OLLAMA_MODEL=qwen3:1.7b node faq_backend.js",
+    "start:qwen": "USE_LLM=1 OLLAMA_MODEL=qwen3:1.7b node faq_backend.js",
     "health": "curl -s http://localhost:3000/health/ollama",
     "embed:service:st": "python3 embedding_service.py",
     "embed:service:ollama": "USE_OLLAMA_EMBED=1 OLLAMA_EMBED_MODEL=nomic-embed-text python3 embedding_service.py",
     "embed:index:st": "python3 embed_and_index_qdrant.py",
-    "embed:index:ollama": "USE_OLLAMA_EMBED=1 OLLAMA_EMBED_MODEL=nomic-embed-text python3 embed_and_index_qdrant.py"
+    "embed:index:ollama": "USE_OLLAMA_EMBED=1 OLLAMA_EMBED_MODEL=nomic-embed-text python3 embed_and_index_qdrant.py",
+    "dev:frontend": "npm --prefix chatbot-fe run dev",
+    "dev:backend": "npm run start:qwen",
+    "dev:services": "node -e \"require('net').createConnection({port:5001}).on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))\" || npm run embed:service:ollama",
+    "dev:index": "wait-on tcp:5001 && npm run embed:index:ollama",
+    "dev:serve": "concurrently -n BACKEND,FRONTEND -c magenta,cyan \"npm run start:qwen\" \"npm --prefix chatbot-fe run dev\"",
+    "dev:all": "concurrently --continue-on-error -n EMBED,INIT,SERVE -c green,yellow,blue \"npm run dev:services\" \"npm run dev:index\" \"npm run dev:serve\""
   },
   "keywords": [],
   "author": "",
@@ -21,5 +27,9 @@
     "body-parser": "^2.2.2",
     "express": "^5.2.1",
     "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "wait-on": "^7.2.0"
   }
 }
