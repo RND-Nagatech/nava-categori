@@ -93,7 +93,7 @@ export default function AdminPanel() {
             name="pertanyaan"
             value={formData.pertanyaan}
             onChange={handleChange}
-            placeholder="Contoh: Berapa biaya admin program emas?"
+            placeholder="Contoh: Bagaimana cara tambah barang?"
             className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${classes.focusRing} focus:border-transparent dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
             required
           />
