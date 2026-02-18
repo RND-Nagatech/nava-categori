@@ -427,10 +427,10 @@ app.post('/faq/ask', async (req, res) => {
           return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: llmAnswer });
         } catch (e) {
           // Fall back to explicit message
-          return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
+          return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
         }
       }
-      return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
+      return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
     }
     // Ambil top-5
     const topResults = results.slice(0, 5);

@@ -41,7 +41,7 @@
     "faq": [
       {
         "pertanyaan": "Tidak keluar file download nota penjualan atau pembelian",
-        "jawaban": "di google crome ada popup bloked pilih always Allow popup setalah di allow coba lagi print nanti akan download kembali faktur nya,itu biasa nya terjadi ada update dari google crome nya atau windows nya"
+        "jawaban": "di google crome ada popup bloked pilih always Allow popup setelah di allow coba lagi print nanti akan download kembali faktur nya,itu biasa nya terjadi ada update dari google crome nya atau windows nya"
       },
       {
         "pertanyaan": "selisih laporan transaksi penjualan",
@@ -1308,7 +1308,7 @@
       },
       {
         "pertanyaan": "Apa yang dimaksud dengan Transaksi Titipan?",
-        "jawaban": "Transaksi Titipan disini adalah transaksi customer yang menitipkan uangnya pada toko sebagain uang muka (Down Payment) untuk barang yang akan di beli. Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut."
+        "jawaban": "Transaksi Titipan adalah transaksi customer yang menitipkan sebagian uangnya pada toko sebagai uang muka (Down Payment) untuk barang yang akan di beli. Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut."
       },
       {
         "pertanyaan": "Apa itu No Titip?",
@@ -1353,6 +1353,10 @@
       {
         "pertanyaan": "Selisih laporan titipan",
         "jawaban": "Pertama cek laporan transaksil lalu nanti disamakan dengan laporan keuangan cash dan non cash , jika terdapat selisih, di laporan keuangan bisa cek detail laporan nya untuk mengetahui faktur mana yang tidak update ke laporan keuangan."
+      },
+      {
+        "pertanyaan": "Apa itu Transaksi Titipan?",
+        "jawaban": "Transaksi Titipan adalah transaksi customer yang menitipkan sebagian uangnya pada toko sebagai uang muka (Down Payment) untuk barang yang akan di beli. Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut."
       }
     ]
   },
