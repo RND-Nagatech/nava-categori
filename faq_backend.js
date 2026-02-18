@@ -143,7 +143,7 @@ function buildOllamaPrompt(question, topResults) {
   const instructions = [
     'Anda adalah asisten FAQ perusahaan. Jawab dalam bahasa Indonesia.',
     'Gunakan hanya informasi pada konteks di bawah ini. Jangan membuat informasi baru.',
-    'Jika jawaban tidak ada di konteks, balas singkat: "Maaf, belum ada jawaban."',
+    'Jika jawaban tidak ada di konteks, balas singkat: "Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia."',
     'Ringkas dan jelas, maksimal 1-2 kalimat.'
   ].join(' ');
   return `${instructions}\n\nPertanyaan pengguna: ${question}\n\nKonteks:\n${contextBlocks}\n\nJawaban:`;

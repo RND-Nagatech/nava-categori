@@ -518,6 +518,10 @@
       {
         "pertanyaan": "transaksi penjualan bisa skip validasi tidak?",
         "jawaban": "Jika memang SOP di toko Anda tidak diharuskan ada validasi data terlebih dahulu sebelum data masuk ke Laporan, fitur validasi dapat dimatikan oleh tim kami. Oleh karena itu, silakan Anda hubungi tim kami untuk menon aktifkan fitur tersebut."
+      },
+      {
+        "pertanyaan": "Bagaimana cara liat/tau barang yg paling laku terjual?",
+        "jawaban": "Laporan managerial analysis adalah laporan yang memberikan informasi untuk Anda mengenai barang mana yang cepat terjual dan lama terjual berdasarkan qty, berat dan nominal rupiah."
       }
     ]
   },
