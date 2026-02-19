@@ -11,6 +11,7 @@
     "embed:service:ollama": "USE_OLLAMA_EMBED=1 OLLAMA_EMBED_MODEL=nomic-embed-text python3 embedding_service.py",
     "embed:index:st": "python3 embed_and_index_qdrant.py",
     "embed:index:ollama": "USE_OLLAMA_EMBED=1 OLLAMA_EMBED_MODEL=nomic-embed-text python3 embed_and_index_qdrant.py",
+    "faq:augment": "python3 augment_faq_variations.py --input data/faq.json --output data/faq_with_variations.json",
     "dev:frontend": "npm --prefix chatbot-fe run dev",
     "dev:backend": "npm run start:qwen",
     "dev:services": "node -e \"require('net').createConnection({port:5001}).on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))\" || npm run embed:service:ollama",

@@ -17,15 +17,52 @@ COLLECTION_NAME = 'faq_semantic'
 with open('data/faq.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-# Flatten data: satu list berisi dict kategori, pertanyaan, jawaban
+# Flatten data: expand canonical question + optional variants into separate points
+# - Embedding uses the variant text (so paraphrases can match)
+# - Payload `pertanyaan` is kept as canonical (so UI/context stays consistent)
 faq_flat = []
+
+def _clean_q(s: str) -> str:
+    return str(s or '').strip()
+
+def _unique_questions(items):
+    seen = set()
+    out = []
+    for q in items:
+        qq = _clean_q(q)
+        if not qq:
+            continue
+        key = qq.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(qq)
+    return out
+
 for kat in data:
-    for item in kat['faq']:
-        faq_flat.append({
-            'kategori': kat['kategori'],
-            'pertanyaan': item['pertanyaan'],
-            'jawaban': item['jawaban']
-        })
+    kategori = kat.get('kategori')
+    for item in kat.get('faq', []) or []:
+        canonical_q = _clean_q(item.get('pertanyaan'))
+        jawaban = _clean_q(item.get('jawaban'))
+        if not canonical_q or not jawaban:
+            continue
+
+        variants = []
+        # preferred field name
+        if isinstance(item.get('variasi_pertanyaan'), list):
+            variants.extend(item.get('variasi_pertanyaan') or [])
+        # tolerate alternative field names if any
+        if isinstance(item.get('variasi'), list):
+            variants.extend(item.get('variasi') or [])
+
+        all_q = _unique_questions([canonical_q, *variants])
+        for qtext in all_q:
+            faq_flat.append({
+                'kategori': kategori,
+                'pertanyaan': canonical_q,
+                'match_text': qtext,
+                'jawaban': jawaban,
+            })
 
 USE_OLLAMA_EMBED = (os.environ.get('USE_OLLAMA_EMBED') or '0') == '1'
 OLLAMA_URL = os.environ.get('OLLAMA_URL', 'http://127.0.0.1:11434')
@@ -54,8 +91,8 @@ if not USE_OLLAMA_EMBED:
     # Load model embedding (IndoBERT atau multilingual)
     model = SentenceTransformer('distiluse-base-multilingual-cased-v2')
 
-# Generate embedding
-pertanyaan_list = [item['pertanyaan'] for item in faq_flat]
+# Generate embedding using match_text (variants)
+pertanyaan_list = [item['match_text'] for item in faq_flat]
 if USE_OLLAMA_EMBED:
     embeddings = embed_with_ollama(pertanyaan_list)
 else:
@@ -79,6 +116,7 @@ for idx, (item, emb) in enumerate(zip(faq_flat, embeddings)):
         payload={
             'kategori': item['kategori'],
             'pertanyaan': item['pertanyaan'],
+            'match_text': item.get('match_text') or item['pertanyaan'],
             'jawaban': item['jawaban']
         }
     ))

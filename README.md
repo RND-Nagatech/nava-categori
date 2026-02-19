@@ -94,10 +94,28 @@ File: data/faq.json
   {
     "kategori": "Penjualan",
     "faq": [
-      { "pertanyaan": "Apa itu margin penjualan?", "jawaban": "Margin penjualan adalah..." }
+      {
+        "pertanyaan": "Apa itu margin penjualan?",
+        "variasi_pertanyaan": ["Margin penjualan itu apa?", "Maksud margin penjualan apa?"],
+        "jawaban": "Margin penjualan adalah..."
+      }
     ]
   }
 ]
+```
+
+## Menambah Variasi Pertanyaan (Paraphrase)
+Karena pertanyaan user sering beda gaya bahasa, kamu bisa menambahkan variasi pertanyaan per FAQ item (tanpa mengubah jawaban) memakai script ini:
+
+```bash
+# Output ke file baru
+python3 augment_faq_variations.py --input data/faq.json --output data/faq_with_variations.json
+
+# (Opsional) timpa file asli
+python3 augment_faq_variations.py --inplace
+
+# Setelah itu, re-index Qdrant agar variasi ikut ter-embed
+npm run embed:index:ollama
 ```
 
 ## Alur di FE (disarankan)

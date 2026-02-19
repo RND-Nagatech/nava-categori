@@ -26,6 +26,39 @@ function saveFaq(data) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+function getQuestionVariants(item) {
+  const variants = [];
+  if (Array.isArray(item?.variasi_pertanyaan)) variants.push(...item.variasi_pertanyaan);
+  // tolerate alternative field names
+  if (Array.isArray(item?.variasi)) variants.push(...item.variasi);
+  return variants
+    .map(v => (v == null ? '' : String(v)).trim())
+    .filter(Boolean);
+}
+
+function expandFaqForMatching(faqArray) {
+  const expanded = [];
+  const seen = new Set();
+  for (const item of (faqArray || [])) {
+    const canonical = (item?.pertanyaan == null ? '' : String(item.pertanyaan)).trim();
+    if (!canonical) continue;
+    const all = [canonical, ...getQuestionVariants(item)];
+    const localSeen = new Set();
+    for (const qTextRaw of all) {
+      const qText = (qTextRaw == null ? '' : String(qTextRaw)).trim();
+      if (!qText) continue;
+      const norm = qText.toLowerCase();
+      if (localSeen.has(norm)) continue;
+      localSeen.add(norm);
+      const key = `${canonical.toLowerCase()}|${norm}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      expanded.push({ item, qText });
+    }
+  }
+  return expanded;
+}
+
 // Normalize answer newlines to spaces (previous behavior)
 function formatAnswer(text) {
   const raw = (text || '');
@@ -247,6 +280,7 @@ app.post('/faq/ask', async (req, res) => {
       return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
     }
     if (katObj && Array.isArray(katObj.faq)) {
+      const expandedFaq = expandFaqForMatching(katObj.faq);
       // Early rule-based override: prefer Q dengan 'informasi/ditampilkan' yang memuat semua token topik dari query
       const stopEarly = new Set(['yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara']);
       const allTokensEarly = normalizeFull(normalizedQuestion).split(' ');
@@ -263,22 +297,22 @@ app.post('/faq/ask', async (req, res) => {
         (allTokensEarly.includes('apa') && allTokensEarly.includes('saja'))
       );
       if (wantsInfoEarly && qTokensEarly.length) {
-        const preferredEarly = katObj.faq.find(f => {
-          const qn = normalizeFull(f.pertanyaan);
+        const preferredEarly = expandedFaq.find(c => {
+          const qn = normalizeFull(c.qText);
           if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false;
           // kandidat harus memuat semua token topik dari query (mis. 'stok', 'jual')
           return qTokensEarly.every(tok => qn.includes(tok));
         });
         if (preferredEarly) {
-          const formattedPref = formatAnswer(preferredEarly.jawaban);
-          return res.json({ pertanyaan: preferredEarly.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule-early' });
+          const formattedPref = formatAnswer(preferredEarly.item.jawaban);
+          return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule-early' });
         }
       }
       const normQ = normalizeFull(pertanyaan);
-      const exact = katObj.faq.find(f => normalizeFull(f.pertanyaan) === normQ);
+      const exact = expandedFaq.find(c => normalizeFull(c.qText) === normQ);
       if (exact) {
-        const formatted = formatAnswer(exact.jawaban);
-        return res.json({ pertanyaan: exact.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' });
+        const formatted = formatAnswer(exact.item.jawaban);
+        return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' });
       }
 
       // Order-insensitive token match (cocok untuk query singkat: "setting nota buat apa")
@@ -288,12 +322,12 @@ app.post('/faq/ask', async (req, res) => {
         if (userTokens.length >= 2 || isSingleAcronym) {
           let best = null;
           let bestScore = 0;
-          for (const f of katObj.faq) {
-            const faqTokens = tokenize(f.pertanyaan);
+          for (const c of expandedFaq) {
+            const faqTokens = tokenize(c.qText);
             const score = tokenContainmentScore(userTokens, faqTokens);
             if (score > bestScore) {
               bestScore = score;
-              best = f;
+              best = c.item;
             }
           }
           const thresholdTok = isSingleAcronym ? 1.0 : 0.9;
@@ -306,7 +340,7 @@ app.post('/faq/ask', async (req, res) => {
 
       // Local fuzzy fallback before semantic search
       try {
-        const candidates = katObj.faq.map(f => ({ item: f, norm: normalizeFull(f.pertanyaan) }));
+        const candidates = expandedFaq.map(c => ({ item: c.item, norm: normalizeFull(c.qText) }));
         const match = stringSimilarity.findBestMatch(normQ, candidates.map(c => c.norm));
         const best = candidates[match.bestMatchIndex];
         if (match.bestMatch.rating >= 0.6) {
@@ -325,6 +359,7 @@ app.post('/faq/ask', async (req, res) => {
       const dataAll2 = loadFaq();
       const katObj2 = dataAll2.find(k => k.kategori.toLowerCase() === kategori.toLowerCase());
       if (e.response && e.response.status === 400 && katObj2 && Array.isArray(katObj2.faq)) {
+        const expandedFaq2 = expandFaqForMatching(katObj2.faq);
         // Fallback: local fuzzy search within category
         const normalizeSpaces2 = s => (s || '').replace(/\s+/g, ' ').trim();
         const stripPunct2 = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}\/\-\u2013\u2014]/g, ' ');
@@ -367,15 +402,15 @@ app.post('/faq/ask', async (req, res) => {
           if (userTokens2.length >= 2 || isSingleAcronym2) {
             let bestTok = null;
             let bestTokScore = 0;
-            for (const f of katObj2.faq) {
-              const faqTokens2 = tokenize2(f.pertanyaan);
+            for (const c of expandedFaq2) {
+              const faqTokens2 = tokenize2(c.qText);
               const faqSet2 = new Set(faqTokens2);
               let hit2 = 0;
               for (const t of userTokens2) if (faqSet2.has(t)) hit2++;
               const score2 = hit2 / userTokens2.length;
               if (score2 > bestTokScore) {
                 bestTokScore = score2;
-                bestTok = f;
+                bestTok = c.item;
               }
             }
             const thresholdTok2 = isSingleAcronym2 ? 1.0 : 0.9;
@@ -386,9 +421,9 @@ app.post('/faq/ask', async (req, res) => {
           }
         } catch (_) { /* ignore */ }
 
-        const candidates = katObj2.faq.map(f => ({
-          item: f,
-          norm: normalizeFull2(f.pertanyaan)
+        const candidates = expandedFaq2.map(c => ({
+          item: c.item,
+          norm: normalizeFull2(c.qText)
         }));
         const stringSimilarity = require('string-similarity');
         const match = stringSimilarity.findBestMatch(normQ2, candidates.map(c => c.norm));
@@ -443,9 +478,10 @@ app.post('/faq/ask', async (req, res) => {
     const containsKeyword = kw => queryTokens.includes(kw);
 
     let lexicalCandidates = [];
-    if (katObj && Array.isArray(katObj.faq)) {
-      lexicalCandidates = katObj.faq
-        .map(f => ({ item: f, norm: normalize(f.pertanyaan) }))
+    const expandedFaqForLex = (katObj && Array.isArray(katObj.faq)) ? expandFaqForMatching(katObj.faq) : [];
+    if (expandedFaqForLex.length) {
+      lexicalCandidates = expandedFaqForLex
+        .map(c => ({ item: c.item, norm: normalize(c.qText) }))
         .filter(c => queryTokens.some(t => c.norm.includes(t)))
         .slice(0, 50);
     }
@@ -462,14 +498,15 @@ app.post('/faq/ask', async (req, res) => {
       (queryTokens.includes('saja') && (queryTokens.includes('informasi') || queryTokens.includes('lihat')))
     );
     if (queryWantsInfo && queryTokens.length && katObj && Array.isArray(katObj.faq)) {
-      const preferred = katObj.faq.find(f => {
-        const qn = normalize(f.pertanyaan);
+      const expandedFaqForRule = expandFaqForMatching(katObj.faq);
+      const preferred = expandedFaqForRule.find(c => {
+        const qn = normalize(c.qText);
         if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false;
         return queryTokens.every(tok => qn.includes(tok));
       });
       if (preferred) {
-        const formattedPref = formatAnswer(preferred.jawaban);
-        return res.json({ pertanyaan: preferred.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule' });
+        const formattedPref = formatAnswer(preferred.item.jawaban);
+        return res.json({ pertanyaan: preferred.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule' });
       }
     }
 

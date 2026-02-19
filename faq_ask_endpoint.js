@@ -32,18 +32,36 @@ function findBestMatch(pertanyaanUser, daftarFaq) {
     .replace(/\s+/g, ' ')
     .trim();
   const normUser = normalize(pertanyaanUser);
-  const faqQuestions = daftarFaq.map(item => normalize(item.pertanyaan));
+  const expanded = [];
+  for (const item of (daftarFaq || [])) {
+    const canonical = (item?.pertanyaan || '').toString().trim();
+    if (!canonical) continue;
+    const variants = [];
+    if (Array.isArray(item?.variasi_pertanyaan)) variants.push(...item.variasi_pertanyaan);
+    if (Array.isArray(item?.variasi)) variants.push(...item.variasi);
+    const all = [canonical, ...variants]
+      .map(s => (s == null ? '' : String(s)).trim())
+      .filter(Boolean);
+    const localSeen = new Set();
+    for (const qText of all) {
+      const key = normalize(qText);
+      if (!key || localSeen.has(key)) continue;
+      localSeen.add(key);
+      expanded.push({ item, qText });
+    }
+  }
+  const faqQuestions = expanded.map(x => normalize(x.qText));
   // Prioritas exact match setelah normalisasi
   const exactIdx = faqQuestions.findIndex(q => q === normUser);
   if (exactIdx !== -1) {
-    return { ...daftarFaq[exactIdx], score: 1 };
+    return { ...expanded[exactIdx].item, score: 1 };
   }
   // Jika tidak ada exact match, pakai similarity
   const matches = stringSimilarity.findBestMatch(normUser, faqQuestions);
   const bestIndex = matches.bestMatchIndex;
   const bestScore = matches.bestMatch.rating;
   if (bestScore >= 0.8) {
-    return { ...daftarFaq[bestIndex], score: bestScore };
+    return { ...expanded[bestIndex].item, score: bestScore };
   }
   return null;
 }
