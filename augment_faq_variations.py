@@ -91,6 +91,17 @@ def generate_variants(question: str) -> list[str]:
             f"Apa yang dimaksud dengan {obj}?",
         ]
 
+    # Patterns: "Apa yang dimaksud dengan ..." (add informal variants too)
+    m = re.match(r"^apa\s+yang\s+dimaksud\s+dengan\s+(.+)$", base, flags=re.IGNORECASE)
+    if m:
+        obj = m.group(1).strip()
+        variants += [
+            f"{obj} itu apa?",
+            f"{obj} tuh apa?",
+            f"Maksud {obj} apa?",
+            f"Apa itu {obj}?",
+        ]
+
     # Patterns: "Bagaimana cara ..." / "Gimana cara ..."
     m = re.match(r"^(?:bagaimana|gimana)\s+cara\s+(.+)$", base, flags=re.IGNORECASE)
     if m:

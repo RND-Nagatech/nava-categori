@@ -1,8 +1,12 @@
-// Simple Express backend for FAQ add endpoint
+// Simple Express backend with hybrid FAQ matching + helpdesk (MongoDB)
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
+const axios = require('axios');
+const stringSimilarity = require('string-similarity');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 app.use(bodyParser.json());
@@ -10,13 +14,29 @@ app.use(bodyParser.json());
 // Basic CORS for local dev (Vite @ http://localhost:5173)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PATCH');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
 const DATA_PATH = path.join(__dirname, 'data', 'faq.json');
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:1.7b';
+const OLLAMA_TIMEOUT = parseInt(process.env.OLLAMA_TIMEOUT || '20000', 10);
+const USE_LLM_DEFAULT = (process.env.USE_LLM || '0') === '1';
+
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_DB = process.env.MONGODB_DB || 'db_helpdesk_dashboard';
+
+let mongoClient;
+async function getMongoClient() {
+  if (!mongoClient) {
+    mongoClient = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoClient.connect();
+  }
+  return mongoClient;
+}
 
 // Helper: load & save JSON
 function loadFaq() {
@@ -29,7 +49,6 @@ function saveFaq(data) {
 function getQuestionVariants(item) {
   const variants = [];
   if (Array.isArray(item?.variasi_pertanyaan)) variants.push(...item.variasi_pertanyaan);
-  // tolerate alternative field names
   if (Array.isArray(item?.variasi)) variants.push(...item.variasi);
   return variants
     .map(v => (v == null ? '' : String(v)).trim())
@@ -77,14 +96,9 @@ app.post('/faq/add', (req, res) => {
     if (!katTrim || !qTrim || !aTrim) {
       return res.status(400).json({ error: 'kategori, pertanyaan, dan jawaban wajib diisi' });
     }
-
-    // Pastikan file ada dan bisa ditulis
-    try {
-      fs.accessSync(DATA_PATH, fs.constants.R_OK | fs.constants.W_OK);
-    } catch (e) {
+    try { fs.accessSync(DATA_PATH, fs.constants.R_OK | fs.constants.W_OK); } catch (e) {
       return res.status(500).json({ error: 'File data tidak bisa diakses untuk tulis/baca', file: DATA_PATH });
     }
-
     let data = loadFaq();
     let kat = data.find(k => (k.kategori || '').toLowerCase() === katTrim.toLowerCase());
     if (!kat) {
@@ -92,14 +106,7 @@ app.post('/faq/add', (req, res) => {
     }
     if (!Array.isArray(kat.faq)) kat.faq = [];
     kat.faq.push({ pertanyaan: qTrim, jawaban: aTrim });
-
-    // Tulis perubahan ke disk
-    try {
-      saveFaq(data);
-    } catch (e) {
-      return res.status(500).json({ error: 'Gagal menyimpan perubahan ke file', file: DATA_PATH, detail: e.message });
-    }
-
+    try { saveFaq(data); } catch (e) { return res.status(500).json({ error: 'Gagal menyimpan perubahan ke file', file: DATA_PATH, detail: e.message }); }
     res.json({ success: true, message: 'FAQ berhasil ditambahkan', file: DATA_PATH, totalFaq: kat.faq.length });
   } catch (err) {
     res.status(500).json({ error: 'Terjadi kesalahan saat menambah FAQ', detail: err && err.message ? err.message : String(err) });
@@ -112,54 +119,26 @@ app.get('/faq/categories', (req, res) => {
   res.json(data.map(k => k.kategori));
 });
 
-
-
-// Qdrant semantic search
-
-const axios = require('axios');
-const stringSimilarity = require('string-similarity');
-
-// Ollama config
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:1.7b';
-const OLLAMA_TIMEOUT = parseInt(process.env.OLLAMA_TIMEOUT || '20000', 10);
-const USE_LLM_DEFAULT = (process.env.USE_LLM || '0') === '1';
-
+// Ollama / LLM helpers
 function decideUseLlm(req) {
-  // FE override: if use_llm explicitly provided, honor it (true/false)
   if (typeof req.body?.use_llm === 'boolean') return req.body.use_llm;
-  // Query override: ?llm=1 forces LLM
   if (req.query?.llm === '1') return true;
-  // Fallback to server default
   return USE_LLM_DEFAULT;
 }
 
 async function generateWithOllama(prompt) {
   const url = `${OLLAMA_URL}/api/generate`;
-  const body = {
-    model: OLLAMA_MODEL,
-    prompt,
-    stream: false,
-    options: {
-      temperature: 0.2,
-      num_ctx: 4096
-    }
-  };
+  const body = { model: OLLAMA_MODEL, prompt, stream: false, options: { temperature: 0.2, num_ctx: 4096 } };
   try {
     const res = await axios.post(url, body, { timeout: OLLAMA_TIMEOUT });
     return (res.data && res.data.response) ? res.data.response : '';
   } catch (e) {
-    // Re-throw with helpful message
     if (e.response && e.response.status === 404) {
-      const hint = `Ollama 404: model \"${OLLAMA_MODEL}\" tidak ditemukan atau Ollama belum berjalan. Jalankan: 'ollama serve' lalu 'ollama pull ${OLLAMA_MODEL}'.`;
-      const err = new Error(hint);
-      err.code = 404;
-      throw err;
+      const hint = `Ollama 404: model "${OLLAMA_MODEL}" tidak ditemukan atau Ollama belum berjalan. Jalankan: 'ollama serve' lalu 'ollama pull ${OLLAMA_MODEL}'.`;
+      const err = new Error(hint); err.code = 404; throw err;
     }
     if (e.code === 'ECONNREFUSED') {
-      const err = new Error(`Tidak bisa konek ke Ollama di ${OLLAMA_URL}. Pastikan layanan berjalan: 'ollama serve'.`);
-      err.code = 'ECONNREFUSED';
-      throw err;
+      const err = new Error(`Tidak bisa konek ke Ollama di ${OLLAMA_URL}. Pastikan layanan berjalan: 'ollama serve'.`); err.code = 'ECONNREFUSED'; throw err;
     }
     throw e;
   }
@@ -172,7 +151,8 @@ async function getOllamaTags() {
 }
 
 function buildOllamaPrompt(question, topResults) {
-  const contextBlocks = topResults.map((r, i) => `#${i + 1} Pertanyaan: ${r.payload.pertanyaan}\nJawaban: ${r.payload.jawaban}`).join('\n\n');
+  const contextBlocks = topResults.map((r, i) => `#${i + 1} Pertanyaan: ${r.payload?.pertanyaan || r.payload?.pertanyaan}
+Jawaban: ${r.payload?.jawaban || r.payload?.jawaban}`).join('\n\n');
   const instructions = [
     'Anda adalah asisten FAQ perusahaan. Jawab dalam bahasa Indonesia.',
     'Gunakan hanya informasi pada konteks di bawah ini. Jangan membuat informasi baru.',
@@ -182,51 +162,36 @@ function buildOllamaPrompt(question, topResults) {
   return `${instructions}\n\nPertanyaan pengguna: ${question}\n\nKonteks:\n${contextBlocks}\n\nJawaban:`;
 }
 
-
 async function getEmbedding(text) {
-  // Panggil microservice Python (yang bisa pakai SentenceTransformer atau Ollama embeddings)
   const res = await axios.post('http://localhost:5001/embed', { texts: [text] });
   return res.data.vectors[0];
 }
 
 async function searchQdrant(embedding, kategori) {
   const url = 'http://localhost:6333/collections/faq_semantic/points/search';
-  const filter = kategori ? {
-    must: [{ key: 'kategori', match: { value: kategori } }]
-  } : undefined;
-  const body = {
-    vector: embedding,
-    filter,
-    top: 10, // Ambil lebih banyak kandidat agar peluang exact match masuk
-    with_payload: true
-  };
+  const filter = kategori ? { must: [{ key: 'kategori', match: { value: kategori } }] } : undefined;
+  const body = { vector: embedding, filter, top: 10, with_payload: true };
   const res = await axios.post(url, body);
   return res.data.result || [];
 }
 
-// Endpoint POST /faq/askdy
+// Main FAQ ask endpoint (hybrid)
 app.post('/faq/ask', async (req, res) => {
   const { kategori, pertanyaan } = req.body;
-  if (!kategori || !pertanyaan) {
-    return res.status(400).json({ error: 'kategori dan pertanyaan wajib diisi' });
-  }
+  if (!kategori || !pertanyaan) return res.status(400).json({ error: 'kategori dan pertanyaan wajib diisi' });
   try {
-    // Normalisasi pertanyaan untuk membuat hasil tidak sensitif huruf besar/kecil dan tanda baca
+    // normalization utilities
     const normalizeSpaces = s => (s || '').replace(/\s+/g, ' ').trim();
-    // Replace punctuation/hyphens with spaces so tokens like "langkah-langkah" become "langkah langkah"
     const stripPunct = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}\/\-\u2013\u2014]/g, ' ');
     const toLower = s => String(s ?? '').toLowerCase();
     const canonicalize = s => s
-      // Sinonim & typo umum
       .replace(/\b(buat|untuk) apa\b/g, 'apa fungsi')
-      // Stemming ringan untuk kata kerja umum
       .replace(/\bmenghapus(kan)?\b/g, 'hapus')
       .replace(/\b(pengen|mau)\b/g, 'ingin')
       .replace(/\b(nggak|ga|gak|gk)\b/g, 'tidak')
       .replace(/\blihat laporan\b/g, 'akses laporan')
       .replace(/\b(admin|sales|kasir|owner|spv|supervisor)\b/g, 'user')
       .replace(/\beod\b/g, 'laporan eod')
-      // Konsistensi istilah user (singular vs plural)
       .replace(/\busers\b/g, 'user')
       .replace(/\bstock\b/g, 'stok')
       .replace(/\bmargin penjualan\b/g, 'penjualan margin')
@@ -235,400 +200,183 @@ app.post('/faq/ask', async (req, res) => {
       .replace(/\bdiliat\b/g, 'lihat')
       .replace(/\bdilihat\b/g, 'lihat')
       .replace(/\binfo\b/g, 'informasi')
-      .replace(/\baja\b/g, 'saja')
       .replace(/\bpenjuana\b/g, 'penjualan')
       .replace(/\bpenjualn\b/g, 'penjualan')
       .replace(/\bgimana\b/g, 'bagaimana');
     const normalizeFull = s => canonicalize(normalizeSpaces(stripPunct(toLower(s))));
 
-    // Token-overlap match (order-insensitive) untuk pertanyaan yang diparafrase
-    const stopTokens = new Set([
-      'yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara',
-      'buat','menu','nya','dong','sih','tuh','kah','lah','tolong','mohon',
-      'ingin','pengen','mau','agar','supaya','biar','tidak','bisa','boleh'
-    ]);
-    const tokenize = (s) => normalizeFull(s)
-      .split(' ')
-      .map(t => t.trim())
-      .filter(t => t.length >= 3 && !stopTokens.has(t));
-    const tokenContainmentScore = (userTokens, faqTokens) => {
-      if (!userTokens.length) return 0;
-      const faqSet = new Set(faqTokens);
-      let hit = 0;
-      for (const t of userTokens) if (faqSet.has(t)) hit++;
-      return hit / userTokens.length;
-    };
+    // token helpers
+    const stopTokens = new Set(['yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara','buat','menu','nya','dong','sih','tuh','kah','lah','tolong','mohon','ingin','pengen','mau','agar','supaya','biar','tidak','bisa','boleh']);
+    const tokenize = s => normalizeFull(s).split(' ').map(t => t.trim()).filter(t => t.length >= 3 && !stopTokens.has(t));
+    const tokenContainmentScore = (userTokens, faqTokens) => { if (!userTokens.length) return 0; const faqSet = new Set(faqTokens); let hit = 0; for (const t of userTokens) if (faqSet.has(t)) hit++; return hit / userTokens.length; };
 
     const normalizedQuestion = normalizeSpaces(toLower(pertanyaan || ''));
-
-    // Short-circuit: exact match over full kategori (ignoring punctuation/case)
     const dataAll = loadFaq();
     const katObj = dataAll.find(k => k.kategori.toLowerCase() === kategori.toLowerCase());
-    // Jika kategori tidak ditemukan, langsung fallback sesuai instruksi prompt
     if (!katObj) {
       const useLlmCat = decideUseLlm(req);
       if (useLlmCat) {
-        try {
-          const prompt = buildOllamaPrompt(pertanyaan, []);
-          const llmOutput = await generateWithOllama(prompt);
-          const llmAnswer = formatAnswer(llmOutput).jawaban;
-          return res.json({ mode: 'llm-no-category', pertanyaan, score: 0, jawaban: llmAnswer });
-        } catch (e) {
-          return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
-        }
+        try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-no-category', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban.' }); }
       }
       return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
     }
+
     if (katObj && Array.isArray(katObj.faq)) {
       const expandedFaq = expandFaqForMatching(katObj.faq);
-      // Early rule-based override: prefer Q dengan 'informasi/ditampilkan' yang memuat semua token topik dari query
-      const stopEarly = new Set(['yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara']);
+      // Early rule-based
       const allTokensEarly = normalizeFull(normalizedQuestion).split(' ');
-      const qTokensEarly = allTokensEarly.filter(t => t.length >= 3 && !stopEarly.has(t));
-      const wantsInfoEarly = (
-        allTokensEarly.includes('lihat') ||
-        allTokensEarly.includes('informasi') ||
-        allTokensEarly.includes('ditampilkan') ||
-        // dukung variasi bahasa tidak baku
-        allTokensEarly.includes('liat') ||
-        allTokensEarly.includes('diliat') ||
-        allTokensEarly.includes('dilihat') ||
-        // frasa "apa saja" sebagai indikator daftar/informasi
-        (allTokensEarly.includes('apa') && allTokensEarly.includes('saja'))
-      );
+      const qTokensEarly = allTokensEarly.filter(t => t.length >= 3 && !stopTokens.has(t));
+      const wantsInfoEarly = (allTokensEarly.includes('lihat') || allTokensEarly.includes('informasi') || allTokensEarly.includes('ditampilkan') || allTokensEarly.includes('liat') || allTokensEarly.includes('diliat') || allTokensEarly.includes('dilihat') || (allTokensEarly.includes('apa') && allTokensEarly.includes('saja')));
       if (wantsInfoEarly && qTokensEarly.length) {
-        const preferredEarly = expandedFaq.find(c => {
-          const qn = normalizeFull(c.qText);
-          if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false;
-          // kandidat harus memuat semua token topik dari query (mis. 'stok', 'jual')
-          return qTokensEarly.every(tok => qn.includes(tok));
-        });
-        if (preferredEarly) {
-          const formattedPref = formatAnswer(preferredEarly.item.jawaban);
-          return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule-early' });
-        }
-      }
-      const normQ = normalizeFull(pertanyaan);
-      const exact = expandedFaq.find(c => normalizeFull(c.qText) === normQ);
-      if (exact) {
-        const formatted = formatAnswer(exact.item.jawaban);
-        return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' });
+        const preferredEarly = expandedFaq.find(c => { const qn = normalizeFull(c.qText); if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false; return qTokensEarly.every(tok => qn.includes(tok)); });
+        if (preferredEarly) { const formattedPref = formatAnswer(preferredEarly.item.jawaban); return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule-early' }); }
       }
 
-      // Order-insensitive token match (cocok untuk query singkat: "setting nota buat apa")
+      const normQ = normalizeFull(pertanyaan);
+      const exact = expandedFaq.find(c => normalizeFull(c.qText) === normQ);
+      if (exact) { const formatted = formatAnswer(exact.item.jawaban); return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' }); }
+
       try {
         const userTokens = tokenize(pertanyaan);
         const isSingleAcronym = userTokens.length === 1 && /^[a-z]+$/.test(userTokens[0]) && userTokens[0].length <= 4;
         if (userTokens.length >= 2 || isSingleAcronym) {
-          let best = null;
-          let bestScore = 0;
+          let best = null; let bestScore = 0;
           for (const c of expandedFaq) {
             const faqTokens = tokenize(c.qText);
             const score = tokenContainmentScore(userTokens, faqTokens);
-            if (score > bestScore) {
-              bestScore = score;
-              best = c.item;
-            }
+            if (score > bestScore) { bestScore = score; best = c.item; }
           }
           const thresholdTok = isSingleAcronym ? 1.0 : 0.9;
-          if (best && bestScore >= thresholdTok) {
-            const formatted = formatAnswer(best.jawaban);
-            return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, mode: 'token-match' });
-          }
+          if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, mode: 'token-match' }); }
         }
-      } catch (_) { /* ignore and continue */ }
+      } catch (_) {}
 
-      // Local fuzzy fallback before semantic search
       try {
         const candidates = expandedFaq.map(c => ({ item: c.item, norm: normalizeFull(c.qText) }));
         const match = stringSimilarity.findBestMatch(normQ, candidates.map(c => c.norm));
         const best = candidates[match.bestMatchIndex];
-        if (match.bestMatch.rating >= 0.6) {
-          const formatted = formatAnswer(best.item.jawaban);
-          return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'local-fuzzy' });
-        }
-      } catch (_) { /* ignore and continue to semantic search */ }
+        if (match.bestMatch.rating >= 0.6) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'local-fuzzy' }); }
+      } catch (_) {}
     }
+
+    // semantic search via embedding + qdrant
     let results = [];
-    let embedding = null;
     try {
-      embedding = await getEmbedding(normalizedQuestion);
+      const embedding = await getEmbedding(normalizedQuestion);
       results = await searchQdrant(embedding, kategori.toUpperCase());
     } catch (e) {
-      // Qdrant 400 often means embedding dimension mismatch
-      const dataAll2 = loadFaq();
-      const katObj2 = dataAll2.find(k => k.kategori.toLowerCase() === kategori.toLowerCase());
-      if (e.response && e.response.status === 400 && katObj2 && Array.isArray(katObj2.faq)) {
-        const expandedFaq2 = expandFaqForMatching(katObj2.faq);
-        // Fallback: local fuzzy search within category
-        const normalizeSpaces2 = s => (s || '').replace(/\s+/g, ' ').trim();
-        const stripPunct2 = s => (s || '').replace(/[\?\.!,:;"'()\[\]{}\/\-\u2013\u2014]/g, ' ');
-        const toLower2 = s => String(s ?? '').toLowerCase();
-        const canonicalize2 = s => s
-          .replace(/\b(buat|untuk) apa\b/g, 'apa fungsi')
-          .replace(/\bmenghapus(kan)?\b/g, 'hapus')
-          .replace(/\b(pengen|mau)\b/g, 'ingin')
-          .replace(/\b(nggak|ga|gak|gk)\b/g, 'tidak')
-          .replace(/\blihat laporan\b/g, 'akses laporan')
-          .replace(/\b(admin|sales|kasir|owner|spv|supervisor)\b/g, 'user')
-          .replace(/\beod\b/g, 'laporan eod')
-          .replace(/\busers\b/g, 'user')
-          .replace(/\bstock\b/g, 'stok')
-          .replace(/\bmargin penjualan\b/g, 'penjualan margin')
-          .replace(/\bmelihat\b/g, 'lihat')
-          .replace(/\bliat\b/g, 'lihat')
-          .replace(/\bdiliat\b/g, 'lihat')
-          .replace(/\bdilihat\b/g, 'lihat')
-          .replace(/\binfo\b/g, 'informasi')
-          .replace(/\baja\b/g, 'saja')
-          .replace(/\bpenjuana\b/g, 'penjualan')
-          .replace(/\bpenjualn\b/g, 'penjualan');
-        const normalizeFull2 = s => canonicalize2(normalizeSpaces2(stripPunct2(toLower2(s))));
-        const normQ2 = normalizeFull2(pertanyaan);
-
-        // Token-overlap fallback (order-insensitive)
-        try {
-          const stopTokens2 = new Set([
-            'yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu','bagaimana','gimana','cara',
-            'buat','menu','nya','dong','sih','tuh','kah','lah','tolong','mohon',
-            'ingin','pengen','mau','agar','supaya','biar','tidak','bisa','boleh'
-          ]);
-          const tokenize2 = (s) => normalizeFull2(s)
-            .split(' ')
-            .map(t => t.trim())
-            .filter(t => t.length >= 3 && !stopTokens2.has(t));
-          const userTokens2 = tokenize2(pertanyaan);
-          const isSingleAcronym2 = userTokens2.length === 1 && /^[a-z]+$/.test(userTokens2[0]) && userTokens2[0].length <= 4;
-          if (userTokens2.length >= 2 || isSingleAcronym2) {
-            let bestTok = null;
-            let bestTokScore = 0;
-            for (const c of expandedFaq2) {
-              const faqTokens2 = tokenize2(c.qText);
-              const faqSet2 = new Set(faqTokens2);
-              let hit2 = 0;
-              for (const t of userTokens2) if (faqSet2.has(t)) hit2++;
-              const score2 = hit2 / userTokens2.length;
-              if (score2 > bestTokScore) {
-                bestTokScore = score2;
-                bestTok = c.item;
-              }
-            }
-            const thresholdTok2 = isSingleAcronym2 ? 1.0 : 0.9;
-            if (bestTok && bestTokScore >= thresholdTok2) {
-              const formatted = formatAnswer(bestTok.jawaban);
-              return res.json({ pertanyaan: bestTok.pertanyaan, score: bestTokScore, jawaban: formatted.jawaban, mode: 'fallback-token' });
-            }
-          }
-        } catch (_) { /* ignore */ }
-
-        const candidates = expandedFaq2.map(c => ({
-          item: c.item,
-          norm: normalizeFull2(c.qText)
-        }));
-        const stringSimilarity = require('string-similarity');
-        const match = stringSimilarity.findBestMatch(normQ2, candidates.map(c => c.norm));
-        const best = candidates[match.bestMatchIndex];
-        if (match.bestMatch.rating >= 0.6) {
-          const formatted = formatAnswer(best.item.jawaban);
-          return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'fallback-local' });
-        }
-        return res.status(500).json({ error: 'Gagal query ke Qdrant', detail: 'Kemungkinan mismatch dimensi embedding. Pastikan layanan embedding dan indeks memakai model yang sama.', hint: 'Restart embedding_service dengan USE_OLLAMA_EMBED sesuai, lalu reindex.' });
-      }
-      if (e.response && e.response.status === 400) {
-        // Jika 400 tapi kategori tidak valid/atau tidak ada fallback lokal, gunakan LLM/atau balasan default
-        const useLlmErr = decideUseLlm(req);
-        if (useLlmErr) {
-          try {
-            const prompt = buildOllamaPrompt(pertanyaan, []);
-            const llmOutput = await generateWithOllama(prompt);
-            const llmAnswer = formatAnswer(llmOutput).jawaban;
-            return res.json({ mode: 'llm-error-400', pertanyaan, score: 0, jawaban: llmAnswer });
-          } catch (e2) {
-            return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
-          }
-        }
-        return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
-      }
-      // Non-400 or no category, propagate
-      throw e;
+      // try various fallbacks, simplified: fall through to fallback LLM/local fuzzy handled below
+      results = [];
     }
+
     if (!results.length) {
       const useLlm = decideUseLlm(req);
       if (useLlm) {
-        try {
-          const prompt = buildOllamaPrompt(pertanyaan, []);
-          const llmOutput = await generateWithOllama(prompt);
-          const llmAnswer = formatAnswer(llmOutput).jawaban;
-          return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: llmAnswer });
-        } catch (e) {
-          // Fall back to explicit message
-          return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
-        }
+        try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' }); }
       }
       return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
     }
-    // Ambil top-5
+
+    // Hybrid reranker: combine Qdrant + lexical
     const topResults = results.slice(0, 5);
-    const threshold = 0.6;
-    // Hybrid reranker: gabungkan kandidat Qdrant + kandidat leksikal dari kategori
-    const lowerQ = normalizedQuestion;
-    const normalize = s => normalizeFull(s);
-    const queryNorm = normalize(lowerQ);
-    const queryTokens = queryNorm.split(' ').filter(t => t.length >= 3 && !['yang','atau','dari','dalam','pada','untuk','dengan','apa','saja','anda','dan','di','ke','ini','itu'].includes(t));
-    const containsKeyword = kw => queryTokens.includes(kw);
-
-    let lexicalCandidates = [];
     const expandedFaqForLex = (katObj && Array.isArray(katObj.faq)) ? expandFaqForMatching(katObj.faq) : [];
-    if (expandedFaqForLex.length) {
-      lexicalCandidates = expandedFaqForLex
-        .map(c => ({ item: c.item, norm: normalize(c.qText) }))
-        .filter(c => queryTokens.some(t => c.norm.includes(t)))
-        .slice(0, 50);
-    }
-
-    // Rule-based override (umum): prefer Q 'informasi/ditampilkan' yang memuat semua token topik dari query
-    const queryWantsInfo = (
-      queryTokens.includes('lihat') ||
-      queryTokens.includes('informasi') ||
-      queryTokens.includes('ditampilkan') ||
-      queryTokens.includes('liat') ||
-      queryTokens.includes('diliat') ||
-      queryTokens.includes('dilihat') ||
-      // cek bigram secara kasar: hadirkan boost jika ada kata kunci 'saja' dan konteks daftar
-      (queryTokens.includes('saja') && (queryTokens.includes('informasi') || queryTokens.includes('lihat')))
-    );
-    if (queryWantsInfo && queryTokens.length && katObj && Array.isArray(katObj.faq)) {
-      const expandedFaqForRule = expandFaqForMatching(katObj.faq);
-      const preferred = expandedFaqForRule.find(c => {
-        const qn = normalize(c.qText);
-        if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false;
-        return queryTokens.every(tok => qn.includes(tok));
-      });
-      if (preferred) {
-        const formattedPref = formatAnswer(preferred.item.jawaban);
-        return res.json({ pertanyaan: preferred.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule' });
-      }
-    }
+    const lexicalCandidates = expandedFaqForLex.map(c => ({ item: c.item, norm: normalizeFull(c.qText) })).filter(c => normalizedQuestion.split(' ').some(t => c.norm.includes(t))).slice(0,50);
 
     const candidateMap = new Map();
-    // Masukkan kandidat dari Qdrant
-    topResults.forEach(r => {
-      const key = r.payload.pertanyaan;
-      if (!candidateMap.has(key)) {
-        candidateMap.set(key, { source: 'qdrant', qdrantScore: r.score || 0, item: r.payload });
-      } else {
-        const ref = candidateMap.get(key);
-        ref.qdrantScore = Math.max(ref.qdrantScore, r.score || 0);
-      }
-    });
-    // Masukkan kandidat leksikal
-    lexicalCandidates.forEach(c => {
-      const key = c.item.pertanyaan;
-      if (!candidateMap.has(key)) {
-        candidateMap.set(key, { source: 'lexical', qdrantScore: 0, item: c.item });
-      }
-    });
+    topResults.forEach(r => { const key = r.payload.pertanyaan; if (!candidateMap.has(key)) candidateMap.set(key, { source: 'qdrant', qdrantScore: r.score || 0, item: r.payload }); else candidateMap.get(key).qdrantScore = Math.max(candidateMap.get(key).qdrantScore, r.score || 0); });
+    lexicalCandidates.forEach(c => { const key = c.item.pertanyaan; if (!candidateMap.has(key)) candidateMap.set(key, { source: 'lexical', qdrantScore: 0, item: c.item }); });
 
     const compareTwo = stringSimilarity.compareTwoStrings;
     const scored = Array.from(candidateMap.values()).map(c => {
-      const candQ = normalize(c.item.pertanyaan);
+      const candQ = normalizeFull(c.item.pertanyaan);
       const candTokens = candQ.split(' ').filter(t => t.length >= 3);
-      const inter = candTokens.filter(t => queryTokens.includes(t));
-      const union = Array.from(new Set([...candTokens, ...queryTokens]));
+      const inter = candTokens.filter(t => normalizedQuestion.includes(t));
+      const union = Array.from(new Set([...candTokens, ...normalizedQuestion.split(' ')]));
       const overlap = union.length ? (inter.length / union.length) : 0;
-      const sim = compareTwo(queryNorm, candQ); // 0..1
-      const keyword = containsKeyword('margin')
-        ? (candQ.includes('margin') ? 0.12 : -0.06)
-        : 0;
-      // Heuristic: prefer 'informasi'/'ditampilkan' when query asks what can be seen
-      const queryWantsInfo = queryTokens.includes('lihat') || queryTokens.includes('informasi') || queryTokens.includes('ditampilkan');
-      let infoBoost = 0;
-      if (queryWantsInfo) {
-        if (candQ.includes('informasi apa saja') || candQ.startsWith('informasi')) {
-          infoBoost += 0.40;
-        } else if (candQ.includes('informasi') || candQ.includes('ditampilkan') || candQ.includes('lihat')) {
-          infoBoost += 0.22;
-        } else if (candQ.includes('fungsi') || candQ.includes('buat apa')) {
-          infoBoost -= 0.30;
-        }
-      }
-      const composite = (0.60 * c.qdrantScore) + (0.28 * sim) + (0.12 * overlap) + keyword + infoBoost;
+      const sim = compareTwo(normalizeFull(normalizedQuestion), candQ);
+      const composite = (0.60 * c.qdrantScore) + (0.28 * sim) + (0.12 * overlap);
       return { ...c, sim, overlap, composite };
     });
-
-    // Pilih skor komposit tertinggi
-    scored.sort((a, b) => b.composite - a.composite);
+    scored.sort((a,b) => b.composite - a.composite);
     const best = scored[0];
-    if (!best || best.composite < 0.52) {
-      return res.status(404).json({ error: 'Maaf, kami belum menemukan jawaban yang sesuai. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
-    }
+    if (!best || best.composite < 0.52) return res.status(404).json({ error: 'Maaf, kami belum menemukan jawaban yang sesuai. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
     const formatted = formatAnswer(best.item.jawaban);
-
     const useLlm = decideUseLlm(req);
     if (useLlm) {
-      try {
-        // Pakai konteks dari gabungan kandidat terbaik (ambil 5 teratas)
-        const ctxTop = scored.slice(0, 5).map(s => ({ payload: { pertanyaan: s.item.pertanyaan, jawaban: s.item.jawaban } }));
-        const prompt = buildOllamaPrompt(pertanyaan, ctxTop);
-        const llmOutput = await generateWithOllama(prompt);
-        const llmAnswer = formatAnswer(llmOutput).jawaban;
-        return res.json({
-          mode: 'llm',
-          pertanyaan: best.item.pertanyaan,
-          score: best.qdrantScore || best.sim,
-          jawaban: llmAnswer
-        });
-      } catch (e) {
-        // Fallback to retrieved answer, include clearer error
-        return res.json({
-          mode: 'fallback',
-          pertanyaan: best.item.pertanyaan,
-          score: best.qdrantScore || best.sim,
-          jawaban: formatted.jawaban,
-          llmError: e && e.message ? e.message : 'LLM gagal'
-        });
-      }
+      try { const ctxTop = scored.slice(0,5).map(s => ({ payload: { pertanyaan: s.item.pertanyaan, jawaban: s.item.jawaban } })); const prompt = buildOllamaPrompt(pertanyaan, ctxTop); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: llmAnswer }); } catch (e) { return res.json({ mode: 'fallback', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, llmError: e && e.message ? e.message : 'LLM gagal' }); }
     }
-    // Default: return retrieved answer only
     res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban });
   } catch (err) {
     const useLlmAny = decideUseLlm(req);
     if (useLlmAny) {
-      try {
-        const prompt = buildOllamaPrompt(pertanyaan, []);
-        const llmOutput = await generateWithOllama(prompt);
-        const llmAnswer = formatAnswer(llmOutput).jawaban;
-        return res.json({ mode: 'llm-catch', pertanyaan, score: 0, jawaban: llmAnswer });
-      } catch (e) {
-        return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
-      }
+      try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-catch', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban.' }); }
     }
     return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
   }
 });
 
+// Helpdesk endpoints (MongoDB-backed)
+app.post('/helpdesk/ask', async (req, res) => {
+  const { userId, question } = req.body;
+  if (!question) return res.status(400).json({ error: 'Pertanyaan wajib diisi' });
+  try {
+    const client = await getMongoClient();
+    const db = client.db(MONGODB_DB);
+    const now = new Date();
+    let conv = await db.collection('conversations').findOne({ user_id: userId || 'USR001', status: { $in: ['PENDING','OPEN','IN_PROGRESS'] } });
+    let conversation_id;
+    if (conv) {
+      conversation_id = conv.conversation_id;
+      await db.collection('conversations').updateOne({ conversation_id }, { $set: { updated_at: now } });
+    } else {
+      conversation_id = 'CONV-' + now.getTime();
+      await db.collection('conversations').insertOne({ conversation_id, user_id: userId || 'USR001', status: 'PENDING', source: 'chatbot', created_at: now, updated_at: now, assigned_to: null, priority: 'normal' });
+    }
+    await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false });
+    res.json({ success: true, conversation_id });
+  } catch (err) { res.status(500).json({ error: 'Gagal menyimpan ke MongoDB', detail: String(err) }); }
+});
+
+app.get('/helpdesk/messages', async (req, res) => {
+  const conversation_id = req.query.conversation_id;
+  if (!conversation_id) return res.status(400).json({ error: 'conversation_id wajib diisi' });
+  try {
+    const client = await getMongoClient();
+    const db = client.db(MONGODB_DB);
+    await db.collection('messages').updateMany({ conversation_id, sender: 'USER', is_read: false }, { $set: { is_read: true } });
+    const messages = await db.collection('messages').find({ conversation_id }).sort({ created_at: 1 }).limit(50).toArray();
+    const conv = await db.collection('conversations').findOne({ conversation_id });
+    const conversation = conv ? { conversation_id: conv.conversation_id, status: conv.status, updated_at: conv.updated_at } : null;
+    res.json({ messages, conversation });
+  } catch (err) { res.status(500).json({ error: 'Gagal mengambil pesan helpdesk', detail: String(err) }); }
+});
+
+app.patch('/helpdesk/messages/read', async (req, res) => {
+  const { conversation_id } = req.body;
+  if (!conversation_id) return res.status(400).json({ error: 'conversation_id wajib diisi' });
+  try { const client = await getMongoClient(); const db = client.db(MONGODB_DB); await db.collection('messages').updateMany({ conversation_id, sender: 'USER', is_read: false }, { $set: { is_read: true } }); res.json({ success: true }); } catch (err) { res.status(500).json({ error: 'Gagal update status pesan', detail: String(err) }); }
+});
+
+app.patch('/helpdesk/conversation/close', async (req, res) => {
+  const { conversation_id } = req.body;
+  if (!conversation_id) return res.status(400).json({ error: 'conversation_id wajib diisi' });
+  try { const client = await getMongoClient(); const db = client.db(MONGODB_DB); await db.collection('conversations').updateOne({ conversation_id }, { $set: { status: 'CLOSED', updated_at: new Date() } }); await db.collection('messages').insertOne({ conversation_id, sender: 'SYSTEM', message: 'Percakapan dengan admin telah selesai.', created_at: new Date(), is_read: true }); res.json({ success: true }); } catch (err) { res.status(500).json({ error: 'Gagal menutup percakapan', detail: String(err) }); }
+});
+
 // Health check for Ollama
 app.get('/health/ollama', async (req, res) => {
+  try { const tags = await getOllamaTags(); const hasModel = !!tags.find(m => m.name === OLLAMA_MODEL); if (!hasModel) return res.status(404).json({ ok: false, error: `Model \"${OLLAMA_MODEL}\" belum ada di Ollama. Jalankan: ollama pull ${OLLAMA_MODEL}`, available: tags.map(m => m.name) }); const out = await generateWithOllama('Balas "OK" jika siap.'); res.json({ ok: true, model: OLLAMA_MODEL, response: out.slice(0,50) }); } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// Expose minimal runtime config to frontend (so UI can default the checkbox)
+app.get('/faq/config', (req, res) => {
   try {
-    const tags = await getOllamaTags();
-    const hasModel = !!tags.find(m => m.name === OLLAMA_MODEL);
-    if (!hasModel) {
-      return res.status(404).json({
-        ok: false,
-        error: `Model \"${OLLAMA_MODEL}\" belum ada di Ollama. Jalankan: ollama pull ${OLLAMA_MODEL}`,
-        available: tags.map(m => m.name)
-      });
-    }
-    // Quick ping by attempting a trivial generation
-    const out = await generateWithOllama('Balas "OK" jika siap.');
-    res.json({ ok: true, model: OLLAMA_MODEL, response: out.slice(0, 50) });
+    res.json({ use_llm_default: USE_LLM_DEFAULT, ollama_url: OLLAMA_URL, ollama_model: OLLAMA_MODEL });
   } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
+    res.status(500).json({ error: 'Failed to read config', detail: String(e) });
   }
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`FAQ backend listening on port ${PORT}`);
-});
+app.listen(PORT, () => { console.log(`FAQ backend listening on port ${PORT}`); });

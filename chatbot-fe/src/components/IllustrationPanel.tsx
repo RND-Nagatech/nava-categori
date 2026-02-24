@@ -26,7 +26,7 @@ export default function IllustrationPanel() {
           <div className="relative w-full h-full overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-yellow-100 to-white dark:from-slate-800 dark:via-slate-900 dark:to-slate-800" />
           </div>
-          <p className="sr-only">Ilustrasi oleh Freepik — klik untuk membuka sumber.</p>
+          <p className="sr-only">Ilustrasi.</p>
         </a>
       )}
     </div>

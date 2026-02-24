@@ -8,8 +8,7 @@
         "variasi_pertanyaan": [
           "Kenapa Tidak bisa cetak barcode / cetak barcode tidak keluar?",
           "gak bisa cetak barcode / cetak barcode tidak keluar?",
-          "Cara mengatasi Tidak bisa cetak barcode / cetak barcode tidak keluar?",
-          "Gimana cara mengatasi Tidak bisa cetak barcode / cetak barcode tidak keluar?"
+          "Cara mengatasi Tidak bisa cetak barcode / cetak barcode tidak keluar?"
         ]
       },
       {
@@ -28,8 +27,7 @@
           "Fungsi menu Setting System apa?",
           "menu Setting System buat apa?",
           "menu Setting System untuk apa?",
-          "Kegunaan menu Setting System apa?",
-          "menu Setting System gunanya apa?"
+          "Kegunaan menu Setting System apa?"
         ]
       },
       {
@@ -39,19 +37,16 @@
           "Fungsi menu Setting Nota apa?",
           "menu Setting Nota buat apa?",
           "menu Setting Nota untuk apa?",
-          "Kegunaan menu Setting Nota apa?",
-          "menu Setting Nota gunanya apa?"
+          "Kegunaan menu Setting Nota apa?"
         ]
       },
       {
         "pertanyaan": "Bagaimana langkah-langkah untuk membuka dan mengatur Setting Nota?",
         "jawaban": "1. Pilih menu Setting Nota.\r\n2. Akan muncul halaman Pilih Nota Platform, terdapat opsi platform yang Anda gunakan, yaitu \"Desktop\" atau \"Mobile\". Pilihlah salah satu.\r\n3. Gunakan kolom \"Cari Field\" untuk mencari field atau informasi yang ingin ditambahkan pada nota. Misalnya, jika Anda ingin menampilkan informasi Nama Barang, ketikkan \"Nama Barang\" dalam kolom pencarian.\r\n4. Setelah menemukan field yang ingin Anda tambahkan, seret dan lepas field tersebut ke dalam kolom putih yang ada di sebelah kiri halaman.\r\n5. Anda dapat mengatur posisi informasi dengan cara menggeser atau mengubah urutan field pada kolom putih. Dengan ini, Anda dapat mengatur tata letak nota sesuai dengan preferensi Anda.\r\n6. Setelah Anda selesai mengatur informasi pada nota, pastikan untuk menyimpan perubahan yang telah Anda buat dengan mengklik tombol \"Simpan Data\" atau tombol serupa yang tersedia.",
         "variasi_pertanyaan": [
-          "Langkah-langkah membuka dan mengatur Setting Nota gimana?",
           "Gimana langkah-langkah membuka dan mengatur Setting Nota?",
           "Gimana cara membuka dan mengatur Setting Nota?",
-          "Cara membuka dan mengatur Setting Nota gimana?",
-          "gimana langkah-langkah untuk membuka dan mengatur Setting Nota?"
+          "Cara membuka dan mengatur Setting Nota gimana?"
         ]
       },
       {
@@ -69,8 +64,7 @@
           "Fungsi menu Setting Nota Slip apa?",
           "menu Setting Nota Slip buat apa?",
           "menu Setting Nota Slip untuk apa?",
-          "Kegunaan menu Setting Nota Slip apa?",
-          "menu Setting Nota Slip gunanya apa?"
+          "Kegunaan menu Setting Nota Slip apa?"
         ]
       },
       {
@@ -80,8 +74,7 @@
           "Langkah-langkah mengatur Setting Nota Slip gimana?",
           "Gimana langkah-langkah mengatur Setting Nota Slip?",
           "Gimana cara mengatur Setting Nota Slip?",
-          "Cara mengatur Setting Nota Slip gimana?",
-          "gimana langkah-langkah untuk mengatur Setting Nota Slip?"
+          "Cara mengatur Setting Nota Slip gimana?"
         ]
       },
       {
@@ -89,8 +82,7 @@
         "jawaban": "1. Pilih menu Setting Nota. 2. Akan muncul halaman Pilih Nota Platform, terdapat opsi platform yang Anda gunakan, yaitu \"Desktop\" atau \"Mobile\". Pilihlah salah satu. 3. Gunakan kolom \"Cari Field\" untuk mencari field atau informasi yang ingin ditambahkan pada nota. Misalnya, jika Anda ingin menampilkan informasi Nama Barang, ketikkan \"Nama Barang\" dalam kolom pencarian. 4. Setelah menemukan field yang ingin Anda tambahkan, seret dan lepas field tersebut ke dalam kolom putih yang ada di sebelah kiri halaman. 5. Anda dapat mengatur posisi informasi dengan cara menggeser atau mengubah urutan field pada kolom putih. Dengan ini, Anda dapat mengatur tata letak nota sesuai dengan preferensi Anda. 6. Setelah Anda selesai mengatur informasi pada nota, pastikan untuk menyimpan perubahan yang telah Anda buat dengan mengklik tombol \"Simpan Data\" atau tombol serupa yang tersedia.",
         "variasi_pertanyaan": [
           "Cara setting nota gimana?",
-          "Cara setting nota?",
-          "Bagaimana cara setting nota?"
+          "setting nota caranya gimana?"
         ]
       }
     ]
@@ -113,7 +105,7 @@
         "jawaban": "Pertama cek laporan penjualan metode pembayaran Cash ,debet ,tranfer dll lalu nanti disamakan dengan laporan keuangan cash dan non cash , jika sama tidak ada selisih , dan jika selilsih di laporan keungan bisa cek detail laporan nya untuk mengetahui faktur mana yang tidak update ke laporan keuangan",
         "variasi_pertanyaan": [
           "Kenapa selisih laporan transaksi penjualan?",
-          "Cara mengatasi selisih laporan transaksi penjualan?",
+          "laporan transaksi penjualan saya selisih?",
           "Gimana cara mengatasi selisih laporan transaksi penjualan?"
         ]
       },
@@ -182,8 +174,7 @@
         "jawaban": "Anda dapat mencetak data pada Laporan Penjualan Margin dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Penjualan Margin?",
-          "Cara mencetak data dari Laporan Penjualan Margin gimana?",
-          "Cara mencetak data dari Laporan Penjualan Margin?"
+          "Cara mencetak data dari Laporan Penjualan Margin gimana?"
         ]
       },
       {
@@ -191,10 +182,9 @@
         "jawaban": "Menu Laporan Titip Uang berfungsi untuk menampilkan laporan transaksi titip uang atau Down Payment (DP) baik yang belum ataupun yang sudah melakukan pelunasan oleh customer.",
         "variasi_pertanyaan": [
           "Fungsi Menu Laporan Titip Uang apa?",
-          "Menu Laporan Titip Uang buat apa?",
-          "Menu Laporan Titip Uang untuk apa?",
-          "Kegunaan Menu Laporan Titip Uang apa?",
-          "Menu Laporan Titip Uang gunanya apa?"
+          "Laporan Titip Uang buat apa?",
+          "Laporan Titip Uang untuk apa?",
+          "Kegunaan Menu Laporan Titip Uang apa?"
         ]
       },
       {
@@ -202,7 +192,7 @@
         "jawaban": "Pada kolom \"Tanggal Dari\" dan \"Tanggal Akhir\", masukkan rentang tanggal yang ingin Anda lihat laporan transaksi titip uangnya.",
         "variasi_pertanyaan": [
           "Langkah awal untuk melihat Laporan Titip Uang apa?",
-          "Step pertama untuk melihat Laporan Titip Uang apa?",
+          "gimana cara liat Laporan Titip Uang?",
           "Pertama kali harus ngapain untuk melihat Laporan Titip Uang?"
         ]
       },
@@ -211,8 +201,7 @@
         "jawaban": "Pilih \"Valid By\" yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua validasi, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan Titip Uang berdasarkan Valid By?",
-          "Cara memfilter laporan Titip Uang berdasarkan Valid By gimana?",
-          "Cara memfilter laporan Titip Uang berdasarkan Valid By?"
+          "Cara memfilter laporan Titip Uang berdasarkan Valid By gimana?"
         ]
       },
       {
@@ -224,10 +213,10 @@
         "jawaban": "Menu Laporan Stock Jual berfungsi untuk menampilkan laporan transaksi penjualan yang sudah di validasi berdasarkan barang yang terjual. Anda bisa memilih Tanggal, Jenis, Kode Baki, atau Group By sesuai kebutuhan.",
         "variasi_pertanyaan": [
           "Fungsi Menu Laporan Stok Jual apa?",
-          "Menu Laporan Stok Jual buat apa?",
-          "Menu Laporan Stok Jual untuk apa?",
+          "Laporan Stok Jual buat apa?",
+          "Laporan Stok Jual untuk apa?",
           "Kegunaan Menu Laporan Stok Jual apa?",
-          "Menu Laporan Stok Jual gunanya apa?"
+          "Laporan Stok Jual tuh apa?"
         ]
       },
       {
@@ -236,12 +225,17 @@
         "variasi_pertanyaan": [
           "Langkah awal untuk melihat Laporan Stok Jual apa?",
           "Step pertama untuk melihat Laporan Stok Jual apa?",
-          "Pertama kali harus ngapain untuk melihat Laporan Stok Jual?"
+          "Gimana cara lihat Laporan Stok Jual?"
         ]
       },
       {
         "pertanyaan": "Apa langkah-langkah untuk melihat Laporan Stok Jual?",
-        "jawaban": "1. Pada kolom \"Tanggal Dari\" dan \"Tanggal Akhir\", masukkan rentang tanggal yang ingin Anda lihat laporan stok penjualan.\r\n2. Pilih \"Jenis\" dari penjualan yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua jenis penjualan, pilih opsi \"SEMUA\".\r\n3. Pilih \"Kode Baki\" dari barang baki yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua kode baki, pilih opsi \"SEMUA\".\r\n4. Pilih \"Group By\" untuk mengelompokkan laporan berdasarkan kriteria tertentu. Misalnya, pilih \"KODE JENIS\" untuk mengelompokkan berdasarkan jenis barang.\r\n5. Pilih \"Sort By\" untuk mengurutkan laporan berdasarkan kriteria tertentu. Jika ingin menampilkan laporan tanpa pengurutan khusus, pilih opsi \"SEMUA\".\r\n6. Pilih \"Valid By\" yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua validasi, pilih opsi \"SEMUA\".\r\n7. Setelah memasukkan kriteria yang diinginkan, klik tombol \"Cari Laporan\" untuk memulai pencarian dan menampilkan laporan."
+        "jawaban": "1. Pada kolom \"Tanggal Dari\" dan \"Tanggal Akhir\", masukkan rentang tanggal yang ingin Anda lihat laporan stok penjualan.\r\n2. Pilih \"Jenis\" dari penjualan yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua jenis penjualan, pilih opsi \"SEMUA\".\r\n3. Pilih \"Kode Baki\" dari barang baki yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua kode baki, pilih opsi \"SEMUA\".\r\n4. Pilih \"Group By\" untuk mengelompokkan laporan berdasarkan kriteria tertentu. Misalnya, pilih \"KODE JENIS\" untuk mengelompokkan berdasarkan jenis barang.\r\n5. Pilih \"Sort By\" untuk mengurutkan laporan berdasarkan kriteria tertentu. Jika ingin menampilkan laporan tanpa pengurutan khusus, pilih opsi \"SEMUA\".\r\n6. Pilih \"Valid By\" yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua validasi, pilih opsi \"SEMUA\".\r\n7. Setelah memasukkan kriteria yang diinginkan, klik tombol \"Cari Laporan\" untuk memulai pencarian dan menampilkan laporan.",
+        "variasi_pertanyaan": [
+          "Gimana langkah-langkah untuk melihat Laporan Stok Jual?",
+          "Gimana cara untuk melihat Laporan Stok Jual?",
+          "Cara untuk melihat Laporan Stok Jual gimana?"
+        ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan dalam Laporan Stok Jual?",
@@ -302,8 +296,7 @@
         "jawaban": "Pilih \"Jenis\" dari penjualan yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua jenis penjualan, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan Stok Jual berdasarkan Jenis?",
-          "Cara memfilter laporan Stok Jual berdasarkan Jenis gimana?",
-          "Cara memfilter laporan Stok Jual berdasarkan Jenis?"
+          "Cara memfilter laporan Stok Jual berdasarkan Jenis gimana?"
         ]
       },
       {
@@ -311,10 +304,9 @@
         "jawaban": "Menu Laporan Transaksi Penjualan berfungsi untuk menampilkan laporan transaksi penjualan secara detail.",
         "variasi_pertanyaan": [
           "Fungsi Menu Laporan Transaksi Penjualan apa?",
-          "Menu Laporan Transaksi Penjualan buat apa?",
-          "Menu Laporan Transaksi Penjualan untuk apa?",
-          "Kegunaan Menu Laporan Transaksi Penjualan apa?",
-          "Menu Laporan Transaksi Penjualan gunanya apa?"
+          "Laporan Transaksi Penjualan buat apa?",
+          "Laporan Transaksi Penjualan untuk apa?",
+          "Kegunaan Menu Laporan Transaksi Penjualan apa?"
         ]
       },
       {
@@ -325,9 +317,9 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan dalam Laporan Transaksi Penjualan?",
         "jawaban": "Nomor Faktur Jual (No FJ), Jam Transaksi, Sales, Nama Barang, Berat, Harga Atribut, Harga Jual, Pembayaran DP, Ongkos, Harga Total, Harga Rata-rata, dan Total USD.",
         "variasi_pertanyaan": [
-          "yang ditampilkan dalam Laporan Transaksi Penjualan itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Transaksi Penjualan?",
-          "Info apa aja yang ditampilkan dalam Laporan Transaksi Penjualan?"
+          "Info apa aja yang ditampilkan dalam Laporan Transaksi Penjualan?",
+          "Apa aja yang bisa dilihat di Laporan Transaksi Penjualan?"
         ]
       },
       {
@@ -336,7 +328,7 @@
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Transaksi Penjualan?",
           "Cara mencetak data dari Laporan Transaksi Penjualan gimana?",
-          "Cara mencetak data dari Laporan Transaksi Penjualan?"
+          "Cara print Laporan Transaksi Penjualan gimana?"
         ]
       },
       {
@@ -344,8 +336,7 @@
         "jawaban": "Pilih \"Type Laporan\" untuk jenis laporan yang ingin Anda tampilkan. Jika ingin melihat semua jenis laporan, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memilih jenis laporan yang ingin ditampilkan di Laporan Transaksi Penjualan?",
-          "Cara memilih jenis laporan yang ingin ditampilkan di Laporan Transaksi Penjualan gimana?",
-          "Cara memilih jenis laporan yang ingin ditampilkan di Laporan Transaksi Penjualan?"
+          "Cara memilih jenis laporan yang ingin ditampilkan di Laporan Transaksi Penjualan gimana?"
         ]
       },
       {
@@ -353,8 +344,7 @@
         "jawaban": "Pilih \"Type Transaksi\" untuk jenis transaksi yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua jenis transaksi, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memilih jenis transaksi yang ingin ditampilkan di Laporan Transaksi Penjualan?",
-          "Cara memilih jenis transaksi yang ingin ditampilkan di Laporan Transaksi Penjualan gimana?",
-          "Cara memilih jenis transaksi yang ingin ditampilkan di Laporan Transaksi Penjualan?"
+          "Cara memilih jenis transaksi yang ingin ditampilkan di Laporan Transaksi Penjualan gimana?"
         ]
       },
       {
@@ -362,8 +352,7 @@
         "jawaban": "Pilih \"Kode Group\" untuk memfilter laporan berdasarkan kode grup tertentu. Jika ingin melihat laporan untuk semua kode grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan transaksi penjualan berdasarkan kode grup?",
-          "Cara memfilter laporan transaksi penjualan berdasarkan kode grup gimana?",
-          "Cara memfilter laporan transaksi penjualan berdasarkan kode grup?"
+          "Cara memfilter laporan transaksi penjualan berdasarkan kode grup gimana?"
         ]
       },
       {
@@ -371,8 +360,7 @@
         "jawaban": "Pilih \"Jenis Group\" untuk memfilter laporan berdasarkan jenis grup tertentu. Jika ingin melihat laporan untuk semua jenis grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan transaksi penjualan berdasarkan jenis grup?",
-          "Cara memfilter laporan transaksi penjualan berdasarkan jenis grup gimana?",
-          "Cara memfilter laporan transaksi penjualan berdasarkan jenis grup?"
+          "Cara memfilter laporan transaksi penjualan berdasarkan jenis grup gimana?"
         ]
       },
       {
@@ -384,10 +372,10 @@
         "jawaban": "Menu Laporan Penjualan Marketplace berfungsi untuk menampilkan pencatatan transaksi penjualan yang terjadi di Marketplace toko.",
         "variasi_pertanyaan": [
           "Fungsi Menu Laporan Penjualan Marketplace apa?",
-          "Menu Laporan Penjualan Marketplace buat apa?",
-          "Menu Laporan Penjualan Marketplace untuk apa?",
+          "Laporan Penjualan Marketplace buat apa?",
+          "Laporan Penjualan Marketplace untuk apa?",
           "Kegunaan Menu Laporan Penjualan Marketplace apa?",
-          "Menu Laporan Penjualan Marketplace gunanya apa?"
+          "Laporan Penjualan Marketplace itu apa?"
         ]
       },
       {
@@ -396,7 +384,7 @@
         "variasi_pertanyaan": [
           "Langkah awal untuk melihat Laporan Penjualan Marketplace apa?",
           "Step pertama untuk melihat Laporan Penjualan Marketplace apa?",
-          "Pertama kali harus ngapain untuk melihat Laporan Penjualan Marketplace?"
+          "gimana cara lihat Laporan Penjualan Marketplace?"
         ]
       },
       {
@@ -404,8 +392,7 @@
         "jawaban": "Pilih \"Marketplace\" untuk memilih marketplace tertentu yang ingin Anda sertakan dalam laporan. Jika ingin melihat laporan untuk semua marketplace, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan penjualan marketplace berdasarkan marketplace tertentu?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan marketplace tertentu gimana?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan marketplace tertentu?"
+          "Cara memfilter laporan penjualan marketplace berdasarkan marketplace tertentu gimana?"
         ]
       },
       {
@@ -413,8 +400,7 @@
         "jawaban": "Pilih \"Kode Group\" untuk memfilter laporan berdasarkan kode grup tertentu. Jika ingin melihat laporan untuk semua kode grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan penjualan marketplace berdasarkan Kode Group?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Kode Group gimana?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Kode Group?"
+          "Cara memfilter laporan penjualan marketplace berdasarkan Kode Group gimana?"
         ]
       },
       {
@@ -422,8 +408,7 @@
         "jawaban": "Pilih \"Jenis Group\" untuk memfilter laporan berdasarkan jenis grup tertentu. Jika ingin melihat laporan untuk semua jenis grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan penjualan marketplace berdasarkan Jenis Group?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Jenis Group gimana?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Jenis Group?"
+          "Cara memfilter laporan penjualan marketplace berdasarkan Jenis Group gimana?"
         ]
       },
       {
@@ -431,8 +416,7 @@
         "jawaban": "Pilih \"Valid By\" untuk memfilter laporan berdasarkan validasi oleh pihak tertentu. Jika ingin melihat laporan untuk semua validasi, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan penjualan marketplace berdasarkan Valid By?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Valid By gimana?",
-          "Cara memfilter laporan penjualan marketplace berdasarkan Valid By?"
+          "Cara memfilter laporan penjualan marketplace berdasarkan Valid By gimana?"
         ]
       },
       {
@@ -441,7 +425,7 @@
         "variasi_pertanyaan": [
           "yang ditampilkan dalam Laporan Penjualan Marketplace itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Penjualan Marketplace?",
-          "Info apa aja yang ditampilkan dalam Laporan Penjualan Marketplace?"
+          "apa aja yang bisa dilihat di Laporan Penjualan Marketplace?"
         ]
       },
       {
@@ -449,19 +433,17 @@
         "jawaban": "Selanjutnya Anda dapat mencetak data pada Laporan Transaksi Penjualan dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Penjualan Marketplace?",
-          "Cara mencetak data dari Laporan Penjualan Marketplace gimana?",
-          "Cara mencetak data dari Laporan Penjualan Marketplace?"
+          "Cara mencetak data dari Laporan Penjualan Marketplace gimana?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi dari Menu Laporan Barang Tukar?",
         "jawaban": "Menu Laporan Barang Tukar berfungsi untuk menampilkan laporan transaksi penjualan yang sudah di validasi dan merupakan penjualan tukar kurang atau tukar tambah. Data yang tampil pada laporan ini adalah data barang tukarnya. Anda bisa memfilter laporan per Tanggal atau Jenis Group sesuai kebutuhan.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Laporan Barang Tukar apa?",
           "Menu Laporan Barang Tukar buat apa?",
           "Menu Laporan Barang Tukar untuk apa?",
           "Kegunaan Menu Laporan Barang Tukar apa?",
-          "Menu Laporan Barang Tukar gunanya apa?"
+          "Laporan Barang Tukar itu apa?"
         ]
       },
       {
@@ -470,7 +452,7 @@
         "variasi_pertanyaan": [
           "Langkah awal untuk melihat Laporan Barang Tukar apa?",
           "Step pertama untuk melihat Laporan Barang Tukar apa?",
-          "Pertama kali harus ngapain untuk melihat Laporan Barang Tukar?"
+          "gimana cara lihat Laporan Barang Tukar?"
         ]
       },
       {
@@ -478,8 +460,7 @@
         "jawaban": "Pilih \"Jenis Group\" untuk memfilter laporan berdasarkan jenis grup tertentu. Jika ingin melihat laporan untuk semua jenis grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter Laporan Barang Tukar berdasarkan Jenis Group?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group gimana?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group?"
+          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group gimana?"
         ]
       },
       {
@@ -497,7 +478,7 @@
         "variasi_pertanyaan": [
           "yang ditampilkan dalam Laporan Barang Tukar itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Barang Tukar?",
-          "Info apa aja yang ditampilkan dalam Laporan Barang Tukar?"
+          "apa saja yang bisa dilihat di Laporan Barang Tukar?"
         ]
       },
       {
@@ -505,8 +486,7 @@
         "jawaban": "Selanjutnya Anda dapat mencetak data pada Laporan Barang Tukar dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Barang Tukar?",
-          "Cara mencetak data dari Laporan Barang Tukar gimana?",
-          "Cara mencetak data dari Laporan Barang Tukar?"
+          "Cara mencetak data dari Laporan Barang Tukar gimana?"
         ]
       },
       {
@@ -514,8 +494,7 @@
         "jawaban": "Pilih \"Jenis Group\" untuk memfilter laporan berdasarkan jenis grup tertentu. Jika ingin melihat laporan untuk semua jenis grup, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter Laporan Barang Tukar berdasarkan Jenis Group?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group gimana?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group?"
+          "Cara memfilter Laporan Barang Tukar berdasarkan Jenis Group gimana?"
         ]
       },
       {
@@ -523,19 +502,17 @@
         "jawaban": "Pilih \"Sales\" untuk memfilter laporan berdasarkan sales tertentu. Jika ingin melihat laporan untuk semua sales, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter Laporan Barang Tukar berdasarkan Sales?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Sales gimana?",
-          "Cara memfilter Laporan Barang Tukar berdasarkan Sales?"
+          "Cara memfilter Laporan Barang Tukar berdasarkan Sales gimana?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi dari Menu Laporan Batal Penjualan?",
         "jawaban": "Menu Laporan Batal Penjualan berfungsi untuk menampilkan laporan transaksi pembatalan penjualan berdasarkan Tanggal.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Laporan Batal Penjualan apa?",
           "Menu Laporan Batal Penjualan buat apa?",
           "Menu Laporan Batal Penjualan untuk apa?",
           "Kegunaan Menu Laporan Batal Penjualan apa?",
-          "Menu Laporan Batal Penjualan gunanya apa?"
+          "Menu Laporan Batal Penjualan itu apa?"
         ]
       },
       {
@@ -547,8 +524,7 @@
         "jawaban": "Pilih \"Valid By\" untuk memfilter laporan berdasarkan pihak yang memvalidasi pembatalan. Jika ingin melihat laporan untuk semua validasi, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter Laporan Batal Penjualan berdasarkan Valid By?",
-          "Cara memfilter Laporan Batal Penjualan berdasarkan Valid By gimana?",
-          "Cara memfilter Laporan Batal Penjualan berdasarkan Valid By?"
+          "Cara memfilter Laporan Batal Penjualan berdasarkan Valid By gimana?"
         ]
       },
       {
@@ -560,8 +536,7 @@
         "jawaban": "Anda dapat mencetak data pada Laporan Batal Penjualan dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Batal Penjualan?",
-          "Cara mencetak data dari Laporan Batal Penjualan gimana?",
-          "Cara mencetak data dari Laporan Batal Penjualan?"
+          "Cara mencetak data dari Laporan Batal Penjualan gimana?"
         ]
       },
       {
@@ -569,8 +544,7 @@
         "jawaban": "Pilih \"Kode Sales\" untuk memfilter laporan berdasarkan sales yang melakukan penjualan. Jika ingin melihat laporan untuk semua sales, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan Penjualan Sales berdasarkan Kode Sales?",
-          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Sales gimana?",
-          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Sales?"
+          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Sales gimana?"
         ]
       },
       {
@@ -578,8 +552,7 @@
         "jawaban": "Pilih \"Type\" untuk memilih jenis laporan yang ingin ditampilkan. Dalam hal ini, pilih \"REKAP\" untuk melihat laporan rekapitulasi penjualan.",
         "variasi_pertanyaan": [
           "Gimana cara memilih jenis laporan pada Laporan Penjualan Sales?",
-          "Cara memilih jenis laporan pada Laporan Penjualan Sales gimana?",
-          "Cara memilih jenis laporan pada Laporan Penjualan Sales?"
+          "Cara memilih jenis laporan pada Laporan Penjualan Sales gimana?"
         ]
       },
       {
@@ -587,19 +560,17 @@
         "jawaban": "Pilih \"Kode Group\" dan \"Jenis Group\" untuk memfilter laporan berdasarkan grup produk atau kategori tertentu. Jika ingin melihat laporan untuk semua grup dan jenis, pilih opsi \"SEMUA\".",
         "variasi_pertanyaan": [
           "Gimana cara memfilter laporan Penjualan Sales berdasarkan Kode Group dan Jenis Group?",
-          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Group dan Jenis Group gimana?",
-          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Group dan Jenis Group?"
+          "Cara memfilter laporan Penjualan Sales berdasarkan Kode Group dan Jenis Group gimana?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi dari Menu Laporan Penjualan Sales?",
         "jawaban": "Menu Laporan Penjualan Sales adalah untuk menampilkan laporan transaksi penjualan yang sudah di validasi berdasarkan sales toko yang melakukan transaksi penjualan tersebut.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Laporan Penjualan Sales apa?",
           "Menu Laporan Penjualan Sales buat apa?",
           "Menu Laporan Penjualan Sales untuk apa?",
           "Kegunaan Menu Laporan Penjualan Sales apa?",
-          "Menu Laporan Penjualan Sales gunanya apa?"
+          "Menu Laporan Penjualan Sales itu apa?"
         ]
       },
       {
@@ -607,8 +578,7 @@
         "jawaban": "Selanjutnya Anda dapat mencetak data pada Laporan Penjualan Sales dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Penjualan Sales?",
-          "Cara mencetak data dari Laporan Penjualan Sales gimana?",
-          "Cara mencetak data dari Laporan Penjualan Sales?"
+          "Cara mencetak data dari Laporan Penjualan Sales gimana?"
         ]
       },
       {
@@ -616,8 +586,7 @@
         "jawaban": "Kode Sales, Nama Sales, Jumlah Barang Terjual (Qty), Berat Total, Harga, Ongkos, Total Penjualan, Total Pembayaran Tunai (Cash Rp), Total Penjualan dengan Poin Tukar Kurang (Tukar Kurang), Jumlah Pembatalan Penjualan (Batal Jual), Jumlah Penjualan Berlian (Berlian Rp), dan Jumlah Ongkos Berlian (Ongkos BRL).",
         "variasi_pertanyaan": [
           "yang ditampilkan dalam Laporan Penjualan Sales itu menampilkan informasi apa saja?",
-          "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Penjualan Sales?",
-          "Info apa aja yang ditampilkan dalam Laporan Penjualan Sales?"
+          "Info apa aja yang bisa diliat di Laporan Penjualan Sales?"
         ]
       },
       {
@@ -628,11 +597,10 @@
         "pertanyaan": "Apa fungsi dari Menu Laporan Cash Back?",
         "jawaban": "Laporan Cash Back digunakan untuk menampilkan laporan cashback yang diberikan kepada member dalam suatu periode waktu tertentu.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Laporan Cash Back apa?",
           "Menu Laporan Cash Back buat apa?",
           "Menu Laporan Cash Back untuk apa?",
           "Kegunaan Menu Laporan Cash Back apa?",
-          "Menu Laporan Cash Back gunanya apa?"
+          "Menu Laporan Cash Back ituapa?"
         ]
       },
       {
@@ -640,8 +608,7 @@
         "jawaban": "Pada menu \"Laporan Cash Back\", Anda dapat melihat laporan tentang cashback yang diberikan kepada member dalam rentang tanggal yang Anda tentukan.",
         "variasi_pertanyaan": [
           "Gimana cara membuka Laporan Cash Back?",
-          "Cara membuka Laporan Cash Back gimana?",
-          "Cara membuka Laporan Cash Back?"
+          "Cara membuka Laporan Cash Back gimana?"
         ]
       },
       {
@@ -654,7 +621,7 @@
         "variasi_pertanyaan": [
           "yang ditampilkan dalam Laporan Cash Back itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Cash Back?",
-          "Info apa aja yang ditampilkan dalam Laporan Cash Back?"
+          "Info apa aja yang bisa diliat dalam Laporan Cash Back?"
         ]
       },
       {
@@ -662,19 +629,17 @@
         "jawaban": "Anda dapat mencetak data pada Laporan Cash Back dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Cash Back?",
-          "Cara mencetak data dari Laporan Cash Back gimana?",
-          "Cara mencetak data dari Laporan Cash Back?"
+          "Cara mencetak data dari Laporan Cash Back gimana?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi dari Laporan Penjualan Rekap?",
         "jawaban": "Laporan Penjualan Rekap digunakan untuk meringkas dan menyajikan informasi mengenai total penjualan dalam periode tertentu.",
         "variasi_pertanyaan": [
-          "Fungsi Laporan Penjualan Rekap apa?",
           "Laporan Penjualan Rekap buat apa?",
           "Laporan Penjualan Rekap untuk apa?",
           "Kegunaan Laporan Penjualan Rekap apa?",
-          "Laporan Penjualan Rekap gunanya apa?"
+          "Laporan Penjualan Rekap itu apa?"
         ]
       },
       {
@@ -686,8 +651,7 @@
         "jawaban": "Anda dapat mencetak data pada Laporan Penjualan Rekap dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak data dari Laporan Penjualan Rekap?",
-          "Cara mencetak data dari Laporan Penjualan Rekap gimana?",
-          "Cara mencetak data dari Laporan Penjualan Rekap?"
+          "Cara mencetak data dari Laporan Penjualan Rekap gimana?"
         ]
       },
       {
@@ -706,8 +670,7 @@
           "Fungsi filter slow moving dan fast moving pada Laporan Managerial Analysis apa?",
           "filter slow moving dan fast moving pada Laporan Managerial Analysis buat apa?",
           "filter slow moving dan fast moving pada Laporan Managerial Analysis untuk apa?",
-          "Kegunaan filter slow moving dan fast moving pada Laporan Managerial Analysis apa?",
-          "filter slow moving dan fast moving pada Laporan Managerial Analysis gunanya apa?"
+          "Kegunaan filter slow moving dan fast moving pada Laporan Managerial Analysis apa?"
         ]
       },
       {
@@ -720,7 +683,7 @@
         "variasi_pertanyaan": [
           "yang ditampilkan pada Laporan Managerial Analysis saat di export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Laporan Managerial Analysis saat di export ke PDF?",
-          "Info apa aja yang ditampilkan pada Laporan Managerial Analysis saat di export ke PDF?"
+          "Info apa aja yang bisa diliat pada Laporan Managerial Analysis saat di export ke PDF?"
         ]
       },
       {
@@ -739,7 +702,7 @@
           "Menu Transaksi Penjualan buat apa?",
           "Menu Transaksi Penjualan untuk apa?",
           "Kegunaan Menu Transaksi Penjualan apa?",
-          "Menu Transaksi Penjualan gunanya apa?"
+          "Menu Transakdi Penjualan tuh apa?"
         ]
       },
       {
@@ -751,8 +714,7 @@
         "jawaban": "1. Klik button berwana biru bertuliskan “Data Customer”, maka akan muncul Form Data Customer.\r\n2. Pilih Kode Sales yang melayani transaksi penjualan tersebut. Yang sebelumnya sudah di input di Data Master Sales.\r\n3. Kemudian pilih pelanggan. Ada 2 tipe yaitu NonMember dan Member. Apabila NonMember, maka Anda dapat mengisi Nama Customer, No Hp, dan Alamat Customer. Tapi apabila Member, Anda diharuskan mengisi kolom Kode Member untuk secara otomatis menampilkan Nama Customer, No Hp dan Alamat Customer.\r\n4. Jika data tersebut sudah benar, maka klik tombol “Simpan Data” untuk menyimpan Data Customer.\r\n5. Setelah melakukan pengisian Data Customer, Anda dapat melakukan proses Transaksi Penjualan lainnya seperti Data Barang, Ambil Titipan, dan Ambil Pesanan.",
         "variasi_pertanyaan": [
           "Gimana cara melakukan Input Data Customer?",
-          "Cara melakukan Input Data Customer gimana?",
-          "Cara melakukan Input Data Customer?"
+          "Cara melakukan Input Data Customer gimana?"
         ]
       },
       {
@@ -760,8 +722,7 @@
         "jawaban": "1. Klik button berwana biru bertuliskan “Data Customer”, maka akan muncul Form Data Customer.\r\n2. Pilih data customerKode Sales yang melayani transaksi penjualan tersebut. Yang sebelumnya sudah di input di Data Master Sales.\r\n3. Kemudian pilih pelanggan. Ada 2 tipe yaitu NonMember dan Member. Apabila NonMember, maka Anda dapat mengisi Nama Customer, No Hp, dan Alamat Customer. Tapi apabila Member, Anda diharuskan mengisi kolom Kode Member untuk secara otomatis menampilkan Nama Customer, No Hp dan Alamat Customer.\r\n4. Jika data tersebut sudah benar, maka klik tombol “Simpan Data” untuk menyimpan Data Customer.\r\n5. Untuk mengubah Data Customer apabila ada kesalahan dalam penulisan, Anda dapat melakukan tahap yang sama ketika melakukan input data customer.",
         "variasi_pertanyaan": [
           "Gimana cara melakukan Edit Data Customer?",
-          "Cara melakukan Edit Data Customer gimana?",
-          "Cara melakukan Edit Data Customer?"
+          "Cara melakukan Edit Data Customer gimana?"
         ]
       },
       {
@@ -769,8 +730,7 @@
         "jawaban": "1. Klik button berwarna hijau bertuliskan “Data Barang”, maka akan muncul Form Data Barang.\r\n2. Scan barcode pada perhiasan di kolom Kode Barcode.\r\n3. Pilih Marketplace jika barang terjual di Marketplace, jika terjual di toko, lewati kolom Marketplace.\r\n4. Jika perlu, isi ulang Berat Jual atau Harga Jual barang.\r\n5. Jika harga jual di bawah harga jual sistem, akan muncul form Otorisasi untuk dikonfirmasi oleh Owner atau Kepala Toko.\r\n6. Isi Ongkos dan Keterangan jika diperlukan, jika tidak ada, dapat dilewati.\r\n7. Pilih \"Simpan Data\" jika data sudah benar.",
         "variasi_pertanyaan": [
           "Gimana cara melakukan Input Data Barang?",
-          "Cara melakukan Input Data Barang gimana?",
-          "Cara melakukan Input Data Barang?"
+          "Cara melakukan Input Data Barang gimana?"
         ]
       },
       {
@@ -779,14 +739,15 @@
         "variasi_pertanyaan": [
           "Kenapa Apakah Data Barang yang sudah diinputkan dapat diubah?",
           "Cara mengatasi Apakah Data Barang yang sudah diinputkan dapat diubah?",
-          "Gimana cara mengatasi Apakah Data Barang yang sudah diinputkan dapat diubah?"
+          "Gimana cara ubah Data Barang yang sudah diinputkan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana proses Transaksi Penjualan pada saat Ambil Titipan?",
         "jawaban": "Proses Transaksi Penjualan pada saat Ambil Titipan dilakukan setelah melakukan pembayaran dp. Berikut proses Ambil Titipan.\r\n1. Klik tombol berwana oranye bertuliskan \"Ambil Titipan\" pada menu Transaksi Penjualan, maka akan muncul Form Ambil Titipan.\r\n2. Isi filter yang terdiri dari No HP, Nama Customer, atau No Titipan.\r\n3. Setelah memilih filter, masukkan data sesuai pilihan pada filter.\r\n4. Klik tombol \"Cari\" untuk mencari data titipan yang sesuai dengan filter yang diinputkan.\r\n5. Data titipan akan muncul pada bagian bawah form, termasuk No Titipan, Nama Customer, No HP, Total DP, dan Total Transaksi.\r\n6. Klik “Pilih Barang” pada button berwarna merah jika data yang dicari sudah sesuai. Selanjutnya Anda dapat melakukan pembayaran.",
         "variasi_pertanyaan": [
-          "gimana proses Transaksi Penjualan pada saat Ambil Titipan?"
+          "gimana proses Transaksi Penjualan pada saat Ambil Titipan?",
+          "ambil titipan caranya gimana?"
         ]
       },
       {
@@ -820,7 +781,7 @@
         "variasi_pertanyaan": [
           "Gimana cara membatalkan Transaksi Penjualan yang sudah divalidasi?",
           "Cara membatalkan Transaksi Penjualan yang sudah divalidasi gimana?",
-          "Cara membatalkan Transaksi Penjualan yang sudah divalidasi?"
+          "Apakah transaksi penjualan bisa dibatal?"
         ]
       },
       {
@@ -828,8 +789,7 @@
         "jawaban": "Untuk menghapus data barang yang telah ditambahkan pada proses Transaksi Penjualan, Anda dapat memilih tombol “Hapus” yang berwarna merah pada kolom Action. Pastikan untuk berhati-hati saat menghapus data barang karena tindakan ini tidak dapat dibatalkan. Pastikan barang yang akan dihapus adalah yang benar-benar tidak relevan atau perlu dihapus dari transaksi penjualan.",
         "variasi_pertanyaan": [
           "Gimana cara menghapus data barang pada Transaksi Penjualan?",
-          "Cara menghapus data barang pada Transaksi Penjualan gimana?",
-          "Cara menghapus data barang pada Transaksi Penjualan?"
+          "Cara menghapus data barang pada Transaksi Penjualan gimana?"
         ]
       },
       {
@@ -843,9 +803,7 @@
         "pertanyaan": "Apakah barcode yang sudah digunakan bisa dipakai kembali?",
         "jawaban": "Barcode yang digunakan pada barang kemudian dilakukan transaksi penjualan tidak dapat digunakan lagi untuk Transaksi Penjualan selanjutnya.",
         "variasi_pertanyaan": [
-          "Kenapa Apakah barcode yang sudah digunakan bisa dipakai kembali?",
-          "Cara mengatasi Apakah barcode yang sudah digunakan bisa dipakai kembali?",
-          "Gimana cara mengatasi Apakah barcode yang sudah digunakan bisa dipakai kembali?"
+          "barcode yang sudah dipakai bisa dipakai lagi gak?"
         ]
       },
       {
@@ -870,9 +828,7 @@
         "pertanyaan": "Dari mana Total pada form Data Barang didapatkan?",
         "jawaban": "Total pada form data barang didapat dari akumulasi harga atribut, harga jual, dan ongkos.",
         "variasi_pertanyaan": [
-          "Kenapa Dari mana Total pada form Data Barang didapatkan?",
-          "Cara mengatasi Dari mana Total pada form Data Barang didapatkan?",
-          "Gimana cara mengatasi Dari mana Total pada form Data Barang didapatkan?"
+          "Total penjualan perhitungannya dari mana?"
         ]
       },
       {
@@ -885,14 +841,15 @@
         "variasi_pertanyaan": [
           "yang ditampilkan pada Menu Lihat Penjualan itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Menu Lihat Penjualan?",
-          "Info apa aja yang ditampilkan pada Menu Lihat Penjualan?"
+          "apa aja yang bisa dilihat di Menu Lihat Penjualan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana tahapan untuk melihat penjualan pada Menu Transaksi Penjualan?",
         "jawaban": "1. Buka menu Lihat Penjualan.\r\n2. Secara default, sistem akan menampilkan daftar transaksi penjualan yang terjadi pada tanggal sistem yang sedang berjalan atau transaksi pada hari itu.\r\n3. Jika Anda ingin memfilter data penjualan untuk mencari Nomor Faktur atau transaksi penjualan tertentu, Anda dapat mengubah Tanggal Dari dan Tanggal Akhir sesuai dengan rentang waktu yang Anda inginkan.\r\n4. Setelah mengatur rentang waktu, klik tombol \"Cari Penjualan\" untuk memulai pencarian.\r\n5. Akan muncul daftar transaksi penjualan yang sesuai dengan kriteria pencarian Anda. Informasi yang ditampilkan dapat mencakup Nomor Faktur, Tanggal Penjualan, Nama Pelanggan, Total Penjualan, dan lainnya.",
         "variasi_pertanyaan": [
-          "gimana tahapan untuk melihat penjualan pada Menu Transaksi Penjualan?"
+          "gimana tahapan untuk melihat penjualan pada Menu Transaksi Penjualan?",
+          "gimana cara lihat penjualan yang telah dilakukan?"
         ]
       },
       {
@@ -900,19 +857,17 @@
         "jawaban": "Untuk mencetak ulang nota penjualan, pada menu penjualan temukan transaksi yang ingin dicetak ulang dalam tabel data penjualan. Di kolom \"Reprint\", klik tautan atau tombol yang tersedia untuk mencetak ulang nota penjualan terkait.",
         "variasi_pertanyaan": [
           "Gimana cara mencetak ulang nota penjualan?",
-          "Cara mencetak ulang nota penjualan gimana?",
-          "Cara mencetak ulang nota penjualan?"
+          "Cara mencetak ulang nota penjualan gimana?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi Menu Batal Penjualan?",
         "jawaban": "Menu Batal Penjualan berfungsi jika Anda perlu melakukan pembatalan transaksi penjualan yang telah di validasi dihari yang sama atau dihari dimana Anda melakukan transaksi itu dan langsung di batalkan karena salah input atau transaksi dibatalkan karena suatu kondisi tertentu.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Batal Penjualan apa?",
           "Menu Batal Penjualan buat apa?",
           "Menu Batal Penjualan untuk apa?",
           "Kegunaan Menu Batal Penjualan apa?",
-          "Menu Batal Penjualan gunanya apa?"
+          "Menu Batal Penjualan itu apa?"
         ]
       },
       {
@@ -925,32 +880,29 @@
         "variasi_pertanyaan": [
           "No FJ dalam penjualan itu apa?",
           "Maksud No FJ dalam penjualan apa?",
-          "Apa yang dimaksud dengan No FJ dalam penjualan?"
+          "No FJ tuh apa?"
         ]
       },
       {
         "pertanyaan": "Apa itu Kode Sales dalam penjualan?",
         "jawaban": "Kode Sales: Merupakan kode identifikasi untuk Sales atau penjual yang melayani transaksi penjualan. Kode Sales digunakan untuk menghubungkan penjualan dengan sales yang bertanggung jawab atas transaksi tersebut.",
         "variasi_pertanyaan": [
-          "Kode Sales dalam penjualan itu apa?",
           "Maksud Kode Sales dalam penjualan apa?",
-          "Apa yang dimaksud dengan Kode Sales dalam penjualan?"
+          "Kode Sales tuh apa?"
         ]
       },
       {
         "pertanyaan": "Apa itu Nama Customer?",
         "jawaban": "Nama Customer: Merupakan nama pelanggan yang melakukan transaksi penjualan. Nama Customer digunakan untuk mengidentifikasi pelanggan yang terlibat dalam transaksi penjualan.",
         "variasi_pertanyaan": [
-          "Nama Customer itu apa?",
           "Maksud Nama Customer apa?",
-          "Apa yang dimaksud dengan Nama Customer?"
+          "Nama Customer tuh apa?"
         ]
       },
       {
         "pertanyaan": "Apa itu Harga dalam transaksi penjualan?",
         "jawaban": "Harga: Merupakan harga satuan dari barang yang dijual. Harga digunakan untuk menghitung total harga barang dalam transaksi penjualan.",
         "variasi_pertanyaan": [
-          "Harga dalam transaksi penjualan itu apa?",
           "Maksud Harga dalam transaksi penjualan apa?",
           "Apa yang dimaksud dengan Harga dalam transaksi penjualan?"
         ]
@@ -961,14 +913,13 @@
         "variasi_pertanyaan": [
           "Ongkos dalam transaksi penjualan itu apa?",
           "Maksud Ongkos dalam transaksi penjualan apa?",
-          "Apa yang dimaksud dengan Ongkos dalam transaksi penjualan?"
+          "ongkos itu buat apa?"
         ]
       },
       {
         "pertanyaan": "Apa itu Berat dalam transaksi penjualan?",
         "jawaban": "Berat: Merupakan berat dari barang yang dijual. Berat digunakan dalam perhitungan biaya pengiriman atau untuk keperluan lainnya terkait dengan barang tersebut.",
         "variasi_pertanyaan": [
-          "Berat dalam transaksi penjualan itu apa?",
           "Maksud Berat dalam transaksi penjualan apa?",
           "Apa yang dimaksud dengan Berat dalam transaksi penjualan?"
         ]
@@ -977,7 +928,6 @@
         "pertanyaan": "Apa itu Harga Total dalam transaksi penjualan?",
         "jawaban": "Harga Total: Merupakan total harga keseluruhan dari transaksi penjualan, termasuk harga barang dan biaya tambahan (jika ada).",
         "variasi_pertanyaan": [
-          "Harga Total dalam transaksi penjualan itu apa?",
           "Maksud Harga Total dalam transaksi penjualan apa?",
           "Apa yang dimaksud dengan Harga Total dalam transaksi penjualan?"
         ]
@@ -986,8 +936,6 @@
         "pertanyaan": "Apa itu Status dalam transaksi penjualan?",
         "jawaban": "Status: Merupakan status atau kondisi transaksi penjualan.",
         "variasi_pertanyaan": [
-          "Status dalam transaksi penjualan itu apa?",
-          "Maksud Status dalam transaksi penjualan apa?",
           "Apa yang dimaksud dengan Status dalam transaksi penjualan?"
         ]
       },
@@ -1003,7 +951,8 @@
         "pertanyaan": "Saya ingin lihat keuntungan penjualan ditoko, gimana caranya?",
         "jawaban": "Untuk melihat keuntungan dari transaksi penjualan, Anda bisa menggunakan data pada Laporan Margin Penjualan. Pada laporan margin penjualan, anda dapat melihat jumlah barang terjual, modal yang dikeluarkan, serta keuntungan yang didapatkan.",
         "variasi_pertanyaan": [
-          "Saya ingin lihat keuntungan penjualan ditoko, bagaimana caranya?"
+          "Saya ingin lihat keuntungan penjualan ditoko, bagaimana caranya?",
+          "bisa gak kalau saya ingin tahu keuntungan penjualan ditoko?"
         ]
       },
       {
@@ -1028,27 +977,23 @@
         "pertanyaan": "Apakah foto barang dapat diambil atau ditambahkan saat proses penjualan?",
         "jawaban": "Ya, foto barang dapat ditambahkan atau diperbarui pada saat melakukan transaksi penjualan. Selain menambahkan foto ketika proses Tambah Data Barang, Anda juga dapat menambah atau mengubah foto barang langsung dari menu penjualan.",
         "variasi_pertanyaan": [
-          "Kenapa Apakah foto barang dapat diambil atau ditambahkan saat proses penjualan?",
-          "Cara mengatasi Apakah foto barang dapat diambil atau ditambahkan saat proses penjualan?",
-          "Gimana cara mengatasi Apakah foto barang dapat diambil atau ditambahkan saat proses penjualan?"
+          "foto barang bisa diganti ketika penjualan tidak?",
+          "foto barang bisa ditambahkan ketika penjualan tidak?"
         ]
       },
       {
         "pertanyaan": "Apakah bisa membatalkan penjualan kemarin?",
         "jawaban": "Penjualan yang sudah melewati hari transaksi hanya dapat dibatalkan oleh user dengan level Owner. Selain itu, proses pembatalannya juga harus melalui otorisasi dari user yang memiliki level Owner. Dengan demikian, pembatalan penjualan yang sudah lewat hari tidak bisa dilakukan oleh user selain Owner.",
         "variasi_pertanyaan": [
-          "Kenapa Apakah bisa membatalkan penjualan kemarin?",
-          "Cara mengatasi Apakah bisa membatalkan penjualan kemarin?",
-          "Gimana cara mengatasi Apakah bisa membatalkan penjualan kemarin?"
+          "penjualan yang sudah lewat bisa dibatal tidak?",
+          "Gimana cara membatalkan penjualan kemarin?"
         ]
       },
       {
         "pertanyaan": "Saya sudah melakukan transaksi penjualan, tapi datanya tidak muncul di laporan",
         "jawaban": "Pastikan transaksi yang Anda lakukan sudah divalidasi melalui menu Validasi. Hanya transaksi yang sudah divalidasi yang akan ditampilkan di laporan. Kecuali apabila fitur validasi dinonaktifkan di sistem Anda, dalam kondisi tersebut, transaksi akan otomatis masuk ke laporan tanpa proses validasi.",
         "variasi_pertanyaan": [
-          "Kenapa Saya sudah melakukan transaksi penjualan, tapi datanya tidak muncul di laporan?",
-          "Cara mengatasi Saya sudah melakukan transaksi penjualan, tapi datanya tidak muncul di laporan?",
-          "Gimana cara mengatasi Saya sudah melakukan transaksi penjualan, tapi datanya tidak muncul di laporan?"
+          "Kok data penjualan saya tidak muncul dilaporan?"
         ]
       },
       {
@@ -1059,18 +1004,14 @@
         "pertanyaan": "saya ingin setelah simpan transaksi penjualan, semua data otomatis tersimpan ke laporan tanpa validasi dulu. apakah bisa?",
         "jawaban": "Jika memang SOP di toko Anda tidak diharuskan ada validasi data terlebih dahulu sebelum data masuk ke Laporan, fitur validasi dapat dimatikan oleh tim kami. Oleh karena itu, silakan Anda hubungi tim kami untuk menon aktifkan fitur tersebut.",
         "variasi_pertanyaan": [
-          "Kenapa saya ingin setelah simpan transaksi penjualan, semua data otomatis tersimpan ke laporan tanpa validasi dulu. apakah bisa?",
-          "Cara mengatasi saya ingin setelah simpan transaksi penjualan, semua data otomatis tersimpan ke laporan tanpa validasi dulu. apakah bisa?",
-          "Gimana cara mengatasi saya ingin setelah simpan transaksi penjualan, semua data otomatis tersimpan ke laporan tanpa validasi dulu. apakah bisa?"
+          "bisa gak data langsung masuk ke laporan tanpa validasi?"
         ]
       },
       {
         "pertanyaan": "transaksi penjualan bisa skip validasi tidak?",
         "jawaban": "Jika memang SOP di toko Anda tidak diharuskan ada validasi data terlebih dahulu sebelum data masuk ke Laporan, fitur validasi dapat dimatikan oleh tim kami. Oleh karena itu, silakan Anda hubungi tim kami untuk menon aktifkan fitur tersebut.",
         "variasi_pertanyaan": [
-          "Kenapa transaksi penjualan bisa skip validasi tidak?",
-          "Cara mengatasi transaksi penjualan bisa skip validasi tidak?",
-          "Gimana cara mengatasi transaksi penjualan bisa skip validasi tidak?"
+          "saya tidak mau memakai validasi"
         ]
       },
       {
@@ -1079,8 +1020,12 @@
         "variasi_pertanyaan": [
           "Gimana cara liat/tau barang yg paling laku terjual?",
           "Cara liat/tau barang yg paling laku terjual gimana?",
-          "Cara liat/tau barang yg paling laku terjual?"
+          "saya bisa tau tidak barang yang paling laku terjual?"
         ]
+      },
+      {
+        "pertanyaan": "test",
+        "jawaban": "test"
       }
     ]
   },
@@ -1101,8 +1046,7 @@
         "jawaban": "buka aplikasi timbangan Start lalu akan ada tampilahn masukan user Id , masukan user id ,untuk user id harus sama dengan yang di pakai input barang ,setelah itu coba print timbangan jika sudah keluar angka sesuai dengan g di timbangan itu sudah bisa di gunakan dan sudah konek",
         "variasi_pertanyaan": [
           "Kenapa Tambah barang dan timbang baki tidak konek timbangan?",
-          "Cara mengatasi Tambah barang dan timbang baki tidak konek timbangan?",
-          "Gimana cara mengatasi Tambah barang dan timbang baki tidak konek timbangan?"
+          "Cara mengatasi Tambah barang dan timbang baki tidak konek timbangan?"
         ]
       },
       {
@@ -1111,7 +1055,7 @@
         "variasi_pertanyaan": [
           "Laporan Barang Detail itu apa?",
           "Maksud Laporan Barang Detail apa?",
-          "Apa yang dimaksud dengan Laporan Barang Detail?"
+          "Laporan Barang Detail buat apa?"
         ]
       },
       {
@@ -1126,9 +1070,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Barang Detail di-export ke PDF?",
         "jawaban": "1. Kode Barcode : Kode barcode barang\r\n2. Kode Group : Kode group barang\r\n3. Kode Jenis : Kode jenis barang\r\n4. Kode Intern : Kode unik barang\r\n5. Kode Gudang : Kode Gudang atau lokasi suatu barang\r\n6. Nama Barang : Nama barang berdasarkan kode barcode tersebut\r\n7. Nama Atribut : Nama atribut selain emas pada barang tersebut\r\n8. Batu Berlian : Nama batu berlian pada barang tersebut\r\n9. Berat : Berat barang\r\n10. Berat Atribut : Berat atribut\r\n11. Total USD : Total harga barang dalam mata uang USD\r\n12. Tanggal Input : Tanggal input barang\r\n13. Total Berat : Total berat keseluruhan barang\r\n14. Total Berat Atribute : Total berat attribute keseluruhan barang\r\n15. Total USD : Total harga keseluruhan dalam mata uang USD",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Barang Detail di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Barang Detail di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Barang Detail di-export ke PDF?"
+          "Info apa aja yang bisa dilihat pada Laporan Barang Detail jika di-export ke PDF?"
         ]
       },
       {
@@ -1157,8 +1100,7 @@
         "jawaban": "1. Kode Barcode : Kode barcode barang acc\r\n2. Kode Group : Kode Group untuk barang acc\r\n3. Kode Jenis : Kode Jenis untuk barang acc\r\n4. Kode Intern : Kode unik barang\r\n5. Kode Gudang : Kode Gudang suatu barang\r\n6. Nama Barang : Nama barang acc berdasarkan kode barang tersebut\r\n7. Stock : Stock barang acc\r\n8. Berat : Berat barang Acc\r\n9. Nama Atribute : Nama atribut selain emas untuk barang acc tersebut\r\n10. Berat Atribute : Berat dari atribut tersebut\r\n11. Total Stock : Total stok barang acc secara keseluruhan\r\n12. Total Berat : Total berat barang acc secara keseluruhan\r\n13. Total Berat Atribute : Total berat barang acc secara keseluruhan",
         "variasi_pertanyaan": [
           "yang ditampilkan jika Laporan Barang Acc di-export ke PDF itu menampilkan informasi apa saja?",
-          "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Barang Acc di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Barang Acc di-export ke PDF?"
+          "Info apa aja yang dbisa dilihat jika Laporan Barang Acc di-export ke PDF?"
         ]
       },
       {
@@ -1190,9 +1132,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Barang Detail di-export ke PDF?",
         "jawaban": "1. Kode Barcode : Kode barcode barang\r\n2. Kode Group : Kode group barang\r\n3. Kode Jenis : Kode jenis barang\r\n4. Kode Intern : Kode unik barang\r\n5. Kode Gudang : Kode Gudang atau lokasi suatu barang\r\n6. Nama Barang : Nama barang berdasarkan kode barcode tersebut\r\n7. Nama Atribut : Nama atribut selain emas pada barang tersebut\r\n8. Batu Berlian : Nama batu berlian pada barang tersebut\r\n9. Berat : Berat barang\r\n10. Berat Atribut : Berat atribut\r\n11. Total USD : Total harga barang dalam mata uang USD\r\n12. Tanggal Input : Tanggal input barang\r\n13. Total Berat : Total berat keseluruhan barang\r\n14. Total Berat Atribute : Total berat attribute keseluruhan barang\r\n15. Total USD : Total harga keseluruhan dalam mata uang USD",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Barang Detail di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Barang Detail di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Barang Detail di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Barang Detail di-export ke PDF?"
         ]
       },
       {
@@ -1220,9 +1161,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Barang Acc di-export ke PDF?",
         "jawaban": "1. Kode Barcode : Kode barcode barang acc\r\n2. Kode Group : Kode Group untuk barang acc\r\n3. Kode Jenis : Kode Jenis untuk barang acc\r\n4. Kode Intern : Kode unik barang\r\n5. Kode Gudang : Kode Gudang suatu barang\r\n6. Nama Barang : Nama barang acc berdasarkan kode barang tersebut\r\n7. Stock : Stock barang acc\r\n8. Berat : Berat barang Acc\r\n9. Nama Atribute : Nama atribut selain emas untuk barang acc tersebut\r\n10. Berat Atribute : Berat dari atribut tersebut\r\n11. Total Stock : Total stok barang acc secara keseluruhan\r\n12. Total Berat : Total berat barang acc secara keseluruhan\r\n13. Total Berat Atribute : Total berat barang acc secara keseluruhan",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Barang Acc di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Barang Acc di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Barang Acc di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Barang Acc di-export ke PDF?"
         ]
       },
       {
@@ -1239,15 +1179,14 @@
         "variasi_pertanyaan": [
           "Laporan Tambah Barang itu apa?",
           "Maksud Laporan Tambah Barang apa?",
-          "Apa yang dimaksud dengan Laporan Tambah Barang?"
+          "Laporan Tambah Barang buat/untuk apa?"
         ]
       },
       {
         "pertanyaan": "Apa saja filter pencarian di Laporan Tambah Barang?",
         "jawaban": "1. Tanggal Dari\r\n2. Tanggal Akhir\r\n3. Jenis\r\n4. Baki\r\n5. Gudang",
         "variasi_pertanyaan": [
-          "filter pencarian di Laporan Tambah Barang apa saja?",
-          "Apa aja filter pencarian di Laporan Tambah Barang?"
+          "filter pencarian di Laporan Tambah Barang apa saja?"
         ]
       },
       {
@@ -1258,53 +1197,47 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika memilih tombol Lihat Laporan pada Laporan Tambah Barang?",
         "jawaban": "1. Periode\r\n2. Kode Barcode\r\n3. Kode Intern\r\n4. Kode Gudang\r\n5. Kode Baki\r\n6. Kode Group\r\n7. Kode Jenis\r\n8. Nama Barang\r\n9. Batu/CT\r\n10. Berat\r\n11. Berat Asli\r\n12. Berat Atribut\r\n13. Harga Modal\r\n14. Harga Jual\r\n15. Total USD\r\n16. Input By Berlian\r\n17. Total Berat Barang\r\n18. Total Harga Modal\r\n19. Total Harga Jual",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika memilih tombol Lihat Laporan pada Laporan Tambah Barang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika memilih tombol Lihat Laporan pada Laporan Tambah Barang?",
-          "Info apa aja yang ditampilkan jika memilih tombol Lihat Laporan pada Laporan Tambah Barang?"
+          "Info apa aja yang bisa dilihat jika memilih tombol Lihat Laporan pada Laporan Tambah Barang?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika memilih tombol Global Per Baki pada Laporan Tambah Barang?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan tambah barang\r\n2. Kode Baki : Kode Baki barang saat menambahkan data barang\r\n3. Nama Baki : Nama Baki saat menambahkan data barang\r\n4. Tambah Ptg : Qty barang saat menambahkan data barang dengan baki tersebut\r\n5. Tambah Berat : Berat barang saat menambahkan data barang dengan baki tersebut\r\n6. Tambah Berat Asli : Berat barang asli biasanya merujuk ke berat barang, saat menambahkan data barang",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika memilih tombol Global Per Baki pada Laporan Tambah Barang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika memilih tombol Global Per Baki pada Laporan Tambah Barang?",
-          "Info apa aja yang ditampilkan jika memilih tombol Global Per Baki pada Laporan Tambah Barang?"
+          "Info apa aja yang bisa dilihat jika memilih tombol Global Per Baki pada Laporan Tambah Barang?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika memilih tombol Global Per Jenis pada Laporan Tambah Barang?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan tambah barang\r\n2. Kode Jenis : Kode jenis barang saat menambahkan data barang\r\n3. Nama Jenis : Nama Barang saat menambahkan data barang\r\n4. Tambah Ptg : Qty barang saat menambahkan data barang dengan kode jenis tersebut\r\n5. Tambah Berat : Berat barang saat menambahkan data barang dengan kode jenis tersebut\r\n6. Tambah Berat Asli : Berat barang asli biasanya merujuk ke berat barang, saat menambahkan data barang",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika memilih tombol Global Per Jenis pada Laporan Tambah Barang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika memilih tombol Global Per Jenis pada Laporan Tambah Barang?",
-          "Info apa aja yang ditampilkan jika memilih tombol Global Per Jenis pada Laporan Tambah Barang?"
+          "Info apa aja yang bisa dilihat jika memilih tombol Global Per Jenis pada Laporan Tambah Barang?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika memilih tombol Global Per Kode Intern pada Laporan Tambah Barang?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan tambah barang\r\n2. Kode Intern : Kode intern barang saat menambahkan data barang\r\n3. Tambah Ptg : Qty barang saat menambahkan data barang dengan kode intern tersebut\r\n4. Tambah Berat : Berat barang saat menambahkan data barang dengan kode intern tersebut\r\n5. Tambah Berat Asli : Berat barang asli biasanya merujuk ke berat barang, saat menambahkan data barang",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika memilih tombol Global Per Kode Intern pada Laporan Tambah Barang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika memilih tombol Global Per Kode Intern pada Laporan Tambah Barang?",
-          "Info apa aja yang ditampilkan jika memilih tombol Global Per Kode Intern pada Laporan Tambah Barang?"
+          "Info apa aja yang bisa dilihat jika memilih tombol Global Per Kode Intern pada Laporan Tambah Barang?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika memilih tombol Global Per Kadar pada Laporan Tambah Barang?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan tambah barang\r\n2. Berat Asli : Berat asli barang saat menambahkan data barang\r\n3. Berat Tambah : Jika ada penambahan berat saat menambahkan data barang\r\n4. Kadar Cetak : Kadar cetak yang diinput saat menambahkan data barang\r\n5. Stock Tambah : Jumlah stok jika ada pembambahan saat menambahkan data barang",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika memilih tombol Global Per Kadar pada Laporan Tambah Barang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika memilih tombol Global Per Kadar pada Laporan Tambah Barang?",
-          "Info apa aja yang ditampilkan jika memilih tombol Global Per Kadar pada Laporan Tambah Barang?"
+          "Info apa aja yang bisa dilihat jika memilih tombol Global Per Kadar pada Laporan Tambah Barang?"
         ]
       },
       {
         "pertanyaan": "Apa itu Laporan Timbang Baki?",
         "jawaban": "Laporan Timbang Baki digunakan untuk mencatat dan menampilkan hasil timbangan atau penimbangan baki yang telah dilakukan sebelumnya. Tujuan utamanya adalah membantu Anda memantau stok barang yang tersisa setelah melakukan berbagai transaksi.",
         "variasi_pertanyaan": [
-          "Laporan Timbang Baki itu apa?",
-          "Maksud Laporan Timbang Baki apa?",
+          "Laporan Timbang Baki itu buat/untuk apa?",
           "Apa yang dimaksud dengan Laporan Timbang Baki?"
         ]
       },
@@ -1316,9 +1249,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Timbang Baki di-export ke PDF?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan tambah barang\r\n2. Kode Gudang : Kode Gudang yang dipilih\r\n3. Kode Baki : Kode baki yang dipilih atau kode baki yang ada di Gudang tersebut\r\n4. Qty : Total qty barang\r\n5. Berat : Total berat barang\r\n6. Berat Baki : Total berat baki\r\n7. Berat Plastik : Total berat plastik\r\n8. Berat Atribut : Total berat atribut\r\n9. Total : Total berat barang ditambah berat baki, berat plastikk, berat atribut, dan berat bandrol yang dihitung oleh system\r\n10. Timbangan : Berat yang ada di timbangan\r\n11. Selisih : Selisih dari berat total yang ada di system dengan berat timbangan",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Timbang Baki di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Timbang Baki di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Timbang Baki di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Timbang Baki di-export ke PDF?"
         ]
       },
       {
@@ -1339,7 +1271,7 @@
         "variasi_pertanyaan": [
           "Gimana cara sistem menghitung nilai Total di Laporan Timbang Baki?",
           "Cara sistem menghitung nilai Total di Laporan Timbang Baki gimana?",
-          "Cara sistem menghitung nilai Total di Laporan Timbang Baki?"
+          "nilai total di laporan timbang baki di dapat dari mana?"
         ]
       },
       {
@@ -1356,24 +1288,22 @@
         "variasi_pertanyaan": [
           "Laporan Hancur Barang itu apa?",
           "Maksud Laporan Hancur Barang apa?",
-          "Apa yang dimaksud dengan Laporan Hancur Barang?"
+          "Laporan Hancur Barang buat/untuk apa?"
         ]
       },
       {
         "pertanyaan": "Apa saja filter pencarian yang tersedia di Laporan Hancur Barang?",
         "jawaban": "1. Tanggal Dari\r\n2. Tanggal Akhir\r\n3. Group By\r\n4. Kode Jenis\r\n5. Jenis Group",
         "variasi_pertanyaan": [
-          "filter pencarian yang tersedia di Laporan Hancur Barang apa saja?",
-          "Apa aja filter pencarian yang tersedia di Laporan Hancur Barang?"
+          "filter pencarian yang tersedia di Laporan Hancur Barang apa saja?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Hancur Barang di-export ke PDF?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan hancur barang\r\n2. Kode Gudang : Kode Gudang yang digunakan saat menghancur barang\r\n3. Kode Baki : Kode Baki yang digunakan saat menghancur barang\r\n4. Barcode : Kode barcode barang yang digunakan saat menghancur barang\r\n5. Nama Barang : Nama barang berdasarkan kode barang yang dihancur\r\n6. Kondisi Barang : Kondisi barang saat melakukan hancur barang berdasarkan kode barcode tersebut\r\n7. Nama ATR : Nama Atribut barang\r\n8. Berat ATR : Berat dari atribut barang tersebut\r\n9. Berat : Berat barang\r\n10. Berat : Berat Asli barang\r\n11. Total USD : Total harga barang dalam mata uang USD\r\n12. Total Berat Atr : Total berat atribut secara keseluruhan\r\n13. Total Berat : Total berat barang secara keseluruhan\r\n14. Total Berat Asli : Total berat asli barang secara keseluruhan\r\n15. Total USD : Total harga barang dalam mata uang USD secara keseluruhan",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Hancur Barang di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Hancur Barang di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Hancur Barang di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Hancur Barang di-export ke PDF?"
         ]
       },
       {
@@ -1400,8 +1330,7 @@
         "pertanyaan": "Apa itu Laporan Pindah Barang?",
         "jawaban": "Laporan Pindah Barang adalah laporan yang digunakan untuk mencatat dan menampilkan informasi tentang barang-barang yang dipindahkan dari satu tempat ke tempat lain yang didapatkan dari aktivitas transaksi pindah barang maupun pindah barang satu baki. Tujuannya adalah untuk melacak dan mengatur perpindahan barang pada toko Anda. Laporan ini membantu Anda melihat riwayat perpindahan barang, memastikan stok barang yang tepat di setiap tempat.",
         "variasi_pertanyaan": [
-          "Laporan Pindah Barang itu apa?",
-          "Maksud Laporan Pindah Barang apa?",
+          "Laporan Pindah Barang buat/untuk apa?",
           "Apa yang dimaksud dengan Laporan Pindah Barang?"
         ]
       },
@@ -1409,17 +1338,15 @@
         "pertanyaan": "Apa saja filter pencarian yang tersedia pada Laporan Pindah Barang?",
         "jawaban": "1. Tanggal Dari\r\n2. Tanggal Akhir\r\n3. Kode Group\r\n4. Baki Asal\r\n5. Baki Tujuan",
         "variasi_pertanyaan": [
-          "filter pencarian yang tersedia pada Laporan Pindah Barang apa saja?",
-          "Apa aja filter pencarian yang tersedia pada Laporan Pindah Barang?"
+          "filter pencarian yang tersedia pada Laporan Pindah Barang apa saja?"
         ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Pindah Barang di-export ke PDF?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian laporan pindah barang\r\n2. Gudang Asal : Gudang awal barang tersebut sebelum dipindah\r\n3. Baki Asal : Baki awal barang tersebut sebelum dipindah\r\n4. Gudang : Gudang tujuan barang tersebut yang dipindah\r\n5. Baki Tujuan : Baki tujuan barang tersebut yang dipindah\r\n6. Barcode : Barcode barang tersebut yang dipindah\r\n7. Nama Barang : Nama barang berdasarkan kode barang yang dipindah\r\n8. Nama ATR : Nama atribut barang\r\n9. Berat ATR : Berat atribut barang tersebut\r\n10. Berat : Berat barang yang dipindahkan\r\n11. Total Berat ATR : Total berat atribut secara keseluruhan\r\n12. Total Berat : Total berat barang secara keseluruhan",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Pindah Barang di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Pindah Barang di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Pindah Barang di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Pindah Barang di-export ke PDF?"
         ]
       },
       {
@@ -1432,7 +1359,10 @@
       },
       {
         "pertanyaan": "Apa tujuan utama dari Laporan Pindah Barang?",
-        "jawaban": "Tujuannya adalah untuk melacak dan mengatur perpindahan barang pada toko Anda."
+        "jawaban": "Tujuannya adalah untuk melacak dan mengatur perpindahan barang pada toko Anda.",
+        "variasi_pertanyaan": [
+          "Laporan Pindah Barang untuk/buat apa?"
+        ]
       },
       {
         "pertanyaan": "Informasi apa yang ditampilkan pada kolom Gudang Asal di Laporan Pindah Barang?",
@@ -1452,12 +1382,15 @@
         "variasi_pertanyaan": [
           "Laporan Barang Summary itu apa?",
           "Maksud Laporan Barang Summary apa?",
-          "Apa yang dimaksud dengan Laporan Barang Summary?"
+          "Laporan Barang Summary untuk/buat apa?"
         ]
       },
       {
         "pertanyaan": "Apa tujuan dari Laporan Barang Summary?",
-        "jawaban": "Tujuan dari laporan barang summary adalah untuk memberikan informasi cepat dan mudah tentang statuus stok barang secara keseluruhan."
+        "jawaban": "Tujuan dari laporan barang summary adalah untuk memberikan informasi cepat dan mudah tentang statuus stok barang secara keseluruhan.",
+        "variasi_pertanyaan": [
+          "Laporan Barang Summary untuk/buat apa?"
+        ]
       },
       {
         "pertanyaan": "Apa saja filter pencarian yang tersedia di Laporan Barang Summary?",
@@ -1471,9 +1404,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan jika Laporan Barang Summary di-export ke PDF?",
         "jawaban": "1. Periode : Tanggal yang dipilih\r\n2. Baki : Informasi mengenai baki\r\n3. PTG Awal : Jumlah quantity awal\r\n4. Berat Awal : Jumlah berat awal\r\n5. Tambah PTG : Penambahan quantity, bisa didapatkan dari tambah barang\r\n6. Jual PTG : Jumlah quantity yang dilakukan pada saat transaksi penjualan\r\n7. Berat Jual : Jumlah berat yang dilakukan pada saat transaksi penjualan\r\n8. Hancur PTG : Jumlah quantity yang dilakukan pada saat hancur barang\r\n9. Hancur Berat : Jumlah berat yang dilakukan pada saat hancur barang\r\n10. Stock in : Stock yang masuk\r\n11. Stock Out : Stock yang keluar\r\n12. Berat In : Berat yang masuk\r\n13. Berat Out : Berat yang keluar\r\n14. PTG Akhir : Jumlah quantity secara keseluruhan, dengan perhitungan PTG Awal dikurangi Hancur PTG dan Stock Out ditambah Stock In\r\n15. Berat Akhir : Jumlah berat secara keseluruhan, dengan perhitungan Berat Awal dikurangi Hancur Berat dan Berat Out ditambah Berat In\r\n16. Total USD : Total harga barang dengan mata uang USD",
         "variasi_pertanyaan": [
-          "yang ditampilkan jika Laporan Barang Summary di-export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan jika Laporan Barang Summary di-export ke PDF?",
-          "Info apa aja yang ditampilkan jika Laporan Barang Summary di-export ke PDF?"
+          "Info apa aja yang bisa dilihat jika Laporan Barang Summary di-export ke PDF?"
         ]
       },
       {
@@ -1490,16 +1422,15 @@
         "variasi_pertanyaan": [
           "Gimana cara sistem menghitung nilai PTG Akhir di Laporan Barang Summary?",
           "Cara sistem menghitung nilai PTG Akhir di Laporan Barang Summary gimana?",
-          "Cara sistem menghitung nilai PTG Akhir di Laporan Barang Summary?"
+          "PTG Akhir di Laporan Barang Summary di dapat dari mana?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara sistem menghitung nilai Berat Akhir di Laporan Barang Summary?",
         "jawaban": "Berat Akhir : Jumlah berat secara keseluruhan, dengan perhitungan Berat Awal dikurangi Hancur Berat dan Berat Out ditambah Berat In.",
         "variasi_pertanyaan": [
-          "Gimana cara sistem menghitung nilai Berat Akhir di Laporan Barang Summary?",
           "Cara sistem menghitung nilai Berat Akhir di Laporan Barang Summary gimana?",
-          "Cara sistem menghitung nilai Berat Akhir di Laporan Barang Summary?"
+          "Berat Akhir di Laporan Barang Summary di dapat dari mana?"
         ]
       },
       {
@@ -1511,7 +1442,7 @@
         "jawaban": "Laporan Buku berlian adalah laporan khusus yang berisikan informasi mengenai data barang dengan katagori berlian. Dengan menggunakan laporan ini, Anda dapat mengetahui stok berlian dari kode jenis yang Anda pilih.",
         "variasi_pertanyaan": [
           "Laporan Buku Berlian itu apa?",
-          "Maksud Laporan Buku Berlian apa?",
+          "Laporan Buku Berlian untuk/buat apa?",
           "Apa yang dimaksud dengan Laporan Buku Berlian?"
         ]
       },
@@ -1520,10 +1451,7 @@
         "jawaban": "Terdapat filter pencarian berdasarkan Kode Jenis.",
         "variasi_pertanyaan": [
           "Langkah-langkah membuka dan melihat Laporan Buku Berlian gimana?",
-          "Gimana langkah-langkah membuka dan melihat Laporan Buku Berlian?",
-          "Gimana cara membuka dan melihat Laporan Buku Berlian?",
-          "Cara membuka dan melihat Laporan Buku Berlian gimana?",
-          "gimana langkah-langkah untuk membuka dan melihat Laporan Buku Berlian?"
+          "Gimana cara membuka dan melihat Laporan Buku Berlian?"
         ]
       },
       {
@@ -1544,7 +1472,7 @@
         "jawaban": "Laporan Stock Opname berfungsi untuk menampilkan hasil dari proses stock opname, di mana pencatatan stok barang telah disesuaikan dengan stok yang ada dalam system dan stok fisik.",
         "variasi_pertanyaan": [
           "Laporan Stock Opname itu apa?",
-          "Maksud Laporan Stock Opname apa?",
+          "Laporan Stock Opname untuk/buat apa?",
           "Apa yang dimaksud dengan Laporan Stock Opname?"
         ]
       },
@@ -1556,9 +1484,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan pada Laporan Stock Opname saat di export ke PDF?",
         "jawaban": "1. Tanggal : Tanggal yang dipilih\r\n2. Kode Toko : Seharusnya Kode Baki, kode baki yang dipilih saat stock opname\r\n3. Kode Barcode : Kode barcode barang saat opname barang\r\n4. Kode Intern : Kode intern yang tercantum di kode barcode tersebut\r\n5. Kode Group : Kode group ini mengacu ke kode barcode\r\n6. Kode Jenis : Kode jenis ini mengacu ke kode barcode\r\n7. Nama Barang : Nama barang yang mengacu ke kode barcode\r\n8. Nama Atribut : Nama atribut yang mengacu ke kode barcode\r\n9. Berat : Berat barat yang mengacu ke kode barcode\r\n10. Status : Terdapat 2 status, yaitu Barang Tidak Ketemu dan Barang Ketemu. Barang Ketemu untuk stock barang yang cocok dengan stock fisik dan yang ada di stock barang saat stock opname, stock barang tidak ketemu untuk stock barang yang tidak ada dengan stock fisik dan stock barang saat stock opname\r\n11. Printed By Helpdesk / 2023-06-15 : Laporan ini dicetak oleh user Helpdesk ditanggal 2023-06-13. Dengan mencantumkan identitas \"Printed By Helpdesk\" dan tanggal pencetakan, informasi tersebut menjadi transparan dan memungkinkan untuk melacak dan memverifikasi siapa yang bertanggung jawab atas cetakan laporan stock opname tersebut",
         "variasi_pertanyaan": [
-          "yang ditampilkan pada Laporan Stock Opname saat di export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Laporan Stock Opname saat di export ke PDF?",
-          "Info apa aja yang ditampilkan pada Laporan Stock Opname saat di export ke PDF?"
+          "Info apa aja yang bisa dilihat pada Laporan Stock Opname saat di export ke PDF?"
         ]
       },
       {
@@ -1570,7 +1497,7 @@
         "jawaban": "Laporan Perubahan Harga Emas adalah laporan yang menampilkan informasi mengenai perubahan harga emas dari waktu ke waktu. Perubahan harga emas ini diatur didalam menu Parameter Harga Emas. Laporan Perubahan Harga Emas dapat digunakan untuk menganalisis bagaimana peubahan harga emas dapat mempengaruhi pendapatan, keuangan, dan persediaan emas.",
         "variasi_pertanyaan": [
           "Laporan Perubahan Harga Emas itu apa?",
-          "Maksud Laporan Perubahan Harga Emas apa?",
+          "Laporan Perubahan Harga Emas untuk/buat apa?",
           "Apa yang dimaksud dengan Laporan Perubahan Harga Emas?"
         ]
       },
@@ -1586,9 +1513,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan pada Laporan Perubahan Harga Emas saat di export ke PDF?",
         "jawaban": "1. Periode : Tanggal dari dan tanggal akhir yang dipilih\r\n2. Kode Group : Kode Group barang saat mengubah harga emas\r\n3. Harga : Harga yang diubah berdasarkan kode group tersebut\r\n4. Edit date : Informasi tanggal dilakukannya pengubahan harga emas\r\n5. Edit By : Informasi user dilakukannya pengubahan harga emas\r\n6. Printed By Helpdesk / 2023-06-15 : Laporan ini dicetak oleh user Helpdesk ditanggal 2023-06-13. Dengan mencantumkan identitas \"Printed By Helpdesk\" dan tanggal pencetakan, informasi tersebut menjadi transparan dan memungkinkan untuk melacak dan memverifikasi siapa yang bertanggung jawab atas cetakan laporan perubahan harga emas tersebut",
         "variasi_pertanyaan": [
-          "yang ditampilkan pada Laporan Perubahan Harga Emas saat di export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Laporan Perubahan Harga Emas saat di export ke PDF?",
-          "Info apa aja yang ditampilkan pada Laporan Perubahan Harga Emas saat di export ke PDF?"
+          "Info apa aja yang bisa dilihat pada Laporan Perubahan Harga Emas saat di export ke PDF?"
         ]
       },
       {
@@ -1599,7 +1525,7 @@
         "pertanyaan": "Apa itu Laporan Aktivitas Setelah Timbang Baki?",
         "jawaban": "Laporan setelah timbang baki adalah laporan mencatat informasi menganai transaksi yang terjadi setelah proses timbang baki dilakukan, tetapi sebelum toko ditutup. Laporan ini berfokus pada kegiatan bisnis yang terjadi setelah proses timbang baki selesai dan sebelum toko ditutup pada akhir hari kerja. Tujuan dari laporan ini adalah memberikan informasi tentang aktivitas bisnis yang terjadi setelah proses penimbangan stok fisik barang di toko emas.",
         "variasi_pertanyaan": [
-          "Laporan Aktivitas Setelah Timbang Baki itu apa?",
+          "Laporan Aktivitas Setelah Timbang Baki untuk/buat apa?",
           "Maksud Laporan Aktivitas Setelah Timbang Baki apa?",
           "Apa yang dimaksud dengan Laporan Aktivitas Setelah Timbang Baki?"
         ]
@@ -1612,9 +1538,8 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan pada Laporan Aktivitas Setelah Timbang Baki saat di export ke PDF?",
         "jawaban": "1. Periode : Tanggal yang dipilih\r\n2. Id Pengguna : User Id login saat melakukan transaksi\r\n3. Tanggal dan Waktu : Informasi tanggal dan waktu saat melakukan transaksi di program setelah melakukan timbang baki\r\n4. Deskripsi : Deskripsi mengenai informasi transaksi apa yang dilakukan. Seperti Tambah barang : 00000102 dan Penjualan : NQCFJ-20230616-0002 (00000102)\r\n5. Printed By Helpdesk / 2023-06-15 : Laporan ini dicetak oleh user Helpdesk ditanggal 2023-06-13. Dengan mencantumkan identitas \"Printed By Helpdesk\" dan tanggal pencetakan, informasi tersebut menjadi transparan dan memungkinkan untuk melacak dan memverifikasi siapa yang bertanggung jawab atas cetakan laporan aktivitas setelah timbang baki tersebut",
         "variasi_pertanyaan": [
-          "yang ditampilkan pada Laporan Aktivitas Setelah Timbang Baki saat di export ke PDF itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Laporan Aktivitas Setelah Timbang Baki saat di export ke PDF?",
-          "Info apa aja yang ditampilkan pada Laporan Aktivitas Setelah Timbang Baki saat di export ke PDF?"
+          "Info apa aja yang bisa dilihat pada Laporan Aktivitas Setelah Timbang Baki saat di export ke PDF?"
         ]
       },
       {
@@ -1628,19 +1553,15 @@
           "Fungsi menu Cetak Barcode apa?",
           "menu Cetak Barcode buat apa?",
           "menu Cetak Barcode untuk apa?",
-          "Kegunaan menu Cetak Barcode apa?",
-          "menu Cetak Barcode gunanya apa?"
+          "Kegunaan menu Cetak Barcode apa?"
         ]
       },
       {
         "pertanyaan": "Bagaimana langkah-langkah untuk melakukan Cetak Barcode?",
         "jawaban": "1. Pilih menu “Cetak Barcode”.\r\n2. Pilih Jenis Barang yang ingin Anda cetak barcode-nya dari opsi yang tersedia.\r\n3. Pilih Type yang merupakan tipe barang dari opsi yang tersedia.\r\n4. Masukkan nilai dalam kolom \"Value\".\r\n5. Masukkan Nama Barang yang ingin Anda cetak barcode-nya.\r\n6. Masukkan Berat barang.\r\n7. Masukkan Kode Jenis barang.\r\n8. Pilih gudang dari opsi yang tersedia.\r\n9. Pilih Kode Baki dari opsi yang tersedia.\r\n10. Pilih Stock Barang yang tersedia.\r\n11. Pilih button “Cari Data” untuk mencari data yang ingin dicetak barcodenya.\r\n12. Jika data yang dicari ada, klik checkbox pada data tsb.\r\n13. Klik “Print Barcode” untuk mencetak barcode.\r\n14. Setelah selesai mencetak, periksa hasil cetakan untuk memastikan bahwa barcode dan informasi lainnya tercetak dengan jelas dan sesuai.",
         "variasi_pertanyaan": [
-          "Langkah-langkah melakukan Cetak Barcode gimana?",
-          "Gimana langkah-langkah melakukan Cetak Barcode?",
           "Gimana cara melakukan Cetak Barcode?",
-          "Cara melakukan Cetak Barcode gimana?",
-          "gimana langkah-langkah untuk melakukan Cetak Barcode?"
+          "Cara melakukan Cetak Barcode gimana?"
         ]
       },
       {
@@ -1648,7 +1569,7 @@
         "jawaban": "Stock Opname Barang adalah proses penghitungan dan pencocokan stok fisik barang dengan stok yang tercatat dalam system. Jika terjadi selisih pada saat proses Timbang Baki yang bisa Anda lakukan per baki. Tujuannya adalah untuk memverifikasi keakuratan data stok, mengidentifikasi selisih antara stok fisik dengan stok sistem, dan melakukan penyesuaian jika ditemukan ketidaksesuaian.",
         "variasi_pertanyaan": [
           "Stock Opname Barang itu apa?",
-          "Maksud Stock Opname Barang apa?",
+          "Stock Opname Barang untuk/buat apa?",
           "Apa yang dimaksud dengan Stock Opname Barang?"
         ]
       },
@@ -1679,8 +1600,6 @@
         "pertanyaan": "Bagaimana langkah-langkah melakukan Stock Opname Penerimaan Barang?",
         "jawaban": "1. Buka menu Stock Opname Penerimaan Barang.\r\n2. Pilih Kode Jenis yang akan di opname.\r\n3. Sistem akan menampilkan Berat Awal dari jenis tersebut.\r\n4. Masukkan Berat Opname, berat opname ini adalah berat fisik stock barang.\r\n5. Klik tombol “Selesai”.",
         "variasi_pertanyaan": [
-          "Langkah-langkah melakukan Stock Opname Penerimaan Barang gimana?",
-          "Gimana langkah-langkah melakukan Stock Opname Penerimaan Barang?",
           "Gimana cara melakukan Stock Opname Penerimaan Barang?",
           "Cara melakukan Stock Opname Penerimaan Barang gimana?"
         ]
@@ -1729,8 +1648,7 @@
         "jawaban": "1. Klik tombol “+” berwarna biru setelah mengisi Kode Group, Kode Jenis dan Kode Baki.\r\n2. Isi form dengan inputan berikut: Kode Intern, Nama Barang, Markis, Berat Asli, Berat, Kadar Cetak, Nama Atribut, Berat Atribut, Harga Atribut, Berat Plastik, Upload Gambar.\r\n3. Untuk Kode Barcode akan generated by system dan tidak akan sama dengan barang yang lain.\r\n4. Jika data tersebut sudah benar dan sudah terisi semua Anda pilih Simpan pada tombol yang berwarna hijau.",
         "variasi_pertanyaan": [
           "Gimana cara menambahkan data barang dengan tombol “+”?",
-          "Cara menambahkan data barang dengan tombol “+” gimana?",
-          "Cara menambahkan data barang dengan tombol “+”?"
+          "Cara menambahkan data barang dengan tombol “+” gimana?"
         ]
       },
       {
@@ -1762,8 +1680,7 @@
         "jawaban": "Upload Gambar pada tombol “Pilih Gambar Browse” atau “Webcam” tombol yang berwarna biru.",
         "variasi_pertanyaan": [
           "Gimana cara upload gambar barang?",
-          "Cara upload gambar barang gimana?",
-          "Cara upload gambar barang?"
+          "Cara upload gambar barang gimana?"
         ]
       },
       {
@@ -1781,9 +1698,7 @@
         "pertanyaan": "Bagaimana cara menambahkan data barang dengan tombol “Barang Pesanan”?",
         "jawaban": "1. Klik tombol “Barang Pesanan” berwarna biru setelah mengisi Kode Group, Kode Jenis dan Kode Baki.\r\n2. Masukkan Nomor Pesanan yang didapat dari transaksi pesanan → klik tombol “Search”.\r\n3. Isi form dengan inputan: Kode Intern, Markis, Nama Barang, Berat Jadi, Kadar Cetak, Nama Atribut, Berat Atribut, Harga Atribut, Berat Plastik, Upload Gambar.\r\n4. Untuk Kode Barcode akan generated by system dan tidak akan sama dengan barang yang lain.\r\n5. Jika data tersebut sudah benar dan sudah terisi semua Anda pilih Simpan pada tombol yang berwarna hijau.",
         "variasi_pertanyaan": [
-          "Gimana cara menambahkan data barang dengan tombol “Barang Pesanan”?",
-          "Cara menambahkan data barang dengan tombol “Barang Pesanan” gimana?",
-          "Cara menambahkan data barang dengan tombol “Barang Pesanan”?"
+          "Cara menambahkan data barang dengan tombol “Barang Pesanan” gimana?"
         ]
       },
       {
@@ -1857,17 +1772,14 @@
         "jawaban": "1. Buka menu Data Barang.\r\n2. Temukan data barang yang ingin Anda cek.\r\n3. Klik icon uang berwarna biru.\r\n4. Harga yang tampil = berat * kadar * harga jual (disesuaikan dengan Group barang) + Harga Atribut.",
         "variasi_pertanyaan": [
           "Gimana cara cek harga Data Barang?",
-          "Cara cek harga Data Barang gimana?",
-          "Cara cek harga Data Barang?"
+          "Cara cek harga Data Barang gimana?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara filter pencarian Data Barang?",
         "jawaban": "1. Buka menu Data Barang  \r\n2. Tersedia inputan untuk filter pencarian seperti Kode Barcode, 'Nama Barang, Kode Group, Kode Baki, Kode Jenis, Berat Dari dan Berat Sampai yang dapat Anda gunakan untuk mencari barang. \r\n3. Klik tombol “Cari Data Barang”  \r\n4. Hasil filter pencarian barang akan ditampilkan dalam daftar list barang.",
         "variasi_pertanyaan": [
-          "Gimana cara filter pencarian Data Barang?",
-          "Cara filter pencarian Data Barang gimana?",
-          "Cara filter pencarian Data Barang?"
+          "Cara filter pencarian Data Barang gimana?"
         ]
       },
       {
@@ -1882,19 +1794,13 @@
         "pertanyaan": "Bagaimana cara menghancur barang?",
         "jawaban": "1. Buka Menu Hancur Data Barang\r\n2. Pilih Kondisi Barang, data dari kondisi barang ini mengambil dari Master Kondisi Barang\r\n3. Tujuan Gudang ke Hancur\r\n4. Masukkan Kode Barcode barang yang terdapat di data barang yang ingin dihancurkan\r\n5. Lalu tekan Enter, dan data tersebut akan tampil ke table hancur barang\r\n6. Pada table hancur barang berisikan informasi seperti Kode Barcode, Kode Group, Kode Jenis, Nama Barang, Nama Atribut, Kondisi Barang, Tujuan Gudang, Berat dan Total USD\r\n7. Pastikan data sudah benar dan sesuai dengan kode barcode yang ingin dihancur\r\n8. Pada table hancur barang terdapat action “Hapus” berwarna merah untuk menghapus kode barcode yang ingin dihancur dari table\r\n9. Ulangi Langkah ke 2 hingga ke 4, untuk menghancur barang lebih dari 1\r\n10. Jika data sudah benar, klik tombol “ Simpan Data”\r\n11. Kode Barcode barang yang dihancur tersebut akan hilang atau terhapus di Data Barang",
         "variasi_pertanyaan": [
-          "Gimana cara menghancur barang?",
-          "Cara menghancur barang gimana?",
-          "Cara menghancur barang?"
+          "menu hancur barang buat apa?",
+          "gimana cara hapus data barang saya?"
         ]
       },
       {
         "pertanyaan": "Dari mana asal data Kondisi Barang yang dipilih pada saat menghancur barang?",
-        "jawaban": "Data dari kondisi barang ini mengambil dari Master Kondisi Barang.",
-        "variasi_pertanyaan": [
-          "Kenapa Dari mana asal data Kondisi Barang yang dipilih pada saat menghancur barang?",
-          "Cara mengatasi Dari mana asal data Kondisi Barang yang dipilih pada saat menghancur barang?",
-          "Gimana cara mengatasi Dari mana asal data Kondisi Barang yang dipilih pada saat menghancur barang?"
-        ]
+        "jawaban": "Data dari kondisi barang ini mengambil dari Master Kondisi Barang."
       },
       {
         "pertanyaan": "Apa tujuan Gudang default ketika melakukan Hancur Barang?",
@@ -1904,9 +1810,7 @@
         "pertanyaan": "Apakah ketika menghancur barang ada otorisasi?",
         "jawaban": "Ya, Terdapat otorisasi yang tampil ketika menghancur barang, otorisasi ini hanya dapat dilakukan oleh username yang berwenang atau memiliki akses.",
         "variasi_pertanyaan": [
-          "Kenapa Apakah ketika menghancur barang ada otorisasi?",
-          "Cara mengatasi Apakah ketika menghancur barang ada otorisasi?",
-          "Gimana cara mengatasi Apakah ketika menghancur barang ada otorisasi?"
+          "Kenapa menghancur barang ada otorisasi?"
         ]
       },
       {
@@ -1921,20 +1825,17 @@
         "pertanyaan": "Apa fungsi menu Pindah Barang?",
         "jawaban": "Menu Pindah Barang digunakan untuk memindahkan barang secara satu persatu dari baki asal ke baki dan Gudang tujuan. Fungsinya untuk menyesuaikan dan mengatur persediaan di berbagai lokasi Gudang maupun baki di toko, serta sebagai solusi jika terjadi salah penginputan baki atau Gudang saat tambah barang.",
         "variasi_pertanyaan": [
-          "Fungsi menu Pindah Barang apa?",
+          "menu Pindah Barang itu apa?",
           "menu Pindah Barang buat apa?",
           "menu Pindah Barang untuk apa?",
-          "Kegunaan menu Pindah Barang apa?",
-          "menu Pindah Barang gunanya apa?"
+          "Kegunaan menu Pindah Barang apa?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara memindahkan barang melalui menu Pindah Barang?",
         "jawaban": "1. Buka menu Pindah Barang\r\n2. Pilih Gudang yang ingin dipindahkan, data Gudang ini didapatkan dari Master Gudang\r\n3. Pilih Baki Tujuan, yang sesuai dengan Gudang yang dipilih. Tidak diperbolehkan memindahkan barang ke baki yang sama dengan baki asal sebelum dilakukan pemindahan\r\n4. Masukkan kode barcode barang, kode barcode barang ini didapatkan dari Data Barang\r\n5. Lalu tekan Enter, dan data tersebut akan tampil di table Pindah barang\r\n6. Pada table pindah barang berisikan informasi seperti Kode Barcode, Baki Asal, Kode Group, Kode Jenis, Nama Barang, Nama Atribut dan Berat\r\n7. Pastikan data sudah benar dan sesuai dengan kode barcode yang ingin dihancur\r\n8. Pada table pindah barang terdapat action “Hapus” berwarna merah untuk menghapus kode barcode dari table pindah barang\r\n9. Ulangi Langkah ke 2 hingga ke 4, untuk memindahkan barang lebih dari 1\r\n10. Jika data sudah benar, klik tombol “ Simpan Data”",
         "variasi_pertanyaan": [
-          "Gimana cara memindahkan barang melalui menu Pindah Barang?",
-          "Cara memindahkan barang melalui menu Pindah Barang gimana?",
-          "Cara memindahkan barang melalui menu Pindah Barang?"
+          "Gimana cara pindah barang?"
         ]
       },
       {
@@ -1945,16 +1846,14 @@
         "pertanyaan": "Apakah bisa memindahkan lebih dari satu barang di menu Pindah Barang?",
         "jawaban": "Ya, Pindah barang dapat dilakukan dengan lebih dari satu barang",
         "variasi_pertanyaan": [
-          "Kenapa Apakah bisa memindahkan lebih dari satu barang di menu Pindah Barang?",
-          "Cara mengatasi Apakah bisa memindahkan lebih dari satu barang di menu Pindah Barang?",
-          "Gimana cara mengatasi Apakah bisa memindahkan lebih dari satu barang di menu Pindah Barang?"
+          "gimana cara Pindah Barang banyak sekaligus?"
         ]
       },
       {
         "pertanyaan": "Bagaimana memastikan pindah barang sudah tercatat di sistem?",
         "jawaban": "Untuk memastikan pindah barang telah tercatat dengan benar di dalam system. Anda dapat ke Laporan Pindah Barang, untuk melihat daftar barang yang telah dipindah oleh sistem berdasarkan kode barcode yang digunakan. Laporan Barang Detail dan Laporan Tambah Barang, untuk kode baki yang digunakan akan otomatis terupdate oleh system. Untuk melihat jumlah barang dan berat yang pindahkan, Anda dapat ke Laporan Barang Summary dan Laporan Barang Acc (khusus untuk group acc).",
         "variasi_pertanyaan": [
-          "gimana memastikan pindah barang sudah tercatat di sistem?"
+          "gimana cara saya tau pindah barang sudah betul?"
         ]
       },
       {
@@ -1962,17 +1861,14 @@
         "jawaban": "Pindah Barang Satu Baki adalah pemindahan barang dari satu lokasi baki dan Gudang ke lokasi baki dan Gudang yang lain. Sama dengan menu Pindah Barang. Perbedaannya adalah pada menu Pindah Barang Satu Baki, dilakukan dengan cara memindahkan keseluruhan isi dari satu Baki ke Baki lainnya atau Baki Tujuannya. Tidak memilih barang satu per satu seperti menu Pindah Baki.",
         "variasi_pertanyaan": [
           "Pindah Barang Satu Baki itu apa?",
-          "Maksud Pindah Barang Satu Baki apa?",
-          "Apa yang dimaksud dengan Pindah Barang Satu Baki?"
+          "Pindah Barang Satu Baki untuk/buat apa?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara memindahkan barang di menu Pindah Barang Satu Baki?",
         "jawaban": "1. Buka menu Pindah Barang Satu Baki\r\n2. Pilih Gudang Asal dan Baki Asal. Data Gudang Asal dan Baki Asal didapatkan dari Master Gudang dan Master Baki\r\n3. Klik tombol “Cari Data” yang berwarna biru dan data tersebut akan tampil di table Pindah Barang Satu Baki\r\n4. Pada table Pindah Barang Satu Baki berisikan informasi seperti Kode Barcode, Kode Group, Kode Jenis, Nama Barang, Nama Atribut, Berat, Total Barang dan Total Berat.\r\n5. Pastikan data sudah benar dan sesuai dengan Baki dan Gudang Asal yang dipilih\r\n6. Pilih Gudang Tujuan dan Baki Tujuan yang akan Anda Pindahkan\r\n7. Jika pilihan sudah benar, klik tombol “Simpan Data”",
         "variasi_pertanyaan": [
-          "Gimana cara memindahkan barang di menu Pindah Barang Satu Baki?",
-          "Cara memindahkan barang di menu Pindah Barang Satu Baki gimana?",
-          "Cara memindahkan barang di menu Pindah Barang Satu Baki?"
+          "Gimana Pindah Barang Satu Baki?"
         ]
       },
       {
@@ -1991,7 +1887,7 @@
         "jawaban": "Timbang Baki digunakan untuk mengecek atau membandingkan total berat barang pada suatu baki yang tercatat di sistem dengan berat baki fisik di toko. Hal ini dilakukan untuk mendapatkan berat yang akurat dari baki tersebut, sehingga dapat digunakan dalam perhitungan total berat emas atau nilai emas di dalam baki tersebut. Timbang baki juga biasa dilakukan untuk proses Stock Opname.",
         "variasi_pertanyaan": [
           "Timbang Baki itu apa?",
-          "Maksud Timbang Baki apa?",
+          "Timbang Baki buat/untuk apa?",
           "Apa yang dimaksud dengan Timbang Baki?"
         ]
       },
@@ -1999,9 +1895,7 @@
         "pertanyaan": "Bagaimana cara menginputkan Timbang Baki?",
         "jawaban": "1. Buka menu Timbang Baki\r\n2. Pilih Kode Gudang Dan Kode Baki yang ingin dilakukan proses Timbang Baki\r\n3. Klik tombol “Mulai Timbang”\r\n4. Sistem akan memproses Timbang\r\n5. Pada table timbang baki menampilkan informasi seperti, Gudang, Baki, Qty, Berat, Berat Baki, Berat Plastik, Berat Atribut, Berat Bandrol, Total dan Selisih\r\n6. Terdapat tombol “Reset” berwarna kuning untuk menghapus data timbang dan Anda dapat melakukan Kembali proses Timbang Baki\r\n7. Pada kolom Berat Timbang anda harus mengisikan berat sesuai dengan hasil timbang baki fisik di toko yang mewakili baki pada sistem yang dipanggil datanya. Kemudian, sistem akan otomatis menghitung jika ada selisih berat baki yang tercatat di sistem dengan baki fisik di toko.\r\n8. Pastikan data sudah benar dan sesuai\r\n9. Klik tombol “Simpan Data” yang berwarna biru",
         "variasi_pertanyaan": [
-          "Gimana cara menginputkan Timbang Baki?",
-          "Cara menginputkan Timbang Baki gimana?",
-          "Cara menginputkan Timbang Baki?"
+          "Gimana cara melakukan Timbang Baki?"
         ]
       },
       {
@@ -2012,9 +1906,7 @@
         "pertanyaan": "Bagaimana cara memastikan Timbang Baki tercatat di sistem?",
         "jawaban": "Untuk memastikan timbang baki barang telah tercatat dengan benar di dalam system. Anda dapat ke Laporan Timbang Baki, untuk melihat daftar barang yang telah timbang atau diakumulasi oleh system.",
         "variasi_pertanyaan": [
-          "Gimana cara memastikan Timbang Baki tercatat di sistem?",
-          "Cara memastikan Timbang Baki tercatat di sistem gimana?",
-          "Cara memastikan Timbang Baki tercatat di sistem?"
+          "Gimana cara memastikan Timbang Baki sudah betul datanya?"
         ]
       },
       {
@@ -2026,7 +1918,7 @@
         "jawaban": "Tambah dan Ambil Stock Aksesoris digunakan untuk menambahkan, mengurangi dan mengetahui stock aksesoris yang ada di toko.",
         "variasi_pertanyaan": [
           "Tambah dan Ambil Stock Aksesoris itu apa?",
-          "Maksud Tambah dan Ambil Stock Aksesoris apa?",
+          "Tambah dan Ambil Stock Aksesoris untuk/buat apa?",
           "Apa yang dimaksud dengan Tambah dan Ambil Stock Aksesoris?"
         ]
       },
@@ -2034,28 +1926,19 @@
         "pertanyaan": "Bagaimana cara menambah Stock Aksesoris?",
         "jawaban": "1. Buka Menu Tambah dan Ambil Stock Aksesoris\r\n2. Masukkan Kode Barcode dengan grup ACC, yang Anda dapatkan di Data Barang\r\n3. Pastikan Nama Barang dan Stock sesuai dengan kode barcode yang dimasukkan\r\n4. Pilih type “Tambah”\r\n5. Masukkan jumlah stock di kolom “Tambah Stock”\r\n6. Jika data sudah benar, klik tombol “Simpan Data” yang berwarna biru\r\n7. Stock pada Data Barang untuk kode barcode tersebut akan otomatis terupdate",
         "variasi_pertanyaan": [
-          "Gimana cara menambah Stock Aksesoris?",
-          "Cara menambah Stock Aksesoris gimana?",
-          "Cara menambah Stock Aksesoris?"
+          "Gimana cara menambah Stock Aksesoris?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara mengambil  Stock Aksesoris?",
         "jawaban": "1. Buka Menu Tambah dan Ambil Stock Aksesoris\r\n2. Masukkan Kode Barcode dengan grup ACC, yang Anda dapatkan di Data Barang\r\n3. Pastikan Nama Barang dan Stock sesuai dengan kode barcode yang dimasukkan\r\n4. Pilih type “Ambil”\r\n5. Masukkan jumlah stock di kolom “Ambil Stock”\r\n6. Jika data sudah benar, klik tombol “Simpan Data” yang berwarna biru\r\n7. Stock pada Data Barang untuk kode barcode tersebut akan otomatis terupdate",
         "variasi_pertanyaan": [
-          "Gimana cara mengambil  Stock Aksesoris?",
-          "Cara mengambil  Stock Aksesoris gimana?",
-          "Cara mengambil  Stock Aksesoris?"
+          "Gimana cara mengambil  Stock Aksesoris?"
         ]
       },
       {
-        "pertanyaan": "Bagaimana cara menambah Stock Aksesoris?",
-        "jawaban": "1. Buka Menu Tambah dan Ambil Stock Aksesoris\r\n2. Masukkan Kode Barcode dengan grup ACC, yang Anda dapatkan di Data Barang\r\n3. Pastikan Nama Barang dan Stock sesuai dengan kode barcode yang dimasukkan\r\n4. Pilih type “Tambahl”\r\n5. Masukkan jumlah stock di kolom “Tambah Stock”\r\n6. Jika data sudah benar, klik tombol “Simpan Data” yang berwarna biru\r\n7. Stock pada Data Barang untuk kode barcode tersebut akan otomatis terupdate",
-        "variasi_pertanyaan": [
-          "Gimana cara menambah Stock Aksesoris?",
-          "Cara menambah Stock Aksesoris gimana?",
-          "Cara menambah Stock Aksesoris?"
-        ]
+        "pertanyaan": "Bagaimana cara menambah Stock ACC?",
+        "jawaban": "1. Buka Menu Tambah dan Ambil Stock Aksesoris\r\n2. Masukkan Kode Barcode dengan grup ACC, yang Anda dapatkan di Data Barang\r\n3. Pastikan Nama Barang dan Stock sesuai dengan kode barcode yang dimasukkan\r\n4. Pilih type “Tambahl”\r\n5. Masukkan jumlah stock di kolom “Tambah Stock”\r\n6. Jika data sudah benar, klik tombol “Simpan Data” yang berwarna biru\r\n7. Stock pada Data Barang untuk kode barcode tersebut akan otomatis terupdate"
       },
       {
         "pertanyaan": "Bagaimana memastikan tambah atau ambil stock aksesoris sudah tercatat di sistem?",
@@ -2077,7 +1960,10 @@
       },
       {
         "pertanyaan": "Bisa tidak kalau saya ingin lihat stock barang saya ada berapa?",
-        "jawaban": "Untuk melihat stock barang yang ada, kamu bisa melihat Laporan Barang Detail untuk melihat stock dan data barang secara detail per satu barcode/kode barang. Namun, jika Anda ingin melihat total keseluruhan stock barang Anda dengan rekapan jumlah keluar masuknya barang, Anda dapat melihatnya di Laporan Barang Summary"
+        "jawaban": "Untuk melihat stock barang yang ada, kamu bisa melihat Laporan Barang Detail untuk melihat stock dan data barang secara detail per satu barcode/kode barang. Namun, jika Anda ingin melihat total keseluruhan stock barang Anda dengan rekapan jumlah keluar masuknya barang, Anda dapat melihatnya di Laporan Barang Summary",
+        "variasi_pertanyaan": [
+          "saya pengen tahu stock barang saya ada berapa?"
+        ]
       },
       {
         "pertanyaan": "Bisa tidak kalau saya ingin lihat barang apa saja yang paling laku terjual?",
@@ -2087,14 +1973,14 @@
         "pertanyaan": "Ketika saya cocokkan barang fisik dengan barang yang ada di sistem, terdapat perbedaan stock yang ada. Gimana caranya agar saya tau barang mana yang hilang?",
         "jawaban": "Jika kamu ingin mencari barcode barang yang hilang, kamu dapat menggunakan menu Stock Opname. kamu bisa membuka menu \"Stock Opname Barang\" lalu pilih baki yang akan dilakukan stock opname. Kemudian, sistem akan menampilkan list barang tidak ketemu, termasuk kode barcode fisik barang yang tidak ditemukan. Dengan demikian, kamu dapat mengetahui barcode barang yang hilang.",
         "variasi_pertanyaan": [
-          "Ketika saya cocokkan barang fisik dengan barang yang ada di sistem, terdapat perbedaan stock yang ada. bagaimana caranya agar saya tau barang mana yang hilang?"
+          "bagaimana caranya agar saya tau barang mana yang hilang?"
         ]
       },
       {
         "pertanyaan": "Bagaimana caranya jika saya ingin pindahkan barang dari cabang yang satu ke cabang yang lainnya?",
         "jawaban": "Untuk melakukan perpindah barang antar cabang, Anda bisa menggunakan menu Kirim Barang. Dengan menu ini, Anda bisa mengirim sebagain barang yang ada di dalam sebuah baki ataupun semua barang perbaki. Anda bisa memilih tujuan Toko yang Anda tuju. Kemudian, toko tujuan dapat menerima barangnya melalui menu Terima Barang. Dengan begitu, stock barangakan berpindah dari cabang asal ke cabang tujuan.",
         "variasi_pertanyaan": [
-          "gimana caranya jika saya ingin pindahkan barang dari cabang yang satu ke cabang yang lainnya?"
+          "gimana cara pindah barang antar cabang?"
         ]
       },
       {
@@ -2120,24 +2006,19 @@
         "jawaban": "Markis dalam data barang berarti bahwa barang tersebut memiliki harga jual yang tidak merujuk ke harga di master group, meskipun jenisnya bukan aksesoris. Harganya akan ditentukan secara spesifik pada transaksi penjualan",
         "variasi_pertanyaan": [
           "markis pada saat tambah barang itu apa?",
-          "Maksud markis pada saat tambah barang apa?",
           "Apa yang dimaksud dengan markis pada saat tambah barang?"
         ]
       },
       {
         "pertanyaan": "Gimana cara input gelang keroncong",
-        "jawaban": "Kita ketahui untuk gelang keroncong ini 1 paket bisa beberapa pcs, berikut langlah - langkah cara input gelang keroncong\n1. Untuk kategori, jenis dan baki dipilih seperti input barang biasa.\n2. Pada nama barang tambahkan angka di depannya, misal \"3 pcs gelang keroncong \"\n3. Untuk berat, isi berat keseluruhan dari ke 3 barang tersebut.\n4. Maka dari itu 1 barcode untuk 3 pc gelang keroncong.",
-        "variasi_pertanyaan": [
-          "Cara input gelang keroncong gimana?",
-          "Cara input gelang keroncong?",
-          "Bagaimana cara input gelang keroncong?"
-        ]
+        "jawaban": "Kita ketahui untuk gelang keroncong ini 1 paket bisa beberapa pcs, berikut langlah - langkah cara input gelang keroncong\n1. Untuk kategori, jenis dan baki dipilih seperti input barang biasa.\n2. Pada nama barang tambahkan angka di depannya, misal \"3 pcs gelang keroncong \"\n3. Untuk berat, isi berat keseluruhan dari ke 3 barang tersebut.\n4. Maka dari itu 1 barcode untuk 3 pc gelang keroncong."
       },
       {
         "pertanyaan": "Bagaimana caranya jika saya ingin melakukan edit pada data barang?",
         "jawaban": "1. Buka menu Data Barang.\n2. Temukan data barang yang ingin Anda edit.\n3. Klik tombol “Edit” yang berwarna biru.\n4. Ubah rincian yang perlu diperbarui seperti Nama Barang, Nama Atribut, Harga Atribut, Kadar, Berat Plastik, Kadar Cetak, Kode Intern, Foto.\n5. Untuk barang berlian, terdapat tombol “Edit Berlian” untuk input detail berlian: Jenis Batu, Jumlah, Karat Batu, Size, Cut Grade, Shape, Polish, Color, Symmetry, Clarity dan Flourescence. Klik Tambah Batu.\n6. Pastikan perubahan yang Anda lakukan sudah benar.\n7. Klik Simpan Data Barang.",
         "variasi_pertanyaan": [
-          "gimana caranya jika saya ingin melakukan edit pada data barang?"
+          "gimana cara edit data barang?",
+          "gimana cara ubah data barang?"
         ]
       },
       {
@@ -2156,12 +2037,7 @@
       },
       {
         "pertanyaan": "Apakah barcode yang sudah digunakan bisa dipakai kembali?",
-        "jawaban": "Barcode yang digunakan pada barang kemudian dilakukan transaksi penjualan tidak dapat digunakan lagi untuk Transaksi Penjualan selanjutnya.",
-        "variasi_pertanyaan": [
-          "Kenapa Apakah barcode yang sudah digunakan bisa dipakai kembali?",
-          "Cara mengatasi Apakah barcode yang sudah digunakan bisa dipakai kembali?",
-          "Gimana cara mengatasi Apakah barcode yang sudah digunakan bisa dipakai kembali?"
-        ]
+        "jawaban": "Barcode yang digunakan pada barang kemudian dilakukan transaksi penjualan tidak dapat digunakan lagi untuk Transaksi Penjualan selanjutnya."
       },
       {
         "pertanyaan": "laporan pindah barang untuk apa?",
@@ -2176,18 +2052,17 @@
         "pertanyaan": "Apa fungsi dari Laporan Pesanan?",
         "jawaban": "Laporan Pesanan berfungsi untuk melihat global transaksi Pesanan atau pencatatan data untuk customer yang memesan barang custom.",
         "variasi_pertanyaan": [
-          "Fungsi Laporan Pesanan apa?",
+          "Laporan Pesanan itu apa?",
           "Laporan Pesanan buat apa?",
           "Laporan Pesanan untuk apa?",
-          "Kegunaan Laporan Pesanan apa?",
-          "Laporan Pesanan gunanya apa?"
+          "Kegunaan Laporan Pesanan apa?"
         ]
       },
       {
         "pertanyaan": "Apa langkah pertama untuk melihat Laporan Pesanan?",
         "jawaban": "Masukkan tanggal awal (Tanggal Dari) dan tanggal akhir (Tanggal Akhir) untuk membatasi rentang tanggal pesanan yang akan ditampilkan dalam laporan.",
         "variasi_pertanyaan": [
-          "Langkah awal untuk melihat Laporan Pesanan apa?",
+          "gimana cara melihat Laporan Pesanan?",
           "Step pertama untuk melihat Laporan Pesanan apa?",
           "Pertama kali harus ngapain untuk melihat Laporan Pesanan?"
         ]
@@ -2204,28 +2079,23 @@
         "pertanyaan": "Informasi apa saja yang dapat diperiksa dalam kolom-kolom Laporan Pesanan?",
         "jawaban": "No Pesanan, Sales, Tanggal Pesan, Total Berat, Total Qty, Ongkos, Total Rp, Bayar Rp, dan Sisa Rp. Kolom-kolom ini mungkin dapat bervariasi tergantung pada konfigurasi sistem atau aplikasi yang Anda gunakan.",
         "variasi_pertanyaan": [
-          "yang dapat diperiksa dalam kolom-kolom Laporan Pesanan itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang dapat diperiksa dalam kolom-kolom Laporan Pesanan?",
-          "Info apa aja yang dapat diperiksa dalam kolom-kolom Laporan Pesanan?"
+          "Info apa aja yang dapat dilihat dalam kolom-kolom Laporan Pesanan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara mencetak data pada Laporan Pesanan?",
         "jawaban": "Anda dapat mencetak data pada Laporan Pesanan dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
-          "Gimana cara mencetak data pada Laporan Pesanan?",
-          "Cara mencetak data pada Laporan Pesanan gimana?",
-          "Cara mencetak data pada Laporan Pesanan?"
+          "Gimana cara print data pada Laporan Pesanan?"
         ]
       },
       {
         "pertanyaan": "Apa fungsi Menu Transaksi Pesanan?",
         "jawaban": "Menu Transaksi Pesanan berfungsi untuk melakukan transaksi pesanan barang yang stocknya belum ada di sistem.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Transaksi Pesanan apa?",
           "Menu Transaksi Pesanan buat apa?",
           "Menu Transaksi Pesanan untuk apa?",
-          "Kegunaan Menu Transaksi Pesanan apa?",
           "Menu Transaksi Pesanan gunanya apa?"
         ]
       },
@@ -2233,19 +2103,13 @@
         "pertanyaan": "Informasi apa saja yang ada pada Transaksi Pesanan?",
         "jawaban": "Kategori, Kode Barcode, Nama Barang, Perkiraan Berat, Perkiraan Kadar, Harga / Gram, Sub Total.",
         "variasi_pertanyaan": [
-          "yang ada pada Transaksi Pesanan itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ada pada Transaksi Pesanan?",
-          "Info apa aja yang ada pada Transaksi Pesanan?"
+          "Info apa aja yang bisa dilihat pada Transaksi Pesanan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara menambahkan gambar foto dalam Transaksi Pesanan?",
-        "jawaban": "Klik button berwarna hijau bertuliskan “Data Barang”, maka akan muncul Form Tambah Barang Pesanan. Ambil gambar foto dari WebCam. Namun jika Anda tidak ingin menambahkan gambar foto, Anda dapat melewati tahap ini.",
-        "variasi_pertanyaan": [
-          "Gimana cara menambahkan gambar foto dalam Transaksi Pesanan?",
-          "Cara menambahkan gambar foto dalam Transaksi Pesanan gimana?",
-          "Cara menambahkan gambar foto dalam Transaksi Pesanan?"
-        ]
+        "jawaban": "Klik button berwarna hijau bertuliskan “Data Barang”, maka akan muncul Form Tambah Barang Pesanan. Ambil gambar foto dari WebCam. Namun jika Anda tidak ingin menambahkan gambar foto, Anda dapat melewati tahap ini."
       },
       {
         "pertanyaan": "Bagaimana cara mengisi Contoh Barang saat Transaksi Pesanan dengan pilihan Bawa Sendiri?",
@@ -2257,76 +2121,62 @@
         ]
       },
       {
-        "pertanyaan": "Bagaimana cara mengisi Contoh Barang saat Transaksi Pesanan dengan pilihan Dari Toko?",
-        "jawaban": "1. Pilih opsi \"Dari Toko\" pada form atau menu yang tersedia.\r\n2. Gunakan fitur pemindaian barcode untuk memindai barcode yang ada pada perhiasan yang akan dijadikan contoh pesanan barang.\r\n3. Setelah pemindaian barcode berhasil, informasi mengenai barang tersebut akan muncul secara otomatis pada form.\r\n4. Pastikan data yang muncul sudah sesuai dengan barang yang ingin dipesan.\r\n5. Pilih \"Add\" untuk menambahkan barang tersebut ke dalam tabel.",
-        "variasi_pertanyaan": [
-          "Gimana cara mengisi Contoh Barang saat Transaksi Pesanan dengan pilihan Dari Toko?",
-          "Cara mengisi Contoh Barang saat Transaksi Pesanan dengan pilihan Dari Toko gimana?",
-          "Cara mengisi Contoh Barang saat Transaksi Pesanan dengan pilihan Dari Toko?"
-        ]
-      },
-      {
         "pertanyaan": "Apa fungsi Menu Lihat Pesanan?",
         "jawaban": "Menu Lihat Pesanan berfungsi untuk melihat daftar transaksi pesanan barang.",
         "variasi_pertanyaan": [
-          "Fungsi Menu Lihat Pesanan apa?",
           "Menu Lihat Pesanan buat apa?",
           "Menu Lihat Pesanan untuk apa?",
-          "Kegunaan Menu Lihat Pesanan apa?",
-          "Menu Lihat Pesanan gunanya apa?"
+          "Kegunaan Menu Lihat Pesanan apa?"
         ]
       },
       {
         "pertanyaan": "Bagaimana tahapan untuk melihat Pesanan?",
         "jawaban": "1. Buka menu \"Lihat Pesanan\" pada sistem atau aplikasi yang digunakan.\r\n2. Pada halaman \"Lihat Pesanan\", Anda akan melihat opsi untuk memilih rentang tanggal dengan kolom \"Tanggal Dari\" dan \"Tanggal Akhir\". Pilih tanggal awal dan tanggal akhir yang ingin Anda lihat untuk pesanan. Anda juga bisa menggunakan “No Faktur Pesanan” untuk mencari data penasan.\r\n3. Setelah memilih rentang tanggal, klik tombol \"Cari Pesanan\".\r\n4. Sistem akan melakukan pencarian pesanan berdasarkan tanggal yang Anda pilih atau no faktur kemudian akan muncul table dengan daftar pesanan sesuai dengan rentang tanggal yang Anda tentukan.\r\n5. Pada table data pesanan, Anda dapat melihat informasi seperti No Pesanan, Tgl Transaksi, Nama Customer, Alamat, Nomor HP, Total Harga, dan Jumlah Pembayaran.",
         "variasi_pertanyaan": [
-          "gimana tahapan untuk melihat Pesanan?"
+          "gimana cara lihat data Pesanan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara melakukan Batal Pesanan?",
         "jawaban": "Jika Anda ingin membatalkan pesanan tertentu, temukan pesanan yang ingin dibatalkan pada table data pesanan dan klik tombol \"Batal Pesanan\" atau tombol serupa yang tersedia di kolom \"Action\" pada baris pesanan tersebut. Akan muncul otorisasi dan Anda diminta untuk verifikasi apakah data tersebut yakin untuk dihapus/dibatalkan.",
         "variasi_pertanyaan": [
-          "Gimana cara melakukan Batal Pesanan?",
-          "Cara melakukan Batal Pesanan gimana?",
-          "Cara melakukan Batal Pesanan?"
+          "Pesanan bisa dibatlkan tidak?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara melakukan Reprint Pesanan?",
         "jawaban": "Jika Anda ingin mencetak ulang nota pesanan, temukan pesanan yang ingin dicetak ulang pada table data pesanan dan klik tombol \"Reprint Pesanan\" atau tombol serupa yang tersedia di kolom \"Action\" pada baris pesanan.",
         "variasi_pertanyaan": [
-          "Gimana cara melakukan Reprint Pesanan?",
-          "Cara melakukan Reprint Pesanan gimana?",
-          "Cara melakukan Reprint Pesanan?"
+          "Gimana cara cetak ulang Pesanan?"
         ]
       },
       {
         "pertanyaan": "Apa tujuan Menu Ambil Barang Contoh?",
-        "jawaban": "Ketika terdapat pesanan yang memerlukan barang contoh dari toko, barang tersebut sementara dikeluarkan dari stok toko untuk dijadikan sampel. Setelah barang contoh selesai digunakan sebagai sampel dalam proses pembuatan pesanan, barang tersebut dikembalikan ke toko melalui menu \"Ambil Barang Contoh\" agar stoknya tercatat kembali di toko."
+        "jawaban": "Ketika terdapat pesanan yang memerlukan barang contoh dari toko, barang tersebut sementara dikeluarkan dari stok toko untuk dijadikan sampel. Setelah barang contoh selesai digunakan sebagai sampel dalam proses pembuatan pesanan, barang tersebut dikembalikan ke toko melalui menu \"Ambil Barang Contoh\" agar stoknya tercatat kembali di toko.",
+        "variasi_pertanyaan": [
+          "menu ambil barang contoh untuk/buat apa?"
+        ]
       },
       {
         "pertanyaan": "Informasi apa saja yang ada pada Form Ambil Barang Contoh?",
         "jawaban": "Kode Barcode Contoh, Kode Baki Contoh, Deskripsi, Berat.",
         "variasi_pertanyaan": [
-          "yang ada pada Form Ambil Barang Contoh itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ada pada Form Ambil Barang Contoh?",
-          "Info apa aja yang ada pada Form Ambil Barang Contoh?"
+          "Info apa aja yang bisa dilihat pada Form Ambil Barang Contoh?"
         ]
       },
       {
         "pertanyaan": "Bagaimana tahapan untuk mengambil barang contoh?",
         "jawaban": "1. Buka menu \"Ambil Barang Contoh\".\r\n2. Masukkan nomor pesanan yang telah Anda dapatkan saat melakukan transaksi pesanan.\r\n3. Klik tombol \"Cari\".\r\n4. Akan muncul data barang contoh yang terkait dengan nomor pesanan tersebut.\r\n5. Periksa apakah proses pesanan sudah selesai atau tidak.\r\n6. Jika proses pesanan telah selesai, Anda dapat mengambil barang contoh dengan mengklik “Ambil Barang Contoh” pada bagian bawah halaman.\r\n7. Jika masih ada tahapan atau proses yang harus dilakukan sebelum mengambil barang contoh, pastikan untuk menyelesaikannya terlebih dahulu.",
         "variasi_pertanyaan": [
-          "gimana tahapan untuk mengambil barang contoh?"
+          "gimana tahapan untuk mengambil barang contoh?",
+          "gimana cara balikin barang contoh"
         ]
       },
       {
         "pertanyaan": "Apa itu Kategori pada Transaksi Pesanan?",
         "jawaban": "Kategori: Merupakan klasifikasi atau kategori barang yang digunakan untuk mengelompokkan berbagai jenis barang.",
         "variasi_pertanyaan": [
-          "Kategori pada Transaksi Pesanan itu apa?",
-          "Maksud Kategori pada Transaksi Pesanan apa?",
           "Apa yang dimaksud dengan Kategori pada Transaksi Pesanan?"
         ]
       },
@@ -2334,8 +2184,6 @@
         "pertanyaan": "Apa itu Perkiraan Berat pada Transaksi Pesanan?",
         "jawaban": "Perkiraan Berat: Merupakan estimasi berat barang yang akan dipesan. Estimasi berat ini digunakan sebagai acuan dalam perhitungan harga dan biaya lainnya.",
         "variasi_pertanyaan": [
-          "Perkiraan Berat pada Transaksi Pesanan itu apa?",
-          "Maksud Perkiraan Berat pada Transaksi Pesanan apa?",
           "Apa yang dimaksud dengan Perkiraan Berat pada Transaksi Pesanan?"
         ]
       },
@@ -2343,8 +2191,6 @@
         "pertanyaan": "Apa itu Perkiraan Kadar pada Transaksi Pesanan?",
         "jawaban": "Perkiraan Kadar: Merupakan estimasi kadar atau kemurnian suatu bahan pada barang yang akan dipesan.",
         "variasi_pertanyaan": [
-          "Perkiraan Kadar pada Transaksi Pesanan itu apa?",
-          "Maksud Perkiraan Kadar pada Transaksi Pesanan apa?",
           "Apa yang dimaksud dengan Perkiraan Kadar pada Transaksi Pesanan?"
         ]
       },
@@ -2352,8 +2198,6 @@
         "pertanyaan": "Apa itu Harga/Gram pada Transaksi Pesanan?",
         "jawaban": "Harga / Gram: Merupakan harga per gram barang yang akan dipesan.",
         "variasi_pertanyaan": [
-          "Harga/Gram pada Transaksi Pesanan itu apa?",
-          "Maksud Harga/Gram pada Transaksi Pesanan apa?",
           "Apa yang dimaksud dengan Harga/Gram pada Transaksi Pesanan?"
         ]
       },
@@ -2361,17 +2205,13 @@
         "pertanyaan": "Apa itu Sub Total pada Transaksi Pesanan?",
         "jawaban": "Sub Total: Merupakan total harga atau biaya yang dihitung berdasarkan perkiraan berat dan harga per gram barang.",
         "variasi_pertanyaan": [
-          "Sub Total pada Transaksi Pesanan itu apa?",
-          "Maksud Sub Total pada Transaksi Pesanan apa?",
-          "Apa yang dimaksud dengan Sub Total pada Transaksi Pesanan?"
+          "Sub Total pada Transaksi Pesanan didapat dari mana?"
         ]
       },
       {
         "pertanyaan": "Apa itu Kode Barcode Contoh pada Menu Ambil Barang Contoh?",
         "jawaban": "Kode Barcode Contoh: merupakan kode yang digunakan untuk mengidentifikasi barang contoh secara unik.",
         "variasi_pertanyaan": [
-          "Kode Barcode Contoh pada Menu Ambil Barang Contoh itu apa?",
-          "Maksud Kode Barcode Contoh pada Menu Ambil Barang Contoh apa?",
           "Apa yang dimaksud dengan Kode Barcode Contoh pada Menu Ambil Barang Contoh?"
         ]
       },
@@ -2379,8 +2219,6 @@
         "pertanyaan": "Apa itu Kode Baki Contoh pada Menu Ambil Barang Contoh?",
         "jawaban": "Kode Baki Contoh: merupakan kode yang menunjukkan jenis atau kategori baki yang digunakan untuk menyimpan barang contoh.",
         "variasi_pertanyaan": [
-          "Kode Baki Contoh pada Menu Ambil Barang Contoh itu apa?",
-          "Maksud Kode Baki Contoh pada Menu Ambil Barang Contoh apa?",
           "Apa yang dimaksud dengan Kode Baki Contoh pada Menu Ambil Barang Contoh?"
         ]
       },
@@ -2388,8 +2226,6 @@
         "pertanyaan": "Apa itu Deskripsi pada Menu Ambil Barang Contoh?",
         "jawaban": "Deskripsi: berisi informasi atau penjelasan singkat tentang barang contoh tersebut.",
         "variasi_pertanyaan": [
-          "Deskripsi pada Menu Ambil Barang Contoh itu apa?",
-          "Maksud Deskripsi pada Menu Ambil Barang Contoh apa?",
           "Apa yang dimaksud dengan Deskripsi pada Menu Ambil Barang Contoh?"
         ]
       },
@@ -2397,24 +2233,18 @@
         "pertanyaan": "Apa itu Berat pada Menu Ambil Barang Contoh?",
         "jawaban": "Berat: menyajikan perkiraan berat atau bobot barang.",
         "variasi_pertanyaan": [
-          "Berat pada Menu Ambil Barang Contoh itu apa?",
-          "Maksud Berat pada Menu Ambil Barang Contoh apa?",
           "Apa yang dimaksud dengan Berat pada Menu Ambil Barang Contoh?"
         ]
       },
       {
         "pertanyaan": "kalau ada pelanggan yang mau beli perhiasan custom, bagaimana cara saya input datanya ke sistem?",
-        "jawaban": "Anda bisa input data pesanan seperti data customer dan data barang yang dipesan dimenu Transaksi Pesanan. Menu Transaksi Pesanan ini berfungsi untuk melakukan pencatatan data barang custom/barang pesanan yang stocknya belum ada di sistem.",
-        "variasi_pertanyaan": [
-          "kalau ada pelanggan yang mau beli perhiasan custom, gimana cara saya input datanya ke sistem?"
-        ]
+        "jawaban": "Anda bisa input data pesanan seperti data customer dan data barang yang dipesan dimenu Transaksi Pesanan. Menu Transaksi Pesanan ini berfungsi untuk melakukan pencatatan data barang custom/barang pesanan yang stocknya belum ada di sistem."
       },
       {
         "pertanyaan": "Selisih laporan pesanan",
         "jawaban": "Pertama cek laporan transaksil lalu nanti disamakan dengan laporan keuangan cash dan non cash , jika terdapat selisih, di laporan keuangan bisa cek detail laporan nya untuk mengetahui faktur mana yang tidak update ke laporan keuangan.",
         "variasi_pertanyaan": [
           "Kenapa Selisih laporan pesanan?",
-          "Cara mengatasi Selisih laporan pesanan?",
           "Gimana cara mengatasi Selisih laporan pesanan?"
         ]
       },
@@ -2431,37 +2261,38 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan dalam Laporan Titip Uang?",
         "jawaban": "Nama Barang, Berat, Harga Jual, Ongkos, Sub Total, dan Dp (Down Payment).",
         "variasi_pertanyaan": [
-          "yang ditampilkan dalam Laporan Titip Uang itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan dalam Laporan Titip Uang?",
-          "Info apa aja yang ditampilkan dalam Laporan Titip Uang?"
+          "Info apa aja yang bisa dilihat dalam Laporan Titip Uang?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara mencetak data dari Laporan Titip Uang?",
         "jawaban": "Selanjutnya Anda dapat mencetak data pada Laporan Transaksi Titip dengan mengklik button “Export PDF” ataupun “Export Excel” pada bagian bawah halaman.",
         "variasi_pertanyaan": [
-          "Gimana cara mencetak data dari Laporan Titip Uang?",
-          "Cara mencetak data dari Laporan Titip Uang gimana?",
-          "Cara mencetak data dari Laporan Titip Uang?"
+          "Gimana cara print data dari Laporan Titip Uang?"
         ]
       },
       {
         "pertanyaan": "Bagaimana status barang yang sudah masuk transaksi Titipan?",
         "jawaban": "Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut.",
         "variasi_pertanyaan": [
-          "gimana status barang yang sudah masuk transaksi Titipan?"
+          "kenapa barang Titipan tidak bisa dijual lagi?"
         ]
       },
       {
         "pertanyaan": "Apa yang dimaksud dengan Transaksi Titipan?",
-        "jawaban": "Transaksi Titipan adalah transaksi customer yang menitipkan sebagian uangnya pada toko sebagai uang muka (Down Payment) untuk barang yang akan di beli. Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut."
+        "jawaban": "Transaksi Titipan adalah transaksi customer yang menitipkan sebagian uangnya pada toko sebagai uang muka (Down Payment) untuk barang yang akan di beli. Barang yang sudah di transaksikan di menu ini akan pindah ke Gudang TITIP sehingga barang tersebut tidak bisa dijual lagi ke orang lain kecuali ada pembatalan transaksi titip atas barang tersebut.",
+        "variasi_pertanyaan": [
+          "Transaksi Titipan itu apa?",
+          "Transaksi Titipan tuh apa?",
+          "Transaksi titipan buat/untuk apa?"
+        ]
       },
       {
         "pertanyaan": "Apa itu No Titip?",
         "jawaban": "No Titip: Merupakan nomor identifikasi atau referensi untuk transaksi titipan. Setiap transaksi titipan akan memiliki nomor titip yang unik untuk membedakannya dari transaksi titipan lainnya.",
         "variasi_pertanyaan": [
           "No Titip itu apa?",
-          "Maksud No Titip apa?",
           "Apa yang dimaksud dengan No Titip?"
         ]
       },
@@ -2469,55 +2300,34 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan pada Transaksi Titipan?",
         "jawaban": "Kode Barcode, Nama Barang, Nama Customer, Total DP, Total Harga.",
         "variasi_pertanyaan": [
-          "yang ditampilkan pada Transaksi Titipan itu menampilkan informasi apa saja?",
-          "Apa saja informasi yang ditampilkan yang ditampilkan pada Transaksi Titipan?",
-          "Info apa aja yang ditampilkan pada Transaksi Titipan?"
+          "Apa saja informasi yang ditampilkan pada Transaksi Titipan?",
+          "Info apa aja yang bisa dilihat pada Transaksi Titipan?"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara melihat titipan?",
         "jawaban": "1. Buka menu Lihat Titipan.\r\n2. Secara default, sistem akan menampilkan daftar titipan yang terjadi pada tanggal sistem yang sedang berjalan atau transaksi pada hari itu.\r\n3. Jika Anda ingin memfilter data penjualan untuk mencari No Titip atau Transaksi Titip tertentu, Anda dapat mengubah Tanggal Dari dan Tanggal Akhir sesuai dengan rentang waktu yang Anda inginkan.\r\n4. Setelah mengatur rentang waktu, klik tombol \"Cari Titipan\" untuk memulai pencarian.\r\n5. Akan muncul daftar transaksi Titipan yang sesuai dengan kriteria pencarian Anda. Informasi yang ditampilkan dapat mencakup No Titip, Kode Barcode, Nama Barang, Nama Customer, Total Dp, dan Total Harga.",
         "variasi_pertanyaan": [
-          "Gimana cara melihat titipan?",
-          "Cara melihat titipan gimana?",
-          "Cara melihat titipan?"
+          "saya ingin lihat data titipan"
         ]
       },
       {
         "pertanyaan": "Bagaimana cara melakukan Batal Titipan?",
         "jawaban": "1. Buka menu \"Lihat Titipan\".\r\n2. Pilih rentang waktu transaksi titipan dengan memasukkan tanggal awal dan tanggal akhir untuk mencari transaksi titipan yang ingin Anda batalkan. Lalu klik tombol \"Cari Titipan\".\r\n3. Pada tabel titipan yang muncul, temukan transaksi titipan yang ingin Anda batalkan.\r\n4. Pada kolom Action terdapat tombol berwarna merah \"Batal Titipan\". Klik tombol tersebut.\r\n5. Akan muncul konfirmasi yang meminta Anda untuk memilih kode baki atau lokasi pengembalian barang.\r\n6. Pilih kode baki yang sesuai atau tempat pengembalian barang.\r\n7. Setelah memilih kode baki, klik tombol \"Batal” untuk mengonfirmasi pembatalan titipan.\r\n8. Barang yang dibatalkan akan dikembalikan ke toko sesuai dengan kode baki yang Anda pilih.",
         "variasi_pertanyaan": [
-          "Gimana cara melakukan Batal Titipan?",
-          "Cara melakukan Batal Titipan gimana?",
-          "Cara melakukan Batal Titipan?"
-        ]
-      },
-      {
-        "pertanyaan": "Apa itu No Titip?",
-        "jawaban": "No Titip: Merupakan nomor identifikasi atau referensi untuk transaksi titipan. Setiap transaksi titipan akan memiliki nomor titip yang unik untuk membedakannya dari transaksi titipan lainnya.",
-        "variasi_pertanyaan": [
-          "No Titip itu apa?",
-          "Maksud No Titip apa?",
-          "Apa yang dimaksud dengan No Titip?"
+          "titipan bisa dibatalkan tidak?"
         ]
       },
       {
         "pertanyaan": "Apa itu Kode Barcode pada Transaksi Titipan?",
         "jawaban": "Kode Barcode: Merupakan kode unik yang terdapat pada barang yang dititipkan. Kode barcode digunakan untuk mengidentifikasi barang secara spesifik.",
         "variasi_pertanyaan": [
-          "Kode Barcode pada Transaksi Titipan itu apa?",
-          "Maksud Kode Barcode pada Transaksi Titipan apa?",
-          "Apa yang dimaksud dengan Kode Barcode pada Transaksi Titipan?"
+          "Kode Barcode pada Transaksi Titipan itu apa?"
         ]
       },
       {
         "pertanyaan": "Apa itu Nama Customer pada Transaksi Titipan?",
-        "jawaban": "Nama Customer: Merupakan nama pelanggan yang melakukan transaksi titipan. Nama pelanggan ini digunakan untuk mengidentifikasi pemilik titipan dan memudahkan dalam pengelolaan transaksi.",
-        "variasi_pertanyaan": [
-          "Nama Customer pada Transaksi Titipan itu apa?",
-          "Maksud Nama Customer pada Transaksi Titipan apa?",
-          "Apa yang dimaksud dengan Nama Customer pada Transaksi Titipan?"
-        ]
+        "jawaban": "Nama Customer: Merupakan nama pelanggan yang melakukan transaksi titipan. Nama pelanggan ini digunakan untuk mengidentifikasi pemilik titipan dan memudahkan dalam pengelolaan transaksi."
       },
       {
         "pertanyaan": "Apa itu Total DP pada Transaksi Titipan?",
@@ -2534,7 +2344,7 @@
         "variasi_pertanyaan": [
           "Total Harga pada Transaksi Titipan itu apa?",
           "Maksud Total Harga pada Transaksi Titipan apa?",
-          "Apa yang dimaksud dengan Total Harga pada Transaksi Titipan?"
+          "Total Harga pada Transaksi Titipan didapat dari mana?"
         ]
       },
       {
@@ -2569,8 +2379,7 @@
         "jawaban": "Laporan Transaki Pembelian adalah laporan yang mencatat dan merinci semua transaksi pembelian yang terjadi dalam program tersebut yang sudah di validasi.",
         "variasi_pertanyaan": [
           "Laporan Transaki Pembelian itu apa?",
-          "Maksud Laporan Transaki Pembelian apa?",
-          "Apa yang dimaksud dengan Laporan Transaki Pembelian?"
+          "Maksud Laporan Transaki Pembelian apa?"
         ]
       },
       {
@@ -2581,7 +2390,6 @@
         "pertanyaan": "Informasi apa saja yang ditampilkan pada Laporan Transaksi Pembelian (Type Laporan Normal)?",
         "jawaban": "1. Periode : Tanggal yang dipilih saat filter pencarian transaksi pembelian\r\n2. No FB : No faktur beli pada transaksi pembelian dengan format\r\n3. “INISIALTOKO-FB-yymmddd-0001”\r\n4. No FJ : No faktur jual yang dipakai di transaksi pembelian dengan format “INISIALTOKO-FJ-yymmddd-0001”\r\n5. Kode Intern : Kode intern merujuk pada kode unik intern toko pada data barang yang digunakan pada transaksi pembelian\r\n6. Kode Sales : Kode Sales yang melayani transaksi pembelian customer\r\n7. Kode Member : Type pelanggan saat melakukan transaksi pembelian, terdapat 2 type pelanggan yaitu Member dan Non Member\r\n8. Nama Member : Nama Member saat melakukan transaksi pembelian\r\n9. Nama Barang : Nama Barang yang digunakan saat melakukan transaksi pembelian\r\n10. Kondisi : Kondisi barang yang dipilih saat melakukan transaksi pembelian\r\n11. Kode Dept : Kode Jenis barang sesuai dengan barcode barang saat melakukan transaksi pembelian.\r\n12. Berat Nota : Berat barang pada nota\r\n13. Berat : Berat barang saat dibeli. Berat ini bisa berbeda dari berat nota\r\n14. Kadar : Kadar Barang. Kadar ini bisa berbeda dari kadar nota\r\n15. Harga Nota : Harga yang tertera pada nota\r\n16. Harga Beli : Harga barang yang dibeli\r\n17. Harga Rata : Harga Rata didapat dari Harga Beli di bagi dengan Berat\r\n18. Total USD : Total pembelian dengan mata uang USD\r\n19. Sub Total : Total transaksi dalam 1 faktur\r\n20. Grand Total : Total transaksi pembelian\r\n21. Printed By Helpdesk / 2023-06-12 : Laporan ini dicetak oleh user Helpdesk ditanggal 2023-06-12. Dengan mencantumkan identitas \"Printed By Helpdesk\" dan tanggal pencetakan, informasi tersebut menjadi transparan dan memungkinkan untuk melacak dan memverifikasi siapa yang bertanggung jawab atas cetakan laporan pembelian tersebut.",
         "variasi_pertanyaan": [
-          "yang ditampilkan pada Laporan Transaksi Pembelian (Type Laporan Normal) itu menampilkan informasi apa saja?",
           "Apa saja informasi yang ditampilkan yang ditampilkan pada Laporan Transaksi Pembelian (Type Laporan Normal)?",
           "Info apa aja yang ditampilkan pada Laporan Transaksi Pembelian (Type Laporan Normal)?"
         ]

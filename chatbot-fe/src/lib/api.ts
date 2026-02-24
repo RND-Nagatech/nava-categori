@@ -1,3 +1,11 @@
+// Ambil semua pesan helpdesk untuk conversation tertentu
+export async function getHelpdeskMessages(conversation_id: string): Promise<any> {
+  const res = await fetch(`${API_BASE}/helpdesk/messages?conversation_id=${encodeURIComponent(conversation_id)}`);
+  if (!res.ok) throw new Error('Gagal mengambil pesan helpdesk');
+  const data = await res.json();
+  // returns { messages: [...], conversation: { conversation_id, status, updated_at } }
+  return data;
+}
 export type AskPayload = {
   kategori: string;
   pertanyaan: string;
@@ -21,9 +29,12 @@ export type AddPayload = {
 // - Jika VITE_API_BASE_URL di-set, gunakan itu (contoh: http://localhost:3000)
 // - Jika tidak di-set dan sedang dev (Vite), gunakan path relatif untuk memanfaatkan proxy Vite
 // - Fallback ke http://localhost:3000
-const API_BASE =
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ??
-  (typeof window !== 'undefined' && window.location && window.location.port ? '' : 'http://localhost:3000');
+const API_BASE = (() => {
+  const envBase = typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL;
+  if (envBase && envBase.trim()) return envBase;
+  // Always use path relative for dev, so Vite proxy works
+  return '';
+})();
 
 export async function getCategories(): Promise<string[]> {
   const res = await fetch(`${API_BASE}/faq/categories`);
