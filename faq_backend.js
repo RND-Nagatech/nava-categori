@@ -332,8 +332,10 @@ app.post('/helpdesk/ask', async (req, res) => {
       conversation_id = 'CONV-' + now.getTime();
       await db.collection('conversations').insertOne({ conversation_id, user_id: userId || 'USR001', status: 'PENDING', source: 'chatbot', created_at: now, updated_at: now, assigned_to: null, priority: 'normal' });
     }
-    await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false });
-    res.json({ success: true, conversation_id });
+    const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false });
+    // Return inserted message id as string so frontend can map temporary client id to server id
+    const messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
+    res.json({ success: true, conversation_id, message_id: messageId });
   } catch (err) { res.status(500).json({ error: 'Gagal menyimpan ke MongoDB', detail: String(err) }); }
 });
 

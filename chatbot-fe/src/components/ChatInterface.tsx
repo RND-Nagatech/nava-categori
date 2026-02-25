@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, MessageCircle, RotateCcw } from 'lucide-react';
+import { Send, Loader2, MessageCircle, RotateCcw, ChevronsDown } from 'lucide-react';
 import { askFaq, getCategories, getHelpdeskMessages } from '../lib/api';
 
 // Type definition for a chat message
@@ -18,14 +18,25 @@ function makeId() {
 export default function ChatInterface() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: makeId(),
-      type: 'bot',
-      text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('chat_messages');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }));
+        }
+      } catch (_) { /* ignore parse errors */ }
+    }
+    return [
+      {
+        id: makeId(),
+        type: 'bot',
+        text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.',
+        timestamp: new Date(),
+      },
+    ];
+  });
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showHelpdeskButton, setShowHelpdeskButton] = useState(false);
@@ -43,7 +54,12 @@ export default function ChatInterface() {
     return false;
   });
   const [lastUserQuestion, setLastUserQuestion] = useState('');
+  const [lastUserMessageId, setLastUserMessageId] = useState<string | null>(null);
+  const [showResetLabel, setShowResetLabel] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const pollingRef = useRef<any>(null);
 
   useEffect(() => {
@@ -77,13 +93,29 @@ export default function ChatInterface() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function sendToHelpdesk(question: string, userId?: string) {
+  async function sendToHelpdesk(question: string, clientMessageId?: string, userId?: string) {
     const resp = await fetch('/helpdesk/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question, userId }),
     });
-    return await resp.json();
+    const data = await resp.json();
+    // Jika backend mengembalikan message_id, map temporary client id ke server id
+    if (data && data.message_id && clientMessageId) {
+      const serverId = String(data.message_id);
+      setMessages((prev) => prev.map((m) => m.id === clientMessageId ? { ...m, id: serverId } : m));
+      // jika lastUserMessageId mengarah ke temporary id, update juga
+      setLastUserMessageId((prevId) => (prevId === clientMessageId ? serverId : prevId));
+      console.debug('[ChatInterface] mapped client id to server id', { clientMessageId, serverId });
+    }
+    // Jika backend memberikan conversation_id (mis. saat membuat/open conversation), simpan ke state + localStorage
+    if (data && data.conversation_id) {
+      try {
+        setConversationId(data.conversation_id);
+        if (typeof window !== 'undefined') localStorage.setItem('conversationId', data.conversation_id);
+      } catch (_) {}
+    }
+    return data;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,14 +130,18 @@ export default function ChatInterface() {
     };
 
     setLastUserQuestion(question);
+    setLastUserMessageId(userMessage.id);
     setShowHelpdeskButton(false);
+    // user just submitted a message -> allow auto-scroll to show it
+    setIsUserNearBottom(true);
     setMessages((prev) => [...prev, userMessage]);
     setQuestion('');
     setIsLoading(true);
+    console.debug('[ChatInterface] handleSubmit', { conversationId, selectedCategory, userMessageId: userMessage.id });
 
     if (conversationId) {
       try {
-        await sendToHelpdesk(userMessage.text);
+        await sendToHelpdesk(userMessage.text, userMessage.id);
       } catch {
         setMessages((prev) => [...prev, {
           id: makeId(),
@@ -121,6 +157,7 @@ export default function ChatInterface() {
 
     try {
       const resp = await askFaq({ kategori: selectedCategory, pertanyaan: userMessage.text, use_llm: useLLM });
+      console.debug('[ChatInterface] askFaq response', resp);
       const botMessage: Message = {
         id: makeId(),
         type: 'bot',
@@ -128,11 +165,9 @@ export default function ChatInterface() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
-      if ((!resp.jawaban || resp.jawaban.includes('Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain')) && !conversationId) {
-        setShowHelpdeskButton(true);
-      } else {
-        setShowHelpdeskButton(false);
-      }
+      const ans = (resp && resp.jawaban) ? String(resp.jawaban).trim().toLowerCase() : '';
+      const isNoAnswer = !ans || ans.includes('maaf') && ans.includes('belum ada jawaban');
+      setShowHelpdeskButton(Boolean(isNoAnswer));
     } catch (e: any) {
       const botMessage: Message = {
         id: makeId(),
@@ -141,7 +176,7 @@ export default function ChatInterface() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
-      if (!conversationId) setShowHelpdeskButton(true);
+      setShowHelpdeskButton(true);
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +186,7 @@ export default function ChatInterface() {
     setShowHelpdeskButton(false);
     setIsLoading(true);
     try {
-      const resp = await sendToHelpdesk(lastUserQuestion);
+      const resp = await sendToHelpdesk(lastUserQuestion, lastUserMessageId || undefined);
       setMessages((prev) => [...prev, {
         id: makeId(),
         type: 'bot',
@@ -184,7 +219,6 @@ export default function ChatInterface() {
       try {
         const resp = await getHelpdeskMessages(conversationId);
         const msgs = resp.messages || [];
-        const conv = resp.conversation || null;
         setMessages((prev) => {
           const backendMsgs: Message[] = msgs.map((m: any): Message => ({
             id: m._id?.$oid || m._id || makeId(),
@@ -193,37 +227,53 @@ export default function ChatInterface() {
             timestamp: new Date(m.created_at),
             is_read: m.is_read,
           }));
-          const merged: Message[] = prev.map((msg: Message) => {
-            const found = backendMsgs.find((bm: Message) => bm.id === msg.id || bm.text === msg.text);
-            return found ? { ...msg, is_read: found.is_read } : msg;
-          });
-          backendMsgs.forEach((bm: Message) => {
-            if (!merged.some((msg: Message) => msg.id === bm.id || msg.text === bm.text)) {
-              merged.push({
-                id: bm.id,
-                type: bm.type === 'bot' ? 'bot' : 'user',
-                text: bm.text,
-                timestamp: bm.timestamp,
-                is_read: bm.is_read,
-              });
-            }
-          });
+          // Merge hanya berdasarkan id
+               let merged: Message[] = prev.map((msg: Message) => {
+                 const found = backendMsgs.find((bm: Message) => bm.id === msg.id);
+                 return found ? { ...msg, is_read: found.is_read } : msg;
+               });
+               backendMsgs.forEach((bm: Message) => {
+                 if (!merged.some((msg: Message) => msg.id === bm.id)) {
+                   merged.push({
+                     id: bm.id,
+                     type: bm.type === 'bot' ? 'bot' : 'user',
+                     text: bm.text,
+                     timestamp: bm.timestamp,
+                     is_read: bm.is_read,
+                   });
+                 }
+               });
 
-          // If conversation closed by admin, notify user and clear conversationId so subsequent messages go to bot
-          if (conv && conv.status && String(conv.status).toUpperCase() === 'CLOSED') {
-            const notice = 'Percakapan dengan admin telah selesai. Saya kembali membantu Anda.';
-            if (!merged.some(m => m.text === notice)) {
-              merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: new Date() });
-            }
-          }
+              // If backend did NOT include a SYSTEM message when conversation closed,
+              // add a local notice so user sees the closed notification. Use
+              // resp.conversation.updated_at as timestamp to allow repeated closes.
+              if (resp.conversation && String(resp.conversation.status).toUpperCase() === 'CLOSED') {
+                const notice = 'Percakapan dengan admin telah selesai. Saya kembali membantu Anda.';
+                const hasSystemInResp = msgs.some((m: any) => String(m.sender).toUpperCase() === 'SYSTEM');
+                const convUpdated = resp.conversation.updated_at ? new Date(resp.conversation.updated_at) : new Date();
+                const existingNoticeIndex = merged.findIndex(m => m.text === notice);
+
+                if (!hasSystemInResp) {
+                  if (existingNoticeIndex === -1) {
+                    merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated });
+                  } else {
+                    if (merged[existingNoticeIndex].timestamp < convUpdated) {
+                      merged.splice(existingNoticeIndex, 1);
+                      merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated });
+                    }
+                  }
+                }
+                console.debug('[ChatInterface] conversation CLOSED processed in poll; hasSystemInResp=', hasSystemInResp);
+              }
 
           return merged;
         });
 
         // If conversation closed, clear conversationId to route future messages to bot
         if (resp.conversation && String(resp.conversation.status).toUpperCase() === 'CLOSED') {
+          console.debug('[ChatInterface] clearing conversationId due to CLOSED status from server', { conversationId: resp.conversation.conversation_id });
           setConversationId(null);
-          localStorage.removeItem('conversationId');
+          // Do NOT remove conversationId from localStorage here — keep history for reloads.
           setShowHelpdeskButton(false);
           // stop further polling
           if (pollingRef.current) clearTimeout(pollingRef.current);
@@ -242,9 +292,41 @@ export default function ChatInterface() {
   }, [conversationId]);
 
   useEffect(() => {
+    if (!isUserNearBottom) return;
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
+  }, [messages]);
+
+  // Track user scroll to avoid forcing scroll-to-bottom when user is reading older messages
+  useEffect(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const handler = () => {
+      const threshold = 120; // px from bottom considered 'near bottom'
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+      setIsUserNearBottom(atBottom);
+    };
+    const interactionHandler = () => {
+      // user started interacting (pointerdown/wheel/touchstart) — stop auto-scrolling
+      setIsUserNearBottom(false);
+    };
+    el.addEventListener('scroll', handler);
+    el.addEventListener('pointerdown', interactionHandler, { passive: true });
+    el.addEventListener('wheel', interactionHandler, { passive: true });
+    el.addEventListener('touchstart', interactionHandler, { passive: true });
+    // initial check
+    handler();
+    return () => el.removeEventListener('scroll', handler);
+  }, [messagesContainerRef.current]);
+
+  // Persist messages to localStorage so reload preserves chat history
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const serializable = messages.map(m => ({ ...m, timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }));
+      localStorage.setItem('chat_messages', JSON.stringify(serializable));
+    } catch (_) {}
   }, [messages]);
 
   const classes = {
@@ -263,28 +345,27 @@ export default function ChatInterface() {
           <MessageCircle className="w-5 h-5" />
           Chat Assistant
         </h2>
-        <button
-          onClick={() => {
-            setConversationId(null);
-            localStorage.removeItem('conversationId');
-            setShowHelpdeskButton(false);
-            setMessages([
-              {
-                id: makeId(),
-                type: 'bot',
-                text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.',
-                timestamp: new Date(),
-              },
-            ]);
-          }}
-          title="Reset Percakapan"
-          className="ml-2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
+        <div className="ml-2 relative">
+          <div>
+            <button
+              onMouseEnter={() => setShowResetLabel(true)}
+              onMouseLeave={() => setShowResetLabel(false)}
+              onClick={() => setShowResetConfirm(true)}
+              title="Reset Percakapan"
+              className="ml-2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
+            {showResetLabel && (
+              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                Reset
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-0 space-y-4 bg-transparent">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-0 space-y-4 bg-transparent">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -362,6 +443,21 @@ export default function ChatInterface() {
             </button>
           </div>
         )}
+        {!isUserNearBottom && (
+          <div className="fixed bottom-28 right-6 z-40">
+            <button
+              onClick={() => {
+                if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                setIsUserNearBottom(true);
+              }}
+              title="Terbaru"
+              aria-label="Terbaru"
+              className="bg-blue-600 text-white p-3 rounded-lg shadow-md flex items-center justify-center"
+            >
+              <ChevronsDown className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="p-0 bg-transparent border-t-0">
@@ -417,6 +513,27 @@ export default function ChatInterface() {
           </div>
         </div>
       </form>
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowResetConfirm(false)} />
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-6 z-10 w-11/12 max-w-md">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-slate-100">Konfirmasi Reset</h3>
+            <p className="text-sm text-gray-700 dark:text-slate-300 mb-4">Yakin ingin mereset percakapan? Semua pesan akan dihapus.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-slate-700">Batal</button>
+              <button onClick={() => {
+                setShowResetConfirm(false);
+                setConversationId(null);
+                try { if (typeof window !== 'undefined') { localStorage.removeItem('conversationId'); localStorage.removeItem('chat_messages'); } } catch(_) {}
+                setShowHelpdeskButton(false);
+                setMessages([
+                  { id: makeId(), type: 'bot', text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.', timestamp: new Date() }
+                ]);
+              }} className="px-4 py-2 rounded bg-red-600 text-white">Reset</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
