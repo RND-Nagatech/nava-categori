@@ -7,6 +7,12 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const stringSimilarity = require('string-similarity');
 const { MongoClient } = require('mongodb');
+let bcrypt = null;
+let bcryptjs = null;
+try { bcrypt = require('bcrypt'); } catch (_) { bcrypt = null; }
+if (!bcrypt) {
+  try { bcryptjs = require('bcryptjs'); } catch (_) { bcryptjs = null; }
+}
 
 const app = express();
 app.use(bodyParser.json());
@@ -29,6 +35,18 @@ const USE_LLM_DEFAULT = (process.env.USE_LLM || '0') === '1';
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'db_helpdesk_dashboard';
 
+const LOG_DIR = path.join(__dirname, 'logs');
+function ensureLogDir() {
+  try { if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true }); } catch (_) {}
+}
+function logFaqMismatch(entry) {
+  try {
+    ensureLogDir();
+    const file = path.join(LOG_DIR, 'faq_mismatch.log');
+    const line = `[${new Date().toISOString()}] ${JSON.stringify(entry)}\n`;
+    fs.appendFileSync(file, line, 'utf-8');
+  } catch (_) { /* swallow logging errors */ }
+}
 let mongoClient;
 async function getMongoClient() {
   if (!mongoClient) {
@@ -240,13 +258,17 @@ app.post('/faq/ask', async (req, res) => {
         const userTokens = tokenize(pertanyaan);
         const isSingleAcronym = userTokens.length === 1 && /^[a-z]+$/.test(userTokens[0]) && userTokens[0].length <= 4;
         if (userTokens.length >= 2 || isSingleAcronym) {
-          let best = null; let bestScore = 0;
+          let best = null; let bestScore = 0; let bestFaqLen = Infinity;
           for (const c of expandedFaq) {
             const faqTokens = tokenize(c.qText);
             const score = tokenContainmentScore(userTokens, faqTokens);
-            if (score > bestScore) { bestScore = score; best = c.item; }
+            // prefer higher score, but break ties by choosing the shorter (more specific) FAQ
+            if (score > bestScore || (score === bestScore && faqTokens.length < bestFaqLen)) {
+              bestScore = score; best = c.item; bestFaqLen = faqTokens.length;
+            }
           }
-          const thresholdTok = isSingleAcronym ? 1.0 : 0.9;
+          // relaxed token threshold so near-matches are accepted
+          const thresholdTok = isSingleAcronym ? 1.0 : 0.6;
           if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, mode: 'token-match' }); }
         }
       } catch (_) {}
@@ -255,7 +277,13 @@ app.post('/faq/ask', async (req, res) => {
         const candidates = expandedFaq.map(c => ({ item: c.item, norm: normalizeFull(c.qText) }));
         const match = stringSimilarity.findBestMatch(normQ, candidates.map(c => c.norm));
         const best = candidates[match.bestMatchIndex];
-        if (match.bestMatch.rating >= 0.6) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'local-fuzzy' }); }
+        // relaxed fuzzy threshold to accept more near-matches
+        const FUZZY_THRESHOLD = 0.45;
+        if (match.bestMatch.rating >= FUZZY_THRESHOLD) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'local-fuzzy' }); }
+        // log near-miss fuzzy attempts for tuning
+        if (match.bestMatch.rating > 0.3) {
+          try { logFaqMismatch({ type: 'fuzzy-nearmiss', kategori, question: pertanyaan, bestRating: match.bestMatch.rating, candidateQuestion: best && best.item ? best.item.pertanyaan : null }); } catch(_) {}
+        }
       } catch (_) {}
     }
 
@@ -270,6 +298,8 @@ app.post('/faq/ask', async (req, res) => {
     }
 
     if (!results.length) {
+      // log semantic search empty result for later analysis
+      try { logFaqMismatch({ type: 'semantic-empty', kategori, question: pertanyaan }); } catch(_) {}
       const useLlm = decideUseLlm(req);
       if (useLlm) {
         try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' }); }
@@ -299,7 +329,12 @@ app.post('/faq/ask', async (req, res) => {
     });
     scored.sort((a,b) => b.composite - a.composite);
     const best = scored[0];
-    if (!best || best.composite < 0.52) return res.status(404).json({ error: 'Maaf, kami belum menemukan jawaban yang sesuai. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
+    // relaxed composite threshold; log low-confidence picks
+    const COMPOSITE_THRESHOLD = 0.45;
+    if (!best || best.composite < COMPOSITE_THRESHOLD) {
+      try { logFaqMismatch({ type: 'low-composite', kategori, question: pertanyaan, topCandidates: scored.slice(0,3).map(s => ({ q: s.item.pertanyaan, composite: s.composite })) }); } catch(_) {}
+      return res.status(404).json({ error: 'Maaf, kami belum menemukan jawaban yang sesuai. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
+    }
     const formatted = formatAnswer(best.item.jawaban);
     const useLlm = decideUseLlm(req);
     if (useLlm) {
@@ -339,6 +374,40 @@ app.post('/helpdesk/ask', async (req, res) => {
     const messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
     res.json({ success: true, conversation_id, message_id: messageId });
   } catch (err) { res.status(500).json({ error: 'Gagal menyimpan ke MongoDB', detail: String(err) }); }
+});
+
+// Admin login using agents collection in MongoDB
+app.post('/admin/login', async (req, res) => {
+  // Accept email + password to match agents collection structure
+  const { email, password } = req.body || {};
+  if (!email || !password) return res.status(400).json({ error: 'email and password required' });
+  try {
+    const client = await getMongoClient();
+    const db = client.db(MONGODB_DB);
+    const emailLower = String(email || '').toLowerCase();
+    const agent = await db.collection('agents').findOne({ $or: [{ email }, { emailLower }] });
+    if (!agent) return res.status(401).json({ error: 'Invalid credentials' });
+    const stored = agent.passwordHash || agent.password || agent.pass || agent.hash || '';
+    let ok = false;
+    if (typeof stored === 'string' && stored.startsWith('$2')) {
+      if (bcrypt) {
+        try { ok = await bcrypt.compare(String(password), stored); } catch (_) { ok = false; }
+      } else if (bcryptjs) {
+        try { ok = bcryptjs.compareSync(String(password), stored); } catch (_) { ok = false; }
+      } else {
+        ok = false;
+      }
+    } else {
+      // fallback: plain-text compare
+      ok = String(password) === String(stored);
+    }
+    if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
+    // Success: return basic agent profile (do not return password)
+    const profile = { email: agent.email, fullName: agent.fullName || agent.name || agent.displayName || agent.fullname || agent.email, roles: agent.roles || [] };
+    return res.json({ success: true, agent: profile });
+  } catch (err) {
+    return res.status(500).json({ error: 'Login failed', detail: String(err) });
+  }
 });
 
 app.get('/helpdesk/messages', async (req, res) => {

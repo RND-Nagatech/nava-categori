@@ -84,7 +84,7 @@ function AppInner() {
                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                       activeTab === 'chat'
                         ? classes.tabActiveBtn
-                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
+                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 dark:ring-1 dark:ring-white/10'
                     }`}
                   >
                     Chat
@@ -94,7 +94,7 @@ function AppInner() {
                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                       activeTab === 'admin'
                         ? classes.tabActiveBtn
-                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
+                        : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 dark:ring-1 dark:ring-white/10'
                     }`}
                   >
                     Admin Panel

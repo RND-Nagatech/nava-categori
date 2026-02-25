@@ -1,15 +1,25 @@
-import { useEffect, useState } from 'react';
-import { Plus, Loader2, CheckCircle } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { Plus, Loader2, CheckCircle, LogOut, Mail, Lock, LogIn } from 'lucide-react';
 import { useTheme } from '../theme';
-import { addFaq, getCategories } from '../lib/api';
+import { addFaq, getCategories, adminLogin } from '../lib/api';
 
 export default function AdminPanel() {
   const { classes } = useTheme();
+  const [agent, setAgent] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try { const raw = localStorage.getItem('admin_agent'); return raw ? JSON.parse(raw) : null; } catch (_) { return null; }
+    }
+    return null;
+  });
   const [formData, setFormData] = useState({
     kategori: '',
     pertanyaan: '',
     jawaban: '',
   });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
@@ -27,8 +37,38 @@ export default function AdminPanel() {
     })();
   }, []);
 
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setLoginError(null);
+    try {
+      const resp = await adminLogin(loginForm.email, loginForm.password);
+      if (resp && resp.success) {
+        const profile = resp.agent;
+        setAgent(profile);
+        try { localStorage.setItem('admin_agent', JSON.stringify(profile)); } catch (_) {}
+      }
+    } catch (err: any) {
+      setLoginError(err?.message || 'Login gagal');
+    }
+  };
+
+  const handleLogout = () => {
+    setMenuOpen(false);
+    setAgent(null);
+    try { localStorage.removeItem('admin_agent'); } catch (_) {}
+  };
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agent) { setErrorMsg('Silakan login terlebih dahulu.'); return; }
     setErrorMsg(null);
     setIsLoading(true);
     try {
@@ -58,16 +98,75 @@ export default function AdminPanel() {
 
   return (
     <div className="h-full flex flex-col bg-transparent dark:bg-transparent">
-      <div className={`${classes.headerBar} px-6 py-4`}>
+      <div className={`${classes.headerBar} px-6 py-4 flex items-center justify-between`}>
         <h2 className="text-white font-semibold text-lg flex items-center gap-2 font-display tracking-tight">
           <Plus className="w-5 h-5" />
           Tambah FAQ Baru
         </h2>
+        <div>
+          {agent ? (
+            <div className="flex items-center gap-3">
+              <div ref={menuRef} className="relative">
+                <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-3 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-medium text-sm">
+                    {((agent.fullName || agent.email) || '').charAt(0).toUpperCase()}
+                  </span>
+                  <span className="text-sm font-medium">{agent.fullName || agent.email}</span>
+                  <LogOut className="w-4 h-4 text-white/90" />
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded shadow z-50">
+                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-100">Logout</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-white/80">Admin belum login</div>
+          )}
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-0 space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
+      {!agent ? (
+        <form onSubmit={handleLogin} className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 dark:text-slate-200 mb-1">Email</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-300"><Mail className="w-5 h-5" /></span>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={loginForm.email}
+                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                className={`w-full pl-12 px-3 py-3 rounded border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-800 dark:text-slate-100`}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 dark:text-slate-200 mb-1">Password</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-300"><Lock className="w-5 h-5" /></span>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                className={`w-full pl-12 px-3 py-3 rounded border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-800 dark:text-slate-100`}
+              />
+            </div>
+          </div>
+          {loginError && <div className="text-sm text-red-600">{loginError}</div>}
+          <div>
+            <button type="submit" className={`w-full ${classes.primaryButton} px-4 py-3 rounded flex items-center justify-center gap-2`}>
+              <LogIn className="w-4 h-4 text-white" />
+              <span>Login</span>
+            </button>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={handleSubmit} className="p-0 space-y-5">
+          <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2 mt-3">
             Kategori <span className="text-red-500">*</span>
           </label>
           <select
@@ -160,6 +259,7 @@ export default function AdminPanel() {
           </div>
         )}
       </form>
+      )}
     </div>
   );
 }

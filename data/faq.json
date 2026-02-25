@@ -1022,10 +1022,6 @@
           "Cara liat/tau barang yg paling laku terjual gimana?",
           "saya bisa tau tidak barang yang paling laku terjual?"
         ]
-      },
-      {
-        "pertanyaan": "test",
-        "jawaban": "test"
       }
     ]
   },
@@ -1568,7 +1564,6 @@
         "pertanyaan": "Apa itu Stock Opname Barang?",
         "jawaban": "Stock Opname Barang adalah proses penghitungan dan pencocokan stok fisik barang dengan stok yang tercatat dalam system. Jika terjadi selisih pada saat proses Timbang Baki yang bisa Anda lakukan per baki. Tujuannya adalah untuk memverifikasi keakuratan data stok, mengidentifikasi selisih antara stok fisik dengan stok sistem, dan melakukan penyesuaian jika ditemukan ketidaksesuaian.",
         "variasi_pertanyaan": [
-          "Stock Opname Barang itu apa?",
           "Stock Opname Barang untuk/buat apa?",
           "Apa yang dimaksud dengan Stock Opname Barang?"
         ]
@@ -1579,7 +1574,7 @@
         "variasi_pertanyaan": [
           "Langkah-langkah melakukan Stock Opname Barang gimana?",
           "Gimana langkah-langkah melakukan Stock Opname Barang?",
-          "Gimana cara melakukan Stock Opname Barang?",
+          "Gimana cara Stock Opname Barang?",
           "Cara melakukan Stock Opname Barang gimana?"
         ]
       },

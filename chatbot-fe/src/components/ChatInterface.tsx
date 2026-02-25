@@ -19,6 +19,9 @@ function makeId() {
 export default function ChatInterface() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const categoryContainerRef = useRef<HTMLDivElement | null>(null);
+  const [dropdownUp, setDropdownUp] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -62,12 +65,57 @@ export default function ChatInterface() {
     if (typeof window !== 'undefined') return localStorage.getItem('helpdesk_user_name');
     return null;
   });
-  const [showNameEdit, setShowNameEdit] = useState(false);
+  const [showNameEdit, setShowNameEdit] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const existing = localStorage.getItem('helpdesk_user_name');
+      return !existing; // show modal if no name saved
+    }
+    return false;
+  });
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
   const [showNameRequiredNotice, setShowNameRequiredNotice] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const pollingRef = useRef<any>(null);
+  
+  // Close dropdown on outside click and decide open direction
+  useEffect(() => {
+    if (!showCategoryDropdown) return;
+    function handleOutside(e: MouseEvent) {
+      const el = categoryContainerRef.current;
+      if (!el) return;
+      if (e.target instanceof Node && !el.contains(e.target)) {
+        setShowCategoryDropdown(false);
+      }
+    }
+    function decideDirection() {
+      try {
+        const el = categoryContainerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        // approximate dropdown height (max 240px)
+        const dropdownH = Math.min(240, (categories.length || 6) * 40);
+        if (spaceBelow < dropdownH && spaceAbove > spaceBelow) setDropdownUp(true); else setDropdownUp(false);
+      } catch (_) { setDropdownUp(false); }
+    }
+    decideDirection();
+    document.addEventListener('mousedown', handleOutside);
+    window.addEventListener('resize', decideDirection);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      window.removeEventListener('resize', decideDirection);
+    };
+  }, [showCategoryDropdown, categories]);
+
+  // autofocus name input when name modal opens
+  useEffect(() => {
+    if (showNameEdit && nameInputRef.current) {
+      try { setTimeout(() => { nameInputRef.current?.focus(); }, 50); } catch (_) {}
+    }
+  }, [showNameEdit]);
 
   useEffect(() => {
     (async () => {
@@ -270,6 +318,18 @@ export default function ChatInterface() {
       try {
         const resp = await getHelpdeskMessages(conversationId);
         const msgs = resp.messages || [];
+        // If user is already near bottom right before we merge new backend messages,
+        // allow auto-scroll so incoming messages are visible. Don't force-scroll
+        // when the user intentionally scrolled up.
+        try {
+          const el = messagesContainerRef.current;
+          const threshold = 120;
+          if (el) {
+            const atBottomNow = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+            if (atBottomNow) setIsUserNearBottom(true);
+          }
+        } catch (_) {}
+
         setMessages((prev) => {
           const backendMsgs: Message[] = msgs.map((m: any): Message => ({
             id: m._id?.$oid || m._id || makeId(),
@@ -426,7 +486,7 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-0 space-y-4 bg-transparent">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-0 pb-4 space-y-4 bg-transparent">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -528,20 +588,36 @@ export default function ChatInterface() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-0 bg-transparent border-t-0">
+      <form onSubmit={handleSubmit} className="p-3 bg-transparent border-t-0">
         <div className="space-y-4">
           <div className="flex gap-3">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className={`flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${themeClasses.focusRing} focus:border-transparent bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
-              required
-            >
-              <option value="">Pilih Kategori</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+            <div className="relative flex-1" ref={categoryContainerRef}>
+              {/* Custom dropdown to avoid native select clipping and small visible options */}
+              <button
+                type="button"
+                onClick={() => setSelectedCategory((prev) => prev) /* noop to keep TS happy */}
+                onMouseDown={(e) => { e.preventDefault(); /* prevent blur */ }}
+                className={`w-full text-left px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${themeClasses.focusRing} focus:border-transparent bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100 flex items-center justify-between`}
+                onClickCapture={(e) => { e.preventDefault(); setShowCategoryDropdown((s) => !s); }}
+              >
+                <span className={`truncate ${selectedCategory ? '' : 'text-gray-500 dark:text-slate-400'}`}>{selectedCategory || 'Pilih Kategori'}</span>
+                <svg className="w-4 h-4 ml-2 text-gray-500" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              {showCategoryDropdown && (
+                <div className={`absolute left-0 right-0 z-50 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg max-h-60 overflow-auto ${dropdownUp ? 'bottom-full mb-2' : 'mt-2'}`}>
+                  {categories.length === 0 && <div className="px-3 py-2 text-sm text-gray-500">Tidak ada kategori</div>}
+                  {categories.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => { setSelectedCategory(c); setShowCategoryDropdown(false); }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm ${selectedCategory === c ? 'font-semibold' : ''}`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                  </div>
+              )}
+            </div>
 
             <label className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
               <input
@@ -611,7 +687,8 @@ export default function ChatInterface() {
             <input
               type="text"
               value={userName || ''}
-              onChange={(e) => setUserName(e.target.value)}
+                ref={nameInputRef}
+                onChange={(e) => setUserName(e.target.value)}
               placeholder="Nama Anda"
               className="w-full px-4 py-2 rounded border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-800 dark:text-slate-100 mb-4"
             />

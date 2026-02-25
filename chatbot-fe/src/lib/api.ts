@@ -71,3 +71,14 @@ export async function addFaq(payload: AddPayload): Promise<{ success: boolean; m
   }
   return data;
 }
+
+export async function adminLogin(email: string, password: string): Promise<any> {
+  const res = await fetch(`${API_BASE}/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Login gagal (${res.status})`);
+  return data;
+}
