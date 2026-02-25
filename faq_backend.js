@@ -317,22 +317,24 @@ app.post('/faq/ask', async (req, res) => {
 
 // Helpdesk endpoints (MongoDB-backed)
 app.post('/helpdesk/ask', async (req, res) => {
-  const { userId, question } = req.body;
+  // Accept either userId (legacy) or userName / user_name from frontend
+  const { userId, userName, user_name, question } = req.body;
+  const suppliedUserId = userId || (userName || user_name) || null;
   if (!question) return res.status(400).json({ error: 'Pertanyaan wajib diisi' });
   try {
     const client = await getMongoClient();
     const db = client.db(MONGODB_DB);
     const now = new Date();
-    let conv = await db.collection('conversations').findOne({ user_id: userId || 'USR001', status: { $in: ['PENDING','OPEN','IN_PROGRESS'] } });
+    let conv = await db.collection('conversations').findOne({ user_id: suppliedUserId || 'USR001', status: { $in: ['PENDING','OPEN','IN_PROGRESS'] } });
     let conversation_id;
     if (conv) {
       conversation_id = conv.conversation_id;
-      await db.collection('conversations').updateOne({ conversation_id }, { $set: { updated_at: now } });
+      await db.collection('conversations').updateOne({ conversation_id }, { $set: { updated_at: now, user_name: (userName || user_name) || conv.user_name || null } });
     } else {
       conversation_id = 'CONV-' + now.getTime();
-      await db.collection('conversations').insertOne({ conversation_id, user_id: userId || 'USR001', status: 'PENDING', source: 'chatbot', created_at: now, updated_at: now, assigned_to: null, priority: 'normal' });
+      await db.collection('conversations').insertOne({ conversation_id, user_id: suppliedUserId || 'USR001', user_name: (userName || user_name) || null, status: 'PENDING', source: 'chatbot', created_at: now, updated_at: now, assigned_to: null, priority: 'normal' });
     }
-    const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false });
+    const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false, user_name: (userName || user_name) || null });
     // Return inserted message id as string so frontend can map temporary client id to server id
     const messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
     res.json({ success: true, conversation_id, message_id: messageId });
@@ -362,7 +364,7 @@ app.patch('/helpdesk/messages/read', async (req, res) => {
 app.patch('/helpdesk/conversation/close', async (req, res) => {
   const { conversation_id } = req.body;
   if (!conversation_id) return res.status(400).json({ error: 'conversation_id wajib diisi' });
-  try { const client = await getMongoClient(); const db = client.db(MONGODB_DB); await db.collection('conversations').updateOne({ conversation_id }, { $set: { status: 'CLOSED', updated_at: new Date() } }); await db.collection('messages').insertOne({ conversation_id, sender: 'SYSTEM', message: 'Percakapan dengan admin telah selesai.', created_at: new Date(), is_read: true }); res.json({ success: true }); } catch (err) { res.status(500).json({ error: 'Gagal menutup percakapan', detail: String(err) }); }
+  try { const client = await getMongoClient(); const db = client.db(MONGODB_DB); await db.collection('conversations').updateOne({ conversation_id }, { $set: { status: 'CLOSED', updated_at: new Date() } }); await db.collection('messages').insertOne({ conversation_id, sender: 'SYSTEM', message: 'Percakapan dengan admin telah berakhir.', created_at: new Date(), is_read: true }); res.json({ success: true }); } catch (err) { res.status(500).json({ error: 'Gagal menutup percakapan', detail: String(err) }); }
 });
 
 // Health check for Ollama

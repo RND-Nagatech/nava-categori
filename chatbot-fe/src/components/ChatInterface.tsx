@@ -57,6 +57,12 @@ export default function ChatInterface() {
   const [lastUserMessageId, setLastUserMessageId] = useState<string | null>(null);
   const [showResetLabel, setShowResetLabel] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [userName, setUserName] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('helpdesk_user_name');
+    return null;
+  });
+  const [showNameEdit, setShowNameEdit] = useState(false);
+  const [showNameRequiredNotice, setShowNameRequiredNotice] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
@@ -94,10 +100,13 @@ export default function ChatInterface() {
   }, []);
 
   async function sendToHelpdesk(question: string, clientMessageId?: string, userId?: string) {
+    const body: any = { question };
+    if (userId) body.userId = userId;
+    if (userName) body.user_name = userName;
     const resp = await fetch('/helpdesk/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, userId }),
+      body: JSON.stringify(body),
     });
     const data = await resp.json();
     // Jika backend mengembalikan message_id, map temporary client id ke server id
@@ -140,8 +149,41 @@ export default function ChatInterface() {
     console.debug('[ChatInterface] handleSubmit', { conversationId, selectedCategory, userMessageId: userMessage.id });
 
     if (conversationId) {
+      const userIdToSend = userName || undefined;
+      // If user hasn't set a name yet, prompt them and do NOT forward to helpdesk,
+      // but still process the question through the FAQ flow so the bot replies.
+      if (!userName) {
+        setShowNameEdit(true);
+        setShowNameRequiredNotice(true);
+        // fallback to FAQ answer so user sees an immediate reply
+        try {
+          const resp = await askFaq({ kategori: selectedCategory, pertanyaan: userMessage.text, use_llm: useLLM });
+          const botMessage: Message = {
+            id: makeId(),
+            type: 'bot',
+            text: resp.jawaban || 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain',
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          const ans = (resp && resp.jawaban) ? String(resp.jawaban).trim().toLowerCase() : '';
+          const isNoAnswer = !ans || (ans.includes('maaf') && ans.includes('belum ada jawaban'));
+          setShowHelpdeskButton(Boolean(isNoAnswer));
+        } catch (e: any) {
+          setMessages((prev) => [...prev, {
+            id: makeId(),
+            type: 'bot',
+            text: e?.message || 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain',
+            timestamp: new Date(),
+          }]);
+          setShowHelpdeskButton(true);
+        } finally {
+          setIsLoading(false);
+          setTimeout(() => setShowNameRequiredNotice(false), 5000);
+        }
+        return;
+      }
       try {
-        await sendToHelpdesk(userMessage.text, userMessage.id);
+        await sendToHelpdesk(userMessage.text, userMessage.id, userIdToSend);
       } catch {
         setMessages((prev) => [...prev, {
           id: makeId(),
@@ -183,6 +225,14 @@ export default function ChatInterface() {
   };
 
   const handleHelpdesk = async () => {
+    // Ensure user has a name before sending to helpdesk
+    if (!userName) {
+      setShowNameEdit(true);
+      setShowNameRequiredNotice(true);
+      setTimeout(() => setShowNameRequiredNotice(false), 5000);
+      return;
+    }
+
     setShowHelpdeskButton(false);
     setIsLoading(true);
     try {
@@ -248,7 +298,7 @@ export default function ChatInterface() {
               // add a local notice so user sees the closed notification. Use
               // resp.conversation.updated_at as timestamp to allow repeated closes.
               if (resp.conversation && String(resp.conversation.status).toUpperCase() === 'CLOSED') {
-                const notice = 'Percakapan dengan admin telah selesai. Saya kembali membantu Anda.';
+                const notice = 'Percakapan dengan admin telah berakhir. Saya kembali membantu Anda.';
                 const hasSystemInResp = msgs.some((m: any) => String(m.sender).toUpperCase() === 'SYSTEM');
                 const convUpdated = resp.conversation.updated_at ? new Date(resp.conversation.updated_at) : new Date();
                 const existingNoticeIndex = merged.findIndex(m => m.text === notice);
@@ -345,22 +395,38 @@ export default function ChatInterface() {
           <MessageCircle className="w-5 h-5" />
           Chat Assistant
         </h2>
-        <div className="ml-2 relative">
-          <div>
+        <div className="ml-4 flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
-              onMouseEnter={() => setShowResetLabel(true)}
-              onMouseLeave={() => setShowResetLabel(false)}
-              onClick={() => setShowResetConfirm(true)}
-              title="Reset Percakapan"
-              className="ml-2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              onClick={() => setShowNameEdit(true)}
+              title={userName ? `Nama: ${userName}` : 'Set nama'}
+              className="flex items-center gap-3 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-full transition-colors"
             >
-              <RotateCcw className="w-5 h-5" />
-            </button>
-            {showResetLabel && (
-              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                Reset
+              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-semibold">
+                {userName ? userName.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase() : 'U'}
               </div>
-            )}
+              <div className="text-sm text-white/90 truncate max-w-[10rem]">
+                {userName ? userName : 'Set nama'}
+              </div>
+              <div className="text-xs opacity-80">✏️</div>
+            </button>
+
+            <div className="relative">
+              <button
+                onMouseEnter={() => setShowResetLabel(true)}
+                onMouseLeave={() => setShowResetLabel(false)}
+                onClick={() => setShowResetConfirm(true)}
+                title="Reset Percakapan"
+                className="bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </button>
+              {showResetLabel && (
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                  Reset
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -433,14 +499,21 @@ export default function ChatInterface() {
         )}
         <div ref={messagesEndRef} />
         {showHelpdeskButton && !conversationId && (
-          <div className="flex justify-center mt-2">
-            <button
-              onClick={handleHelpdesk}
-              className="bg-blue-600 text-white px-6 py-2 rounded-xl font-medium shadow-md hover:bg-blue-700 transition-all"
-              disabled={isLoading}
-            >
-              Ajukan ke Helpdesk
-            </button>
+          <div className="flex flex-col items-center mt-2 gap-2">
+            {showNameRequiredNotice && (
+              <div className="px-4 py-2 bg-red-50 border border-red-200 text-red-800 rounded max-w-xl text-sm">
+                Isi nama terlebih dahulu sebelum mengajukan ke helpdesk. Klik badge nama di header (dekat tombol reset) untuk mengisi. <button onClick={() => { setShowNameEdit(true); }} className="underline font-semibold ml-1">Isi sekarang</button>
+              </div>
+            )}
+            <div>
+              <button
+                onClick={handleHelpdesk}
+                className="bg-blue-600 text-white px-6 py-2 rounded-xl font-medium shadow-md hover:bg-blue-700 transition-all"
+                disabled={isLoading}
+              >
+                Ajukan ke Helpdesk
+              </button>
+            </div>
           </div>
         )}
         {!isUserNearBottom && (
@@ -530,6 +603,29 @@ export default function ChatInterface() {
                   { id: makeId(), type: 'bot', text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.', timestamp: new Date() }
                 ]);
               }} className="px-4 py-2 rounded bg-red-600 text-white">Reset</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showNameEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowNameEdit(false)} />
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-6 z-10 w-11/12 max-w-md">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-slate-100">Input Nama</h3>
+            <p className="text-sm text-gray-700 dark:text-slate-300 mb-4">Masukkan nama yang akan dikirim ke helpdesk</p>
+            <input
+              type="text"
+              value={userName || ''}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Nama Anda"
+              className="w-full px-4 py-2 rounded border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-800 dark:text-slate-100 mb-4"
+            />
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setShowNameEdit(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-slate-700">Batal</button>
+              <button onClick={() => {
+                setShowNameEdit(false);
+                try { if (typeof window !== 'undefined') { if (userName && userName.trim()) localStorage.setItem('helpdesk_user_name', userName.trim()); else localStorage.removeItem('helpdesk_user_name'); } } catch(_) {}
+              }} className="px-4 py-2 rounded bg-blue-600 text-white">Simpan</button>
             </div>
           </div>
         </div>
