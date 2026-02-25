@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, MessageCircle, RotateCcw, ChevronsDown } from 'lucide-react';
 import { askFaq, getCategories, getHelpdeskMessages } from '../lib/api';
+import { useTheme } from '../theme';
 
 // Type definition for a chat message
 export type Message = {
@@ -379,24 +380,17 @@ export default function ChatInterface() {
     } catch (_) {}
   }, [messages]);
 
-  const classes = {
-    headerBar: 'bg-blue-700 dark:bg-slate-900',
-    userBubble: 'bg-blue-600 text-white shadow-md border border-blue-200 dark:bg-blue-700 dark:border-blue-900',
-    loaderColor: 'text-blue-600 dark:text-blue-400',
-    focusRing: 'ring-blue-600 dark:ring-blue-400',
-    primaryButton: 'bg-blue-600 text-white hover:bg-blue-700',
-    checkboxColor: 'accent-blue-600 dark:accent-blue-400',
-  };
+  const { classes: themeClasses } = useTheme();
 
   return (
     <div className="h-full min-h-0 flex flex-col bg-transparent dark:bg-transparent">
-      <div className={`${classes.headerBar} px-6 py-4 flex items-center justify-between`}>
+      <div className={`${themeClasses.headerBar} px-6 py-4 flex items-center justify-between`}>
         <h2 className="text-white font-semibold text-lg flex items-center gap-2 font-display tracking-tight">
           <MessageCircle className="w-5 h-5" />
           Chat Assistant
         </h2>
         <div className="ml-4 flex items-center gap-2">
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
             <button
               onClick={() => setShowNameEdit(true)}
               title={userName ? `Nama: ${userName}` : 'Set nama'}
@@ -411,7 +405,7 @@ export default function ChatInterface() {
               <div className="text-xs opacity-80">✏️</div>
             </button>
 
-            <div className="relative">
+            <div className="relative flex items-center gap-2">
               <button
                 onMouseEnter={() => setShowResetLabel(true)}
                 onMouseLeave={() => setShowResetLabel(false)}
@@ -426,6 +420,7 @@ export default function ChatInterface() {
                   Reset
                 </div>
               )}
+              {/* no extra buttons here; theme follows app theme selection */}
             </div>
           </div>
         </div>
@@ -440,7 +435,7 @@ export default function ChatInterface() {
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                 message.type === 'user'
-                  ? classes.userBubble
+                    ? themeClasses.userBubble
                   : 'bg-white text-gray-800 shadow-sm border border-gray-100 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700'
               }`}
               style={message.type === 'user' ? { position: 'relative' } : {}}
@@ -493,7 +488,7 @@ export default function ChatInterface() {
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-2xl px-4 py-3 shadow-sm border border-gray-100 dark:border-slate-700">
-              <Loader2 className={`w-5 h-5 animate-spin ${classes.loaderColor}`} />
+              <Loader2 className={`w-5 h-5 animate-spin ${themeClasses.loaderColor}`} />
             </div>
           </div>
         )}
@@ -508,7 +503,7 @@ export default function ChatInterface() {
             <div>
               <button
                 onClick={handleHelpdesk}
-                className="bg-blue-600 text-white px-6 py-2 rounded-xl font-medium shadow-md hover:bg-blue-700 transition-all"
+                className={`${themeClasses.primaryButton} px-6 py-2 rounded-xl font-medium shadow-md transition-all`}
                 disabled={isLoading}
               >
                 Ajukan ke Helpdesk
@@ -518,17 +513,17 @@ export default function ChatInterface() {
         )}
         {!isUserNearBottom && (
           <div className="fixed bottom-28 right-6 z-40">
-            <button
-              onClick={() => {
-                if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                setIsUserNearBottom(true);
-              }}
-              title="Terbaru"
-              aria-label="Terbaru"
-              className="bg-blue-600 text-white p-3 rounded-lg shadow-md flex items-center justify-center"
-            >
-              <ChevronsDown className="w-5 h-5" />
-            </button>
+              <button
+                onClick={() => {
+                  if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                  setIsUserNearBottom(true);
+                }}
+                title="Terbaru"
+                aria-label="Terbaru"
+                className={`${themeClasses.primaryButton} p-3 rounded-lg shadow-md flex items-center justify-center`}
+              >
+                <ChevronsDown className="w-5 h-5" />
+              </button>
           </div>
         )}
       </div>
@@ -539,7 +534,7 @@ export default function ChatInterface() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className={`flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${classes.focusRing} focus:border-transparent bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
+              className={`flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${themeClasses.focusRing} focus:border-transparent bg-gray-50 dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
               required
             >
               <option value="">Pilih Kategori</option>
@@ -557,7 +552,7 @@ export default function ChatInterface() {
                   setUseLLM(v);
                   if (typeof window !== 'undefined') localStorage.setItem('useLLM', v ? '1' : '0');
                 }}
-                className={`w-4 h-4 rounded ${classes.checkboxColor}`}
+                className={`w-4 h-4 rounded ${themeClasses.checkboxColor}`}
               />
               <span className="text-sm text-gray-700 dark:text-slate-200 font-medium">Use LLM</span>
             </label>
@@ -569,13 +564,13 @@ export default function ChatInterface() {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ketik pertanyaan Anda di sini..."
-              className={`flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${classes.focusRing} focus:border-transparent dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
+              className={`flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${themeClasses.focusRing} focus:border-transparent dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
               required
             />
             <button
               type="submit"
               disabled={isLoading || !selectedCategory}
-              className={`${classes.primaryButton} px-6 py-3 rounded-xl font-medium focus:outline-none focus:ring-2 ${classes.focusRing} focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg`}
+              className={`${themeClasses.primaryButton} px-6 py-3 rounded-xl font-medium focus:outline-none focus:ring-2 ${themeClasses.focusRing} focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg`}
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -593,7 +588,7 @@ export default function ChatInterface() {
             <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-slate-100">Konfirmasi Reset</h3>
             <p className="text-sm text-gray-700 dark:text-slate-300 mb-4">Yakin ingin mereset percakapan? Semua pesan akan dihapus.</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-slate-700">Batal</button>
+              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 rounded bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-slate-100 border border-transparent dark:border-slate-700">Batal</button>
               <button onClick={() => {
                 setShowResetConfirm(false);
                 setConversationId(null);
@@ -621,11 +616,11 @@ export default function ChatInterface() {
               className="w-full px-4 py-2 rounded border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 text-gray-800 dark:text-slate-100 mb-4"
             />
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowNameEdit(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-slate-700">Batal</button>
+              <button onClick={() => setShowNameEdit(false)} className="px-4 py-2 rounded bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-slate-100 border border-transparent dark:border-slate-700">Batal</button>
               <button onClick={() => {
                 setShowNameEdit(false);
                 try { if (typeof window !== 'undefined') { if (userName && userName.trim()) localStorage.setItem('helpdesk_user_name', userName.trim()); else localStorage.removeItem('helpdesk_user_name'); } } catch(_) {}
-              }} className="px-4 py-2 rounded bg-blue-600 text-white">Simpan</button>
+              }} className={`${themeClasses.primaryButton} px-4 py-2 rounded`}>Simpan</button>
             </div>
           </div>
         </div>

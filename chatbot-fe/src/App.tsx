@@ -44,7 +44,7 @@ function HeaderControls() {
 
 function AppInner() {
   const [activeTab, setActiveTab] = useState<'chat' | 'admin'>('chat');
-  const { classes } = useTheme();
+  const { classes, dark, theme } = useTheme();
 
   return (
     <div className="h-screen min-h-0 relative flex flex-col">
@@ -65,9 +65,15 @@ function AppInner() {
                   <div className={`${classes.brandIconBg} p-3 rounded-2xl shadow-lg flex items-center justify-center shrink-0`}>
                     <Coins className="w-8 h-8 text-white translate-y-[4px]" />
                   </div>
-                  <h1 className={`text-3xl md:text-4xl font-bold tracking-tight leading-none font-display ${classes.titleTextGradient}`}>
-                    NAVA CARE
-                  </h1>
+                  {(() => {
+                    const isBlueDark = (dark && theme === 'blue');
+                    const titleClass = isBlueDark ? 'bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent' : classes.titleTextGradient;
+                    return (
+                      <h1 className={`text-3xl md:text-4xl font-bold tracking-tight leading-none font-display ${titleClass}`}>
+                        NAVA CARE
+                      </h1>
+                    );
+                  })()}
                 </div>
               </header>
 
