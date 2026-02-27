@@ -98,10 +98,25 @@ function expandFaqForMatching(faqArray) {
 
 // Normalize answer newlines to spaces (previous behavior)
 function formatAnswer(text) {
-  const raw = (text || '');
+  const raw = String(text || '');
+  // normalize newline variants and trim
   const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-  const plain = normalized.replace(/\n/g, ' ');
-  return { jawaban: plain };
+  // produce a plain single-line fallback (backwards-compatible)
+  const jawaban = normalized.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
+  // split into logical lines for chat-style rendering; keep bullet items as separate lines
+  const jawaban_lines = normalized
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean)
+    .flatMap(l => {
+      // if a line contains multiple list items separated by "- " or "-\t", split them
+      if (/\-\s+/.test(l) && !/^\-\s+/.test(l)) {
+        // keep numbered lists intact (e.g., "1. ...") but split dash bullets
+        return l.split(/\s*-\s+/).map(x => x.trim()).filter(Boolean);
+      }
+      return [l];
+    });
+  return { jawaban, jawaban_lines };
 }
 
 // Endpoint: tambah pertanyaan ke kategori
@@ -220,7 +235,12 @@ app.post('/faq/ask', async (req, res) => {
       .replace(/\binfo\b/g, 'informasi')
       .replace(/\bpenjuana\b/g, 'penjualan')
       .replace(/\bpenjualn\b/g, 'penjualan')
-      .replace(/\bgimana\b/g, 'bagaimana');
+      .replace(/\bgimana\b/g, 'bagaimana')
+      // normalize synonyms requested by user
+      .replace(/\b(untuk|gunanya|kegunaan|buat|fungsi|itu)\b/g, 'fungsi')
+      .replace(/\b(reprint|re-print|cetak ulang|mencetak ulang|re print)\b/g, 'reprint')
+      .replace(/\b(langkah-langkah|langkah langkah|langkah-langkah|langkah| gimana|bagaimana| step| step-step, step step| tahap| tahapan)\b/g, 'cara')
+      .replace(/\b(action|button|tombol|aksi|)\b/g, 'tombol');
     const normalizeFull = s => canonicalize(normalizeSpaces(stripPunct(toLower(s))));
 
     // token helpers
@@ -234,7 +254,14 @@ app.post('/faq/ask', async (req, res) => {
     if (!katObj) {
       const useLlmCat = decideUseLlm(req);
       if (useLlmCat) {
-        try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-no-category', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban.' }); }
+        try {
+          const prompt = buildOllamaPrompt(pertanyaan, []);
+          const llmOutput = await generateWithOllama(prompt);
+          const formatted = formatAnswer(llmOutput);
+          return res.json({ mode: 'llm-no-category', pertanyaan, score: 0, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
+        } catch (e) {
+          return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
+        }
       }
       return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
     }
@@ -247,12 +274,12 @@ app.post('/faq/ask', async (req, res) => {
       const wantsInfoEarly = (allTokensEarly.includes('lihat') || allTokensEarly.includes('informasi') || allTokensEarly.includes('ditampilkan') || allTokensEarly.includes('liat') || allTokensEarly.includes('diliat') || allTokensEarly.includes('dilihat') || (allTokensEarly.includes('apa') && allTokensEarly.includes('saja')));
       if (wantsInfoEarly && qTokensEarly.length) {
         const preferredEarly = expandedFaq.find(c => { const qn = normalizeFull(c.qText); if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false; return qTokensEarly.every(tok => qn.includes(tok)); });
-        if (preferredEarly) { const formattedPref = formatAnswer(preferredEarly.item.jawaban); return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, mode: 'rule-early' }); }
+        if (preferredEarly) { const formattedPref = formatAnswer(preferredEarly.item.jawaban); return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, jawaban_lines: formattedPref.jawaban_lines, mode: 'rule-early' }); }
       }
 
       const normQ = normalizeFull(pertanyaan);
       const exact = expandedFaq.find(c => normalizeFull(c.qText) === normQ);
-      if (exact) { const formatted = formatAnswer(exact.item.jawaban); return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, mode: 'exact' }); }
+      if (exact) { const formatted = formatAnswer(exact.item.jawaban); return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'exact' }); }
 
       try {
         const userTokens = tokenize(pertanyaan);
@@ -269,7 +296,7 @@ app.post('/faq/ask', async (req, res) => {
           }
           // relaxed token threshold so near-matches are accepted
           const thresholdTok = isSingleAcronym ? 1.0 : 0.6;
-          if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, mode: 'token-match' }); }
+          if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'token-match' }); }
         }
       } catch (_) {}
 
@@ -279,7 +306,7 @@ app.post('/faq/ask', async (req, res) => {
         const best = candidates[match.bestMatchIndex];
         // relaxed fuzzy threshold to accept more near-matches
         const FUZZY_THRESHOLD = 0.45;
-        if (match.bestMatch.rating >= FUZZY_THRESHOLD) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, mode: 'local-fuzzy' }); }
+        if (match.bestMatch.rating >= FUZZY_THRESHOLD) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'local-fuzzy' }); }
         // log near-miss fuzzy attempts for tuning
         if (match.bestMatch.rating > 0.3) {
           try { logFaqMismatch({ type: 'fuzzy-nearmiss', kategori, question: pertanyaan, bestRating: match.bestMatch.rating, candidateQuestion: best && best.item ? best.item.pertanyaan : null }); } catch(_) {}
@@ -302,7 +329,12 @@ app.post('/faq/ask', async (req, res) => {
       try { logFaqMismatch({ type: 'semantic-empty', kategori, question: pertanyaan }); } catch(_) {}
       const useLlm = decideUseLlm(req);
       if (useLlm) {
-        try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' }); }
+        try {
+          const prompt = buildOllamaPrompt(pertanyaan, []);
+          const llmOutput = await generateWithOllama(prompt);
+          const formatted = formatAnswer(llmOutput);
+          return res.json({ mode: 'llm-empty', pertanyaan, score: 0, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
+        } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' }); }
       }
       return res.status(404).json({ error: 'Maaf, belum ada jawaban. Silakan perjelas pertanyaan atau pilih kategori yang tersedia.' });
     }
@@ -338,13 +370,24 @@ app.post('/faq/ask', async (req, res) => {
     const formatted = formatAnswer(best.item.jawaban);
     const useLlm = decideUseLlm(req);
     if (useLlm) {
-      try { const ctxTop = scored.slice(0,5).map(s => ({ payload: { pertanyaan: s.item.pertanyaan, jawaban: s.item.jawaban } })); const prompt = buildOllamaPrompt(pertanyaan, ctxTop); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: llmAnswer }); } catch (e) { return res.json({ mode: 'fallback', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, llmError: e && e.message ? e.message : 'LLM gagal' }); }
+      try {
+        const ctxTop = scored.slice(0,5).map(s => ({ payload: { pertanyaan: s.item.pertanyaan, jawaban: s.item.jawaban } }));
+        const prompt = buildOllamaPrompt(pertanyaan, ctxTop);
+        const llmOutput = await generateWithOllama(prompt);
+        const formattedLlm = formatAnswer(llmOutput);
+        return res.json({ mode: 'llm', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formattedLlm.jawaban, jawaban_lines: formattedLlm.jawaban_lines });
+      } catch (e) { return res.json({ mode: 'fallback', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, llmError: e && e.message ? e.message : 'LLM gagal' }); }
     }
-    res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban });
+    res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
   } catch (err) {
     const useLlmAny = decideUseLlm(req);
     if (useLlmAny) {
-      try { const prompt = buildOllamaPrompt(pertanyaan, []); const llmOutput = await generateWithOllama(prompt); const llmAnswer = formatAnswer(llmOutput).jawaban; return res.json({ mode: 'llm-catch', pertanyaan, score: 0, jawaban: llmAnswer }); } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban.' }); }
+      try {
+        const prompt = buildOllamaPrompt(pertanyaan, []);
+        const llmOutput = await generateWithOllama(prompt);
+        const formatted = formatAnswer(llmOutput);
+        return res.json({ mode: 'llm-catch', pertanyaan, score: 0, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
+      } catch (e) { return res.status(404).json({ error: 'Maaf, belum ada jawaban.' }); }
     }
     return res.status(404).json({ error: 'Maaf, belum ada jawaban.' });
   }

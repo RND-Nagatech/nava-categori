@@ -3,3 +3,14 @@
 [2026-02-25T07:19:32.648Z] {"type":"low-composite","kategori":"BARANG","question":"ada tukar","topCandidates":[{"q":"Apakah ada fitur ekspor pada Data Tambah Barang?","composite":0.4254384915942029},{"q":"Apakah ketika menghancur barang ada otorisasi?","composite":0.41820599331677016},{"q":"Ada berapa cara menambahkan data barang?","composite":0.08714285714285715}]}
 [2026-02-25T07:28:11.373Z] {"type":"low-composite","kategori":"BARANG","question":"hallo","topCandidates":[{"q":"Apa arti dari kolom Selisih di Laporan Timbang Baki?","composite":0.3189226530434782},{"q":"Bagaimana cara upload gambar barang?","composite":0.31522974623529415},{"q":"Barang saya ada yang hilang, bagaimana solusinya?","composite":0.30681084}]}
 [2026-02-25T08:10:56.678Z] {"type":"fuzzy-nearmiss","kategori":"PENJUALAN","question":"bisa tukar tambah gak?","bestRating":0.4444444444444444,"candidateQuestion":"Apakah foto barang dapat diambil atau ditambahkan saat proses penjualan?"}
+[2026-02-25T08:53:56.134Z] {"type":"low-composite","kategori":"HARDWARE","question":"hallo","topCandidates":[{"q":"Kamera error tidak bisa foto barang","composite":0.269864544}]}
+[2026-02-25T08:54:28.150Z] {"type":"low-composite","kategori":"HARDWARE","question":"hallo","topCandidates":[{"q":"Kamera error tidak bisa foto barang","composite":0.269864544}]}
+[2026-02-25T10:18:46.354Z] {"type":"low-composite","kategori":"HARDWARE","question":"halo","topCandidates":[{"q":"Kamera error tidak bisa foto barang","composite":0.239338872}]}
+[2026-02-26T02:16:17.049Z] {"type":"fuzzy-nearmiss","kategori":"PEMBELIAN","question":"kalau reprint penjualan?","bestRating":0.375,"candidateQuestion":"Bagaimana cara mencetak ulang nota pembelian?"}
+[2026-02-26T02:16:17.405Z] {"type":"semantic-empty","kategori":"PEMBELIAN","question":"kalau reprint penjualan?"}
+[2026-02-26T02:25:29.504Z] {"type":"fuzzy-nearmiss","kategori":"KEUANGAN","question":"uang saya ada selisih","bestRating":0.3888888888888889,"candidateQuestion":"Apa fungsi Menu Uang Kas?"}
+[2026-02-26T02:25:30.091Z] {"type":"semantic-empty","kategori":"KEUANGAN","question":"uang saya ada selisih"}
+[2026-02-26T02:28:19.306Z] {"type":"fuzzy-nearmiss","kategori":"PEMBELIAN","question":"otorisasi, bukan validasi","bestRating":0.44,"candidateQuestion":"Bagaimana cara melakukan Validasi Pembelian?"}
+[2026-02-26T02:28:19.517Z] {"type":"semantic-empty","kategori":"PEMBELIAN","question":"otorisasi, bukan validasi"}
+[2026-02-27T02:41:10.721Z] {"type":"fuzzy-nearmiss","kategori":"VALIDASI","question":"gimana cara hubungi helpdesk","bestRating":0.3333333333333333,"candidateQuestion":"Bagaimana cara memvalidasi Jual Beli?"}
+[2026-02-27T02:41:48.224Z] {"type":"fuzzy-nearmiss","kategori":"LAYANAN SUPPORT","question":"bukanya jam berapa?","bestRating":0.32653061224489793,"candidateQuestion":"Kapan jam operasional Helpdesk tersedia?"}

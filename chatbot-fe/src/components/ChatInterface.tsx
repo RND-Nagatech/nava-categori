@@ -28,7 +28,13 @@ export default function ChatInterface() {
         const raw = localStorage.getItem('chat_messages');
         if (raw) {
           const parsed = JSON.parse(raw);
-          return parsed.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }));
+          // normalize any escaped newlines stored in cached messages so they render as real line breaks
+          return parsed.map((m: any) => {
+            const txt = typeof m.text === 'string'
+              ? String(m.text).replace(/\\r\\n/g, '\\n').replace(/\\n/g, '\\n').replace(/\\r/g, '\\n')
+              : m.text;
+            return { ...m, text: txt, timestamp: new Date(m.timestamp) };
+          });
         }
       } catch (_) { /* ignore parse errors */ }
     }
@@ -197,6 +203,22 @@ export default function ChatInterface() {
     setIsLoading(true);
     console.debug('[ChatInterface] handleSubmit', { conversationId, selectedCategory, userMessageId: userMessage.id });
 
+    // helper to push bot response which may contain jawaban_lines
+    const pushBotResponse = (resp: any) => {
+      try {
+        if (resp && Array.isArray(resp.jawaban_lines) && resp.jawaban_lines.length) {
+          // join lines into a single text with newlines so it renders in one bubble
+          const joined = resp.jawaban_lines.join('\n');
+          setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text: joined, timestamp: new Date() }]);
+        } else {
+          const text = (resp && (resp.jawaban || resp.answer)) ? String(resp.jawaban || resp.answer) : 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain';
+          setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text, timestamp: new Date() }]);
+        }
+      } catch (e) {
+        setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text: 'Maaf, belum ada jawaban.', timestamp: new Date() }]);
+      }
+    };
+
     if (conversationId) {
       const userIdToSend = userName || undefined;
       // If user hasn't set a name yet, prompt them and do NOT forward to helpdesk,
@@ -207,13 +229,7 @@ export default function ChatInterface() {
         // fallback to FAQ answer so user sees an immediate reply
         try {
           const resp = await askFaq({ kategori: selectedCategory, pertanyaan: userMessage.text, use_llm: useLLM });
-          const botMessage: Message = {
-            id: makeId(),
-            type: 'bot',
-            text: resp.jawaban || 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain',
-            timestamp: new Date(),
-          };
-          setMessages((prev) => [...prev, botMessage]);
+          await pushBotResponse(resp);
           const ans = (resp && resp.jawaban) ? String(resp.jawaban).trim().toLowerCase() : '';
           const isNoAnswer = !ans || (ans.includes('maaf') && ans.includes('belum ada jawaban'));
           setShowHelpdeskButton(Boolean(isNoAnswer));
@@ -249,13 +265,7 @@ export default function ChatInterface() {
     try {
       const resp = await askFaq({ kategori: selectedCategory, pertanyaan: userMessage.text, use_llm: useLLM });
       console.debug('[ChatInterface] askFaq response', resp);
-      const botMessage: Message = {
-        id: makeId(),
-        type: 'bot',
-        text: resp.jawaban || 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
+      await pushBotResponse(resp);
       const ans = (resp && resp.jawaban) ? String(resp.jawaban).trim().toLowerCase() : '';
       const isNoAnswer = !ans || ans.includes('maaf') && ans.includes('belum ada jawaban');
       setShowHelpdeskButton(Boolean(isNoAnswer));
@@ -500,7 +510,7 @@ export default function ChatInterface() {
               }`}
               style={message.type === 'user' ? { position: 'relative' } : {}}
             >
-              <p className="text-sm leading-relaxed">{message.text}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
               <div className="flex items-center gap-1">
                 <div className="flex items-center justify-end mt-1 gap-1">
                   <p

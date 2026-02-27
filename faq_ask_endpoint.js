@@ -19,7 +19,8 @@ function formatAnswer(text) {
   const raw = (text || '');
   const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
   const plain = normalized.replace(/\n/g, ' ');
-  return { jawaban: plain };
+  const jawaban_lines = normalized.split('\n').map(l => l.trim()).filter(Boolean);
+  return { jawaban: plain, jawaban_lines };
 }
 
 // Fungsi fuzzy match sederhana
@@ -84,7 +85,7 @@ app.post('/faq/ask', (req, res) => {
   }
   // Kembalikan pertanyaan, skor, dan jawaban yang sudah dinormalisasi
   const formatted = formatAnswer(match.jawaban);
-  res.json({ pertanyaan: match.pertanyaan, score: match.score, jawaban: formatted.jawaban });
+  res.json({ pertanyaan: match.pertanyaan, score: match.score, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
 });
 
 module.exports = app;
