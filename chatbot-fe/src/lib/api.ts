@@ -59,12 +59,17 @@ export async function askFaq(payload: AskPayload): Promise<AskResponse> {
   return res.json();
 }
 
-export async function addFaq(payload: AddPayload): Promise<{ success: boolean; message: string }>{
-  const res = await fetch(`${API_BASE}/faq/add`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+export async function addFaq(payload: AddPayload | FormData): Promise<{ success: boolean; message: string }>{
+  let res: Response;
+  if (typeof FormData !== 'undefined' && payload instanceof FormData) {
+    res = await fetch(`${API_BASE}/faq/add`, { method: 'POST', body: payload });
+  } else {
+    res = await fetch(`${API_BASE}/faq/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(data.error || `Gagal menambah FAQ (${res.status})`);

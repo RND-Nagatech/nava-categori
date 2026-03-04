@@ -16,6 +16,8 @@ export default function AdminPanel() {
     pertanyaan: '',
     jawaban: '',
   });
+  const [files, setFiles] = useState<File[]>([]);
+  const [videoLinks, setVideoLinks] = useState('');
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -72,13 +74,30 @@ export default function AdminPanel() {
     setErrorMsg(null);
     setIsLoading(true);
     try {
-      await addFaq({
-        kategori: formData.kategori,
-        pertanyaan: formData.pertanyaan,
-        jawaban: formData.jawaban,
-      });
+      // if files attached, send as FormData
+      if (files && files.length) {
+        const fd = new FormData();
+        fd.append('kategori', formData.kategori);
+        fd.append('pertanyaan', formData.pertanyaan);
+        fd.append('jawaban', formData.jawaban);
+        // variasi_pertanyaan empty for now
+        fd.append('variasi_pertanyaan', JSON.stringify([]));
+        for (const f of files) fd.append('videos', f as unknown as Blob, (f as File).name);
+        // Also include any YouTube links the admin entered so both files and links are saved
+        const links = videoLinks.split('\n').map(s => s.trim()).filter(Boolean);
+        for (const l of links) fd.append('videos', l);
+        await addFaq(fd);
+      } else {
+        // prepare videos array from videoLinks textarea (one URL per line)
+        const links = videoLinks.split('\n').map(s => s.trim()).filter(Boolean);
+        const payload: any = { kategori: formData.kategori, pertanyaan: formData.pertanyaan, jawaban: formData.jawaban };
+        if (links.length) payload.videos = links;
+        await addFaq(payload);
+      }
       setShowSuccess(true);
       setFormData({ kategori: '', pertanyaan: '', jawaban: '' });
+      setFiles([]);
+      setVideoLinks('');
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (e: any) {
       setErrorMsg(e?.message || 'Gagal menambah FAQ');
@@ -164,7 +183,8 @@ export default function AdminPanel() {
           </div>
         </form>
       ) : (
-        <form onSubmit={handleSubmit} className="p-0 space-y-5">
+        <div className="flex-1 overflow-auto p-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
           <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2 mt-3">
             Kategori <span className="text-red-500">*</span>
@@ -213,6 +233,27 @@ export default function AdminPanel() {
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">
+            Attach Video (opsional) — YouTube link per baris
+          </label>
+          <textarea
+            placeholder="https://youtu.be/abc123\nhttps://www.youtube.com/watch?v=xyz789"
+            value={videoLinks}
+            onChange={(e) => setVideoLinks(e.target.value)}
+            rows={3}
+            className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 ${classes.focusRing} focus:border-transparent resize-none dark:bg-slate-900/50 dark:border-slate-700 dark:text-slate-100`}
+          />
+          <div className="mt-2 text-sm text-gray-700 dark:text-slate-200">Atau unggah file video (legacy):</div>
+          <div className="mt-1 text-xs text-gray-500">Catatan: jika Anda mengunggah file dan juga memasukkan link, keduanya akan disimpan.</div>
+          <input type="file" accept="video/*" multiple onChange={(e) => setFiles(e.target.files ? Array.from(e.target.files) : [])} />
+          {files.length > 0 && (
+            <div className="mt-2 text-sm text-gray-700 dark:text-slate-200">
+              {files.map((f) => <div key={f.name}>{f.name} ({Math.round(f.size/1024)} KB)</div>)}
+            </div>
+          )}
+        </div>
+
         {/* Keywords di-hide karena belum dipakai di backend */}
 
         {/* Payload preview di-hide sementara untuk menyederhanakan UI */}
@@ -258,7 +299,8 @@ export default function AdminPanel() {
             </div>
           </div>
         )}
-      </form>
+          </form>
+        </div>
       )}
     </div>
   );

@@ -17,6 +17,8 @@ if (!bcrypt) {
 const app = express();
 app.use(bodyParser.json());
 
+const { spawn } = require('child_process');
+
 // Basic CORS for local dev (Vite @ http://localhost:5173)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -25,6 +27,56 @@ app.use((req, res, next) => {
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
+
+// serve uploaded assets (videos/thumbnails)
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
+
+// Multer for handling file uploads (admin video attachments)
+const multer = require('multer');
+const UPLOAD_DIR = path.join(__dirname, 'public', 'assets', 'videos');
+try { fs.mkdirSync(UPLOAD_DIR, { recursive: true }); } catch (_) {}
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => {
+    const safe = Date.now() + '-' + file.originalname.replace(/\s+/g, '-');
+    cb(null, safe);
+  }
+});
+const upload = multer({ storage, limits: { fileSize: 200 * 1024 * 1024 } }); // 200MB limit
+
+// Try to transcode uploaded videos to MP4 (H.264 + AAC) for browser playback and generate a thumbnail
+async function transcodeToMp4(srcPath) {
+  return new Promise((resolve) => {
+    try {
+      const ext = path.extname(srcPath);
+      const base = path.basename(srcPath, ext);
+      const outMp4 = path.join(UPLOAD_DIR, `${base}.mp4`);
+      const thumbPath = path.join(UPLOAD_DIR, `${base}.jpg`);
+
+      // ffmpeg args for mp4
+      const ffArgs = ['-y', '-i', srcPath, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', outMp4];
+      const p = spawn('ffmpeg', ffArgs, { stdio: 'ignore' });
+      p.on('close', (code) => {
+        if (code === 0 && fs.existsSync(outMp4)) {
+          // generate thumbnail (attempt) at 1s
+          const thumbArgs = ['-y', '-i', outMp4, '-ss', '00:00:01', '-vframes', '1', '-vf', 'scale=320:-1', thumbPath];
+          const t = spawn('ffmpeg', thumbArgs, { stdio: 'ignore' });
+          t.on('close', () => {
+            const relMp4 = `/assets/videos/${path.basename(outMp4)}`;
+            const relThumb = fs.existsSync(thumbPath) ? `/assets/videos/${path.basename(thumbPath)}` : null;
+            return resolve({ mp4: relMp4, thumbnail: relThumb });
+          });
+          t.on('error', () => resolve({ mp4: `/assets/videos/${path.basename(outMp4)}`, thumbnail: null }));
+        } else {
+          return resolve(null);
+        }
+      });
+      p.on('error', () => resolve(null));
+    } catch (e) {
+      return resolve(null);
+    }
+  });
+}
 
 const DATA_PATH = path.join(__dirname, 'data', 'faq.json');
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
@@ -96,6 +148,18 @@ function expandFaqForMatching(faqArray) {
   return expanded;
 }
 
+// Extract YouTube ID from various URL formats
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+  if (m && m[1]) return m[1];
+  // try query param v
+  try {
+    const u = new URL(url, 'http://localhost');
+    return u.searchParams.get('v');
+  } catch (_) { return null; }
+}
+
 // Normalize answer newlines to spaces (previous behavior)
 function formatAnswer(text) {
   const raw = String(text || '');
@@ -119,10 +183,13 @@ function formatAnswer(text) {
   return { jawaban, jawaban_lines };
 }
 
-// Endpoint: tambah pertanyaan ke kategori
-app.post('/faq/add', (req, res) => {
+// Endpoint: tambah pertanyaan ke kategori (mendukung upload video oleh admin)
+app.post('/faq/add', upload.array('videos', 5), async (req, res) => {
   try {
-    const { kategori, pertanyaan, jawaban } = req.body;
+    // Support both multipart/form-data (with files) and application/json
+    const isMultipart = (req.files && req.files.length > 0) || (req.is && req.is('multipart/form-data'));
+    const body = isMultipart ? req.body : req.body;
+    const { kategori, pertanyaan, jawaban } = body;
     const katTrim = (kategori || '').trim();
     const qTrim = (pertanyaan || '').trim();
     const aTrim = (jawaban || '').trim();
@@ -135,12 +202,137 @@ app.post('/faq/add', (req, res) => {
     let data = loadFaq();
     let kat = data.find(k => (k.kategori || '').toLowerCase() === katTrim.toLowerCase());
     if (!kat) {
-      return res.status(404).json({ error: 'Kategori tidak ditemukan', kategori: katTrim });
+      // create new category if not found
+      kat = { kategori: katTrim, faq: [] };
+      data.push(kat);
     }
     if (!Array.isArray(kat.faq)) kat.faq = [];
-    kat.faq.push({ pertanyaan: qTrim, jawaban: aTrim });
+
+    // Build video metadata from uploaded files (if any) OR from provided video URLs (e.g., YouTube links)
+    const files = req.files || [];
+    let videos = [];
+
+    // If frontend provided body.videos (JSON array or newline-separated), parse them first
+    const providedVideosRaw = body.videos || body.video_links || body.videoLinks;
+    if (providedVideosRaw) {
+      let list = [];
+      if (Array.isArray(providedVideosRaw)) list = providedVideosRaw;
+      else if (typeof providedVideosRaw === 'string') {
+        try { list = JSON.parse(providedVideosRaw); } catch (_) { list = providedVideosRaw.split('\n').map(s => s.trim()).filter(Boolean); }
+      }
+      for (const link of list) {
+        const url = (link || '').trim();
+        if (!url) continue;
+        const ytId = extractYouTubeId(url);
+        if (ytId) {
+          videos.push({ title: null, url, embed: `https://www.youtube.com/embed/${ytId}`, source: 'youtube', thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, mime: 'video/youtube' });
+        } else {
+          // generic external link
+          videos.push({ title: null, url, source: 'external', thumbnail: null, mime: null });
+        }
+      }
+    }
+
+    // Next process any uploaded files (legacy behavior)
+    for (const f of files) {
+      const origRel = `/assets/videos/${path.basename(f.filename)}`;
+      const meta = {
+        title: f.originalname,
+        url: origRel,
+        original_url: origRel,
+        source: 'local',
+        thumbnail: null,
+        size: f.size,
+        mime: f.mimetype,
+      };
+      try {
+        const srcPath = path.join(UPLOAD_DIR, f.filename);
+        const trans = await transcodeToMp4(srcPath);
+        if (trans && trans.mp4) {
+          meta.original_url = origRel;
+          meta.url = trans.mp4; // prefer mp4 for playback
+          if (trans.thumbnail) meta.thumbnail = trans.thumbnail;
+          // update mime for playback
+          meta.mime = 'video/mp4';
+        }
+      } catch (_) {}
+      videos.push(meta);
+    }
+
+    // If frontend provided videos but our parsing didn't produce structured entries,
+    // fall back to storing raw links so they are not lost. Also handle some edge
+    // cases where the payload may have been mangled by middleware.
+    if ((providedVideosRaw) && videos.length === 0) {
+      try {
+        let list = [];
+        if (Array.isArray(providedVideosRaw)) list = providedVideosRaw;
+        else if (typeof providedVideosRaw === 'string') {
+          try { list = JSON.parse(providedVideosRaw); } catch (_) { list = providedVideosRaw.split('\n').map(s => s.trim()).filter(Boolean); }
+        } else if (typeof providedVideosRaw === 'object' && providedVideosRaw !== null) {
+          // if it's an object, try to extract array-like values
+          for (const k of Object.keys(providedVideosRaw)) {
+            const v = providedVideosRaw[k];
+            if (Array.isArray(v)) list.push(...v);
+            else if (typeof v === 'string') list.push(v);
+          }
+        }
+        for (const link of list) {
+          const url = (link || '').trim();
+          if (!url) continue;
+          const ytId = extractYouTubeId(url);
+          if (ytId) videos.push({ title: null, url, embed: `https://www.youtube.com/embed/${ytId}`, source: 'youtube', thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, mime: 'video/youtube' });
+          else videos.push({ title: null, url, source: 'external' });
+        }
+      } catch (_) {}
+    }
+
+    // Final fallback: scan the entire request body for any YouTube/external links (catch-all)
+    if (videos.length === 0) {
+      try {
+        const collected = new Set();
+        function scanObj(o) {
+          if (!o) return;
+          if (typeof o === 'string') {
+            const s = o.trim();
+            if (/https?:\/\/.+/.test(s)) collected.add(s);
+            return;
+          }
+          if (Array.isArray(o)) {
+            for (const it of o) scanObj(it);
+            return;
+          }
+          if (typeof o === 'object') {
+            for (const k of Object.keys(o)) scanObj(o[k]);
+          }
+        }
+        scanObj(body);
+        for (const url of Array.from(collected)) {
+          const ytId = extractYouTubeId(url);
+          if (ytId) videos.push({ title: null, url, embed: `https://www.youtube.com/embed/${ytId}`, source: 'youtube', thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, mime: 'video/youtube' });
+          else videos.push({ title: null, url, source: 'external' });
+        }
+      } catch (_) {}
+    }
+
+    // Debug: log what we received so we can trace why videos might be missing
+    try { console.log('[faq/add] headers:', req.headers['content-type']); } catch (_) {}
+    try { console.log('[faq/add] providedVideosRaw type:', typeof providedVideosRaw, 'value:', providedVideosRaw); } catch (_) {}
+    try { console.log('[faq/add] parsed videos count:', videos.length); } catch (_) {}
+
+    const newFaq = { pertanyaan: qTrim, jawaban: aTrim };
+    // Ensure that if the client provided video links in any recognized field,
+    // they are persisted even if earlier parsing failed to build structured metadata.
+    if (videos.length) {
+      newFaq.videos = videos;
+    } else if (providedVideosRaw) {
+      // last-resort: persist raw links so they are not lost
+      const list = Array.isArray(providedVideosRaw) ? providedVideosRaw : (typeof providedVideosRaw === 'string' ? providedVideosRaw.split('\n').map(s => s.trim()).filter(Boolean) : []);
+      if (list.length) newFaq.videos = list.map(u => ({ title: null, url: String(u).trim(), source: 'external' }));
+    }
+    kat.faq.push(newFaq);
+
     try { saveFaq(data); } catch (e) { return res.status(500).json({ error: 'Gagal menyimpan perubahan ke file', file: DATA_PATH, detail: e.message }); }
-    res.json({ success: true, message: 'FAQ berhasil ditambahkan', file: DATA_PATH, totalFaq: kat.faq.length });
+    res.json({ success: true, message: 'FAQ berhasil ditambahkan', file: DATA_PATH, totalFaq: kat.faq.length, item: newFaq });
   } catch (err) {
     res.status(500).json({ error: 'Terjadi kesalahan saat menambah FAQ', detail: err && err.message ? err.message : String(err) });
   }
@@ -274,12 +466,12 @@ app.post('/faq/ask', async (req, res) => {
       const wantsInfoEarly = (allTokensEarly.includes('lihat') || allTokensEarly.includes('informasi') || allTokensEarly.includes('ditampilkan') || allTokensEarly.includes('liat') || allTokensEarly.includes('diliat') || allTokensEarly.includes('dilihat') || (allTokensEarly.includes('apa') && allTokensEarly.includes('saja')));
       if (wantsInfoEarly && qTokensEarly.length) {
         const preferredEarly = expandedFaq.find(c => { const qn = normalizeFull(c.qText); if (!(qn.includes('informasi') || qn.includes('ditampilkan'))) return false; return qTokensEarly.every(tok => qn.includes(tok)); });
-        if (preferredEarly) { const formattedPref = formatAnswer(preferredEarly.item.jawaban); return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, jawaban_lines: formattedPref.jawaban_lines, mode: 'rule-early' }); }
+        if (preferredEarly) { const formattedPref = formatAnswer(preferredEarly.item.jawaban); return res.json({ pertanyaan: preferredEarly.item.pertanyaan, score: 0.99, jawaban: formattedPref.jawaban, jawaban_lines: formattedPref.jawaban_lines, videos: preferredEarly.item.videos || [], mode: 'rule-early' }); }
       }
 
       const normQ = normalizeFull(pertanyaan);
       const exact = expandedFaq.find(c => normalizeFull(c.qText) === normQ);
-      if (exact) { const formatted = formatAnswer(exact.item.jawaban); return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'exact' }); }
+      if (exact) { const formatted = formatAnswer(exact.item.jawaban); return res.json({ pertanyaan: exact.item.pertanyaan, score: 1, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, videos: exact.item.videos || [], mode: 'exact' }); }
 
       try {
         const userTokens = tokenize(pertanyaan);
@@ -296,7 +488,7 @@ app.post('/faq/ask', async (req, res) => {
           }
           // relaxed token threshold so near-matches are accepted
           const thresholdTok = isSingleAcronym ? 1.0 : 0.6;
-          if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'token-match' }); }
+          if (best && bestScore >= thresholdTok) { const formatted = formatAnswer(best.jawaban); return res.json({ pertanyaan: best.pertanyaan, score: bestScore, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, videos: best.videos || [], mode: 'token-match' }); }
         }
       } catch (_) {}
 
@@ -306,7 +498,7 @@ app.post('/faq/ask', async (req, res) => {
         const best = candidates[match.bestMatchIndex];
         // relaxed fuzzy threshold to accept more near-matches
         const FUZZY_THRESHOLD = 0.45;
-        if (match.bestMatch.rating >= FUZZY_THRESHOLD) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, mode: 'local-fuzzy' }); }
+        if (match.bestMatch.rating >= FUZZY_THRESHOLD) { const formatted = formatAnswer(best.item.jawaban); return res.json({ pertanyaan: best.item.pertanyaan, score: match.bestMatch.rating, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, videos: best.item.videos || [], mode: 'local-fuzzy' }); }
         // log near-miss fuzzy attempts for tuning
         if (match.bestMatch.rating > 0.3) {
           try { logFaqMismatch({ type: 'fuzzy-nearmiss', kategori, question: pertanyaan, bestRating: match.bestMatch.rating, candidateQuestion: best && best.item ? best.item.pertanyaan : null }); } catch(_) {}
@@ -375,10 +567,10 @@ app.post('/faq/ask', async (req, res) => {
         const prompt = buildOllamaPrompt(pertanyaan, ctxTop);
         const llmOutput = await generateWithOllama(prompt);
         const formattedLlm = formatAnswer(llmOutput);
-        return res.json({ mode: 'llm', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formattedLlm.jawaban, jawaban_lines: formattedLlm.jawaban_lines });
-      } catch (e) { return res.json({ mode: 'fallback', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, llmError: e && e.message ? e.message : 'LLM gagal' }); }
+        return res.json({ mode: 'llm', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formattedLlm.jawaban, jawaban_lines: formattedLlm.jawaban_lines, videos: best.item.videos || [] });
+      } catch (e) { return res.json({ mode: 'fallback', pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, videos: best.item.videos || [], llmError: e && e.message ? e.message : 'LLM gagal' }); }
     }
-    res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines });
+    res.json({ pertanyaan: best.item.pertanyaan, score: best.qdrantScore || best.sim, jawaban: formatted.jawaban, jawaban_lines: formatted.jawaban_lines, videos: best.item.videos || [] });
   } catch (err) {
     const useLlmAny = decideUseLlm(req);
     if (useLlmAny) {
@@ -496,3 +688,50 @@ app.get('/faq/config', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => { console.log(`FAQ backend listening on port ${PORT}`); });
+
+// Admin utility: transcode existing uploaded videos referenced in data/faq.json
+// WARNING: this may be slow and requires ffmpeg installed. Restricted endpoint for local admin use.
+app.post('/admin/transcode-videos', async (req, res) => {
+  try {
+    const data = loadFaq();
+    const allFaqs = data.flatMap(k => (Array.isArray(k.faq) ? k.faq : []));
+    const toProcess = [];
+    for (const item of allFaqs) {
+      if (!item.videos || !Array.isArray(item.videos)) continue;
+      for (const v of item.videos) {
+        // if mime is not mp4 or url ends with known non-mp4 extension, schedule
+        const url = v.url || v.original_url || '';
+        if (!url) continue;
+        const ext = path.extname(url).toLowerCase();
+        if (ext !== '.mp4') {
+          const localPath = path.join(__dirname, 'public', url.replace('/assets/', 'assets/'));
+          // Only process local files
+          if (localPath.indexOf(UPLOAD_DIR) === 0 && fs.existsSync(localPath)) {
+            toProcess.push({ item, video: v, localPath });
+          }
+        }
+      }
+    }
+    const results = [];
+    for (const t of toProcess) {
+      try {
+        const trans = await transcodeToMp4(t.localPath);
+        if (trans && trans.mp4) {
+          t.video.original_url = t.video.url;
+          t.video.url = trans.mp4;
+          if (trans.thumbnail) t.video.thumbnail = trans.thumbnail;
+          t.video.mime = 'video/mp4';
+          results.push({ ok: true, from: t.localPath, mp4: trans.mp4 });
+        } else {
+          results.push({ ok: false, from: t.localPath });
+        }
+      } catch (e) {
+        results.push({ ok: false, from: t.localPath, err: String(e) });
+      }
+    }
+    try { saveFaq(data); } catch (_) {}
+    res.json({ success: true, processed: results.length, results });
+  } catch (e) {
+    res.status(500).json({ error: 'Gagal melakukan transcode', detail: String(e) });
+  }
+});

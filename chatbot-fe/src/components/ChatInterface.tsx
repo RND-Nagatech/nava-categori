@@ -10,6 +10,7 @@ export type Message = {
   text: string;
   timestamp: Date;
   is_read?: boolean;
+  videos?: Array<{ title?: string; url: string; thumbnail?: string | null; mime?: string; source?: string; size?: number }>;
 };
 
 function makeId() {
@@ -22,7 +23,8 @@ export default function ChatInterface() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryContainerRef = useRef<HTMLDivElement | null>(null);
   const [dropdownUp, setDropdownUp] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(() => {
+  // initialize messages in a separate function to avoid TSX generic parsing ambiguity
+  const initMessages = (): Message[] => {
     if (typeof window !== 'undefined') {
       try {
         const raw = localStorage.getItem('chat_messages');
@@ -46,9 +48,11 @@ export default function ChatInterface() {
         timestamp: new Date(),
       },
     ];
-  });
-  const [question, setQuestion] = useState('');
+  };
+
+  const [messages, setMessages] = useState<Message[]>(initMessages);
   const [isLoading, setIsLoading] = useState(false);
+  const [question, setQuestion] = useState('');
   const [showHelpdeskButton, setShowHelpdeskButton] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
@@ -83,7 +87,22 @@ export default function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
+  const [videoErrorMap, setVideoErrorMap] = useState<Record<string, boolean>>({});
   const pollingRef = useRef<any>(null);
+  const [modalVideo, setModalVideo] = useState<any | null>(null);
+
+  const openVideoModal = (v: any) => {
+    try { setModalVideo(v); } catch (_) { setModalVideo(v); }
+  };
+  const closeVideoModal = () => setModalVideo(null);
+
+  // close modal on Escape
+  useEffect(() => {
+    if (!modalVideo) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeVideoModal(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [modalVideo]);
   
   // Close dropdown on outside click and decide open direction
   useEffect(() => {
@@ -206,13 +225,24 @@ export default function ChatInterface() {
     // helper to push bot response which may contain jawaban_lines
     const pushBotResponse = (resp: any) => {
       try {
+        let pushedTextId: string | null = null;
         if (resp && Array.isArray(resp.jawaban_lines) && resp.jawaban_lines.length) {
           // join lines into a single text with newlines so it renders in one bubble
           const joined = resp.jawaban_lines.join('\n');
-          setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text: joined, timestamp: new Date() }]);
+          const msg = { id: makeId(), type: 'bot', text: joined, timestamp: new Date() } as Message;
+          setMessages((prev) => [...prev, msg]);
+          pushedTextId = msg.id;
         } else {
           const text = (resp && (resp.jawaban || resp.answer)) ? String(resp.jawaban || resp.answer) : 'Maaf, belum ada jawaban. Silakan ajukan pertanyaan lebih spesifik atau pilih kategori lain';
-          setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text, timestamp: new Date() }]);
+          const msg = { id: makeId(), type: 'bot', text, timestamp: new Date() } as Message;
+          setMessages((prev) => [...prev, msg]);
+          pushedTextId = msg.id;
+        }
+
+        // if there are videos attached, push a separate message containing video metadata
+        if (resp && Array.isArray(resp.videos) && resp.videos.length) {
+          const vmsg = { id: makeId(), type: 'bot', text: '', timestamp: new Date(), videos: resp.videos } as Message;
+          setMessages((prev) => [...prev, vmsg]);
         }
       } catch (e) {
         setMessages((prev) => [...prev, { id: makeId(), type: 'bot', text: 'Maaf, belum ada jawaban.', timestamp: new Date() }]);
@@ -451,9 +481,102 @@ export default function ChatInterface() {
   }, [messages]);
 
   const { classes: themeClasses } = useTheme();
+  // Detect backend origin (try common dev ports) so assets point at the correct server (3000/3001)
+  const [backendOrigin, setBackendOrigin] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let cancelled = false;
+    const host = window.location.hostname || 'localhost';
+    const proto = window.location.protocol || 'http:';
+    const candidates = [3000, 3001, 3002];
+
+    const probe = async () => {
+      for (const p of candidates) {
+        const url = `${proto}//${host}:${p}/faq/config`;
+        try {
+          const ctrl = new AbortController();
+          const timeout = setTimeout(() => ctrl.abort(), 1500);
+          const r = await fetch(url, { method: 'GET', signal: ctrl.signal });
+          clearTimeout(timeout);
+          if (!cancelled && r.ok) {
+            setBackendOrigin(`${proto}//${host}:${p}`);
+            return;
+          }
+        } catch (_) {
+          /* ignore and try next port */
+        }
+      }
+      // fallback to same origin
+      if (!cancelled) setBackendOrigin(window.location.origin);
+    };
+    probe();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Resolve an asset URL (like `/assets/videos/foo.mov`) to the backend absolute URL
+  const resolveAssetUrl = (rel: string) => {
+    try {
+      if (!rel) return rel;
+      if (rel.startsWith('http://') || rel.startsWith('https://')) return rel;
+      if (backendOrigin) return `${backendOrigin}${rel}`;
+      return `${window.location.origin}${rel}`;
+    } catch (_) { return rel; }
+  };
+
+  const extractYouTubeIdFromUrl = (url: string) => {
+    if (!url) return null;
+    const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+    if (m && m[1]) return m[1];
+    try { const u = new URL(url); return u.searchParams.get('v'); } catch (_) { return null; }
+  };
 
   return (
     <div className="h-full min-h-0 flex flex-col bg-transparent dark:bg-transparent">
+      {/* Video modal / lightbox */}
+      {modalVideo && (
+        <div onClick={closeVideoModal} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-3xl bg-black rounded-lg shadow-lg">
+            <button
+              onClick={closeVideoModal}
+              aria-label="Tutup video"
+              className="absolute -right-3 -top-3 z-50 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center p-0.5 shadow-sm hover:scale-105 transform transition focus:outline-none"
+            >
+              <svg className="w-3 h-3 text-white/95" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M6 6L18 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 18L18 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div className="w-full aspect-[16/9] bg-black flex items-center justify-center rounded-lg overflow-hidden">
+              {(() => {
+                const v = modalVideo as any;
+                const ytId = (v && (v as any).embed) ? (v as any).embed : null;
+                if (v.source === 'youtube' || (v.embed || extractYouTubeIdFromUrl(v.url))) {
+                  const embed = v.embed || `https://www.youtube.com/embed/${extractYouTubeIdFromUrl(v.url || '')}`;
+                  return (
+                    <iframe
+                      src={`${embed}${embed.indexOf('?') === -1 ? '?rel=0&autoplay=1' : '&autoplay=1'}`}
+                      title={v.title || 'YouTube video'}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  );
+                }
+                return (
+                  <video
+                    controls
+                    autoPlay
+                    src={resolveAssetUrl(v.url)}
+                    className="w-full h-full object-contain bg-black"
+                  />
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
       <div className={`${themeClasses.headerBar} px-6 py-4 flex items-center justify-between`}>
         <h2 className="text-white font-semibold text-lg flex items-center gap-2 font-display tracking-tight">
           <MessageCircle className="w-5 h-5" />
@@ -511,6 +634,83 @@ export default function ChatInterface() {
               style={message.type === 'user' ? { position: 'relative' } : {}}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+              {message.videos && message.videos.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {message.videos.map((v, idx) => (
+                    <div key={idx} className="flex gap-3 items-start">
+                      <div className="w-36 h-20 overflow-hidden rounded bg-black/5">
+                        {(() => {
+                          // show a clickable preview (thumbnail or small muted video). Clicking opens the modal
+                          const ytId = extractYouTubeIdFromUrl(v.url || '');
+                          const thumb = (v && (v as any).thumbnail) ? (v as any).thumbnail : null;
+                          if (v.source === 'youtube' || ytId) {
+                            return (
+                              <div className="relative w-full h-full cursor-pointer" onClick={() => openVideoModal(v)}>
+                                {thumb ? (
+                                  <img src={thumb} alt={v.title || 'YouTube thumbnail'} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-black" />
+                                )}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="bg-black/40 rounded-full p-2">
+                                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          // fallback: local/native video preview
+                          if (!videoErrorMap[v.url]) {
+                            return (
+                              <div className="relative w-full h-full cursor-pointer" onClick={() => openVideoModal(v)}>
+                                <video muted playsInline className="w-full h-full object-cover" src={resolveAssetUrl(v.url)} preload="metadata" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="bg-black/40 rounded-full p-2">
+                                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-500 px-2 text-center">
+                              Tidak dapat diputar di browser
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      <div className="flex-1">
+                        <button
+                          onClick={() => { try { window.open(resolveAssetUrl(v.url), '_blank', 'noopener,noreferrer'); } catch (_) {} }}
+                          className="font-medium text-sm text-blue-600 dark:text-blue-400 text-left"
+                        >
+                          {v.title || 'Video'}
+                        </button>
+                        <div className="text-xs text-gray-500">{v.mime || ''} {v && (v as any).size ? `· ${Math.round((v as any).size/1024)} KB` : ''}</div>
+                        {videoErrorMap[v.url] && (
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={() => { try { window.open(resolveAssetUrl(v.url), '_blank', 'noopener,noreferrer'); } catch(_){} }}
+                              className="text-xs px-2 py-1 bg-gray-100 dark:bg-slate-800 rounded"
+                            >
+                              Buka di tab baru
+                            </button>
+                            {!(v.source === 'youtube' || extractYouTubeIdFromUrl(v.url || '')) && (
+                              <a
+                                href={resolveAssetUrl(v.url)}
+                                download
+                                className="text-xs px-2 py-1 bg-gray-100 dark:bg-slate-800 rounded"
+                              >
+                                Download
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex items-center gap-1">
                 <div className="flex items-center justify-end mt-1 gap-1">
                   <p
