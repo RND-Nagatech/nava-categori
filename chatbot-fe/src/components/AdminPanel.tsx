@@ -40,6 +40,7 @@ export default function AdminPanel() {
   const [faqSearch, setFaqSearch] = useState('');
   const [isFaqDropdownOpen, setIsFaqDropdownOpen] = useState(false);
   const [variationText, setVariationText] = useState('');
+  const [existingLocalVideos, setExistingLocalVideos] = useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -58,6 +59,7 @@ export default function AdminPanel() {
       setFaqList([]);
       setEditingIndex(null);
       setVariationText('');
+      setExistingLocalVideos([]);
       return;
     }
     setIsLoadingFaqList(true);
@@ -121,6 +123,15 @@ export default function AdminPanel() {
         fd.append('pertanyaan', formData.pertanyaan);
         fd.append('jawaban', formData.jawaban);
         fd.append('variasi_pertanyaan', variationText);
+
+        // Kirim daftar video lokal yang masih ingin dipertahankan
+        if (existingLocalVideos.length) {
+          fd.append('existing_videos', JSON.stringify(existingLocalVideos));
+        } else {
+          // Jika field ini dikirim sebagai array kosong, backend akan menghapus semua video lokal lama
+          fd.append('existing_videos', JSON.stringify([]));
+        }
+
         const links = videoLinks.split('\n').map(s => s.trim()).filter(Boolean);
         for (const l of links) fd.append('videos', l);
         for (const f of files) fd.append('videos', f as unknown as Blob, (f as File).name);
@@ -132,6 +143,7 @@ export default function AdminPanel() {
         setVideoLinks('');
         setVariationText('');
         setFaqList([]);
+        setExistingLocalVideos([]);
         setEditingIndex(null);
         setFaqSearch('');
         setIsFaqDropdownOpen(false);
@@ -189,6 +201,7 @@ export default function AdminPanel() {
       setVideoLinks('');
       setFiles([]);
       setVariationText('');
+      setExistingLocalVideos([]);
       loadFaqForCategory(value);
     }
   };
@@ -380,23 +393,36 @@ export default function AdminPanel() {
                                       const vars = (item as any).variasi_pertanyaan;
                                       setVariationText(Array.isArray(vars) ? vars.join('\n') : '');
 
-                                      // Prefill textarea dengan link video yang sudah ada (berdasarkan url)
-                                      const vids: any = (item as any).videos;
-                                      if (Array.isArray(vids) && vids.length) {
-                                        const urls = vids
-                                          .map((v: any) => {
-                                            if (v == null) return '';
-                                            if (typeof v === 'string') return v;
-                                            if (typeof v.url === 'string') return v.url;
-                                            return '';
-                                          })
-                                          .map((u: string) => u.trim())
-                                          .filter(Boolean);
-                                        setVideoLinks(urls.join('\n'));
-                                      } else {
-                                        setVideoLinks('');
+                                      // Pisahkan video YouTube vs video lokal
+                                      const vids: any[] = (item as any).videos || [];
+                                      const ytUrls: string[] = [];
+                                      const locals: any[] = [];
+                                      const isYoutubeUrl = (url: string) =>
+                                        !!url && (url.includes('youtube.com') || url.includes('youtu.be'));
+
+                                      for (const v of vids) {
+                                        if (v == null) continue;
+                                        if (typeof v === 'string') {
+                                          const u = v.trim();
+                                          if (!u) continue;
+                                          if (isYoutubeUrl(u)) ytUrls.push(u);
+                                          else locals.push({ title: null, url: u, source: 'external' });
+                                          continue;
+                                        }
+                                        const url = typeof v.url === 'string' ? v.url.trim() : '';
+                                        if (!url) {
+                                          locals.push(v);
+                                          continue;
+                                        }
+                                        if (v.source === 'youtube' || isYoutubeUrl(url)) {
+                                          ytUrls.push(url);
+                                        } else {
+                                          locals.push(v);
+                                        }
                                       }
 
+                                      setVideoLinks(ytUrls.join('\n'));
+                                      setExistingLocalVideos(locals);
                                       setFiles([]);
                                       setIsFaqDropdownOpen(false);
                                     }}
@@ -466,31 +492,6 @@ export default function AdminPanel() {
                 Attach Video (opsional)
               </label>
 
-              {editingIndex !== null && (() => {
-                const current = faqList.find(f => f.index === editingIndex) as any;
-                const vids = current?.videos as any[] | undefined;
-                if (!vids || !vids.length) return null;
-                return (
-                  <div className="mb-3 rounded-lg border border-dashed border-gray-300 dark:border-slate-700 p-3 bg-gray-50/60 dark:bg-slate-900/40">
-                    <div className="text-xs font-medium text-gray-700 dark:text-slate-200 mb-1">
-                      Video yang sudah tersimpan
-                    </div>
-                    <ul className="text-xs text-gray-600 dark:text-slate-300 space-y-1 list-disc list-inside">
-                      {vids.map((v, i) => (
-                        <li key={i}>
-                          {v.source === 'youtube' || (typeof v.url === 'string' && v.url.includes('youtube.com'))
-                            ? (v.url || '[YouTube]')
-                            : (v.title || v.url || 'Video lokal')}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-2 text-[11px] text-gray-500 dark:text-slate-400">
-                      Jika Anda mengisi link atau upload file baru di bawah ini, daftar video akan diganti dengan yang baru.
-                    </p>
-                  </div>
-                );
-              })()}
-
               <label className="block text-xs font-medium text-gray-700 dark:text-slate-200 mb-1">
                 YouTube link (satu per baris)
               </label>
@@ -504,19 +505,56 @@ export default function AdminPanel() {
               <div className="mt-2 text-sm text-gray-700 dark:text-slate-200">Atau unggah file video:</div>
               <div className="mt-1 text-xs text-gray-500">
                 Catatan: jika Anda mengunggah file dan juga memasukkan link, keduanya akan disimpan.
-                {editingIndex !== null && ' Untuk edit, daftar video lama akan terganti dengan yang baru.'}
               </div>
               <input
                 type="file"
                 accept="video/*"
                 multiple
-                onChange={(e) => setFiles(e.target.files ? Array.from(e.target.files) : [])}
+                onChange={(e) => {
+                  const selected = e.target.files ? Array.from(e.target.files) : [];
+                  if (!selected.length) return;
+                  // Tambah ke daftar file yang sudah ada (bisa pilih beberapa kali)
+                  setFiles((prev) => [...prev, ...selected]);
+                  // Reset value supaya bisa pilih file yang sama lagi kalau perlu
+                  e.target.value = '';
+                }}
               />
-              {files.length > 0 && (
-                <div className="mt-2 text-sm text-gray-700 dark:text-slate-200">
-                  {files.map((f) => (
-                    <div key={f.name}>
-                      {f.name} ({Math.round(f.size / 1024)} KB)
+              {(existingLocalVideos.length > 0 || files.length > 0) && (
+                <div className="mt-2 text-sm text-gray-700 dark:text-slate-200 space-y-1">
+                  {existingLocalVideos.map((v, idx) => (
+                    <div
+                      key={`existing-${idx}`}
+                      className="flex items-center justify-between gap-2 rounded-md bg-gray-50 dark:bg-slate-900/60 px-2 py-1 border border-gray-200 dark:border-slate-700"
+                    >
+                      <span className="truncate text-xs sm:text-sm">
+                        {v.title || v.url || 'Video lokal'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setExistingLocalVideos(prev => prev.filter((_, i) => i !== idx))}
+                        className="ml-2 inline-flex items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/70 w-5 h-5 text-[10px] font-bold"
+                        aria-label="Hapus video lokal ini"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {files.map((f, idx) => (
+                    <div
+                      key={`new-${f.name}-${f.size}-${idx}`}
+                      className="flex items-center justify-between gap-2 rounded-md bg-gray-50 dark:bg-slate-900/60 px-2 py-1 border border-gray-200 dark:border-slate-700"
+                    >
+                      <span className="truncate text-xs sm:text-sm">
+                        {f.name} ({Math.round(f.size / 1024)} KB)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))}
+                        className="ml-2 inline-flex items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/70 w-5 h-5 text-[10px] font-bold"
+                        aria-label="Hapus file ini"
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                 </div>

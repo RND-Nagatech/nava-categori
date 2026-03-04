@@ -449,15 +449,33 @@ app.post('/faq/update', upload.array('videos', 5), async (req, res) => {
         .filter(Boolean);
     }
 
-    // Opsional: ganti daftar video jika admin mengirim link/file baru
+    // Opsional: ganti daftar video jika admin mengirim data video baru
     const files = req.files || [];
     const providedVideosRaw = body.videos || body.video_links || body.videoLinks;
-    const shouldReplaceVideos = (files && files.length > 0) ||
+    const existingVideosRaw = body.existing_videos || body.existingVideos;
+
+    const hasVideoField = Object.prototype.hasOwnProperty.call(body, 'existing_videos') ||
+      Object.prototype.hasOwnProperty.call(body, 'existingVideos') ||
+      (files && files.length > 0) ||
       (typeof providedVideosRaw === 'string' && providedVideosRaw.trim().length > 0) ||
       (Array.isArray(providedVideosRaw) && providedVideosRaw.length > 0);
 
-    if (shouldReplaceVideos) {
+    if (hasVideoField) {
       let videos = [];
+
+      // 0) Gabungkan video yang ingin dipertahankan dari client (biasanya video lokal lama)
+      if (existingVideosRaw) {
+        let parsed = [];
+        if (Array.isArray(existingVideosRaw)) parsed = existingVideosRaw;
+        else if (typeof existingVideosRaw === 'string') {
+          try { parsed = JSON.parse(existingVideosRaw); } catch (_) { parsed = []; }
+        }
+        if (Array.isArray(parsed)) {
+          for (const v of parsed) {
+            if (v && typeof v === 'object') videos.push(v);
+          }
+        }
+      }
 
       // 1) Proses link yang dikirim (YouTube / external)
       if (providedVideosRaw) {
@@ -525,6 +543,9 @@ app.post('/faq/update', upload.array('videos', 5), async (req, res) => {
         item.videos = list
           .map(u => ({ title: null, url: String(u).trim(), source: 'external' }))
           .filter(v => v.url);
+      } else {
+        // Jika field video eksplisit dikirim tapi kosong, berarti hapus semua video
+        item.videos = [];
       }
     }
 

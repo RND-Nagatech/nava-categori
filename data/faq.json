@@ -77,85 +77,6 @@
           "Cara setting nota gimana?",
           "setting nota caranya gimana?"
         ]
-      },
-      {
-        "pertanyaan": "test gimana cara setting printer?",
-        "jawaban": "caranya gini",
-        "videos": [
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=tpjpsDV4qPc",
-            "embed": "https://www.youtube.com/embed/tpjpsDV4qPc",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/tpjpsDV4qPc/hqdefault.jpg",
-            "mime": "video/youtube"
-          }
-        ]
-      },
-      {
-        "pertanyaan": "test 1",
-        "jawaban": "test `",
-        "videos": [
-          {
-            "title": "Screen Recording 2026-03-04 at 09.29.44.mov",
-            "url": "/assets/videos/1772595265065-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "original_url": "/assets/videos/1772595265065-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "source": "local",
-            "thumbnail": null,
-            "size": 32377508,
-            "mime": "video/quicktime"
-          }
-        ]
-      },
-      {
-        "pertanyaan": "setting test",
-        "jawaban": "setting test",
-        "videos": [
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=jPPv1mWn_Mg",
-            "embed": "https://www.youtube.com/embed/jPPv1mWn_Mg",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/jPPv1mWn_Mg/hqdefault.jpg",
-            "mime": "video/youtube"
-          },
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=aAq2OWU4c_w",
-            "embed": "https://www.youtube.com/embed/aAq2OWU4c_w",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/aAq2OWU4c_w/hqdefault.jpg",
-            "mime": "video/youtube"
-          }
-        ]
-      },
-      {
-        "pertanyaan": "test123",
-        "jawaban": "jawab test 123",
-        "variasi_pertanyaan": [
-          "test1234",
-          "test 12345",
-          "test 1 2 3 4 5"
-        ],
-        "videos": [
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=0OIvXeTXhrU",
-            "embed": "https://www.youtube.com/embed/0OIvXeTXhrU",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/0OIvXeTXhrU/hqdefault.jpg",
-            "mime": "video/youtube"
-          },
-          {
-            "title": "Screen Recording 2026-03-04 at 09.29.44.mov",
-            "url": "/assets/videos/1772617343881-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "original_url": "/assets/videos/1772617343881-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "source": "local",
-            "thumbnail": null,
-            "size": 32377508,
-            "mime": "video/quicktime"
-          }
-        ]
       }
     ]
   },
@@ -1092,31 +1013,7 @@
           "Cara mengatasi Selisih stock barang?",
           "Gimana cara mengatasi Selisih stock barang?"
         ],
-        "videos": [
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=aAq2OWU4c_w",
-            "embed": "https://www.youtube.com/embed/aAq2OWU4c_w",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/aAq2OWU4c_w/hqdefault.jpg",
-            "mime": "video/youtube"
-          },
-          {
-            "title": null,
-            "url": "/assets/videos/1772616904870-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "source": "external",
-            "thumbnail": null,
-            "mime": null
-          },
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=0OIvXeTXhrU",
-            "embed": "https://www.youtube.com/embed/0OIvXeTXhrU",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/0OIvXeTXhrU/hqdefault.jpg",
-            "mime": "video/youtube"
-          }
-        ]
+        "videos": []
       },
       {
         "pertanyaan": "Tambah barang dan timbang baki tidak konek timbangan",
@@ -2056,37 +1953,6 @@
       {
         "pertanyaan": "laporan pindah barang untuk apa?",
         "jawaban": "Laporan Pindah Barang adalah laporan yang digunakan untuk mencatat dan menampilkan informasi tentang barang-barang yang dipindahkan dari satu tempat ke tempat lain yang didapatkan dari aktivitas transaksi pindah barang maupun pindah barang satu baki. Tujuannya adalah untuk melacak dan mengatur perpindahan barang pada toko Anda. Laporan ini membantu Anda melihat riwayat perpindahan barang, memastikan stok barang yang tepat di setiap tempat."
-      },
-      {
-        "pertanyaan": "barang test",
-        "jawaban": "barang test",
-        "videos": [
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=t8j6vvMmU-E",
-            "embed": "https://www.youtube.com/embed/t8j6vvMmU-E",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/t8j6vvMmU-E/hqdefault.jpg",
-            "mime": "video/youtube"
-          },
-          {
-            "title": null,
-            "url": "https://www.youtube.com/watch?v=aAq2OWU4c_w",
-            "embed": "https://www.youtube.com/embed/aAq2OWU4c_w",
-            "source": "youtube",
-            "thumbnail": "https://img.youtube.com/vi/aAq2OWU4c_w/hqdefault.jpg",
-            "mime": "video/youtube"
-          },
-          {
-            "title": "Screen Recording 2026-03-04 at 09.29.44.mov",
-            "url": "/assets/videos/1772596992589-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "original_url": "/assets/videos/1772596992589-Screen-Recording-2026-03-04-at-09.29.44.mov",
-            "source": "local",
-            "thumbnail": null,
-            "size": 32377508,
-            "mime": "video/quicktime"
-          }
-        ]
       }
     ]
   },
