@@ -25,6 +25,14 @@ export type AddPayload = {
   jawaban: string;
 };
 
+export type FaqSummaryItem = {
+  index: number;
+  pertanyaan: string;
+  jawaban: string;
+   variasi_pertanyaan?: string[];
+   videos?: any[];
+};
+
 // Resolusi base URL:
 // - Jika VITE_API_BASE_URL di-set, gunakan itu (contoh: http://localhost:3000)
 // - Jika tidak di-set dan sedang dev (Vite), gunakan path relatif untuk memanfaatkan proxy Vite
@@ -40,6 +48,17 @@ export async function getCategories(): Promise<string[]> {
   const res = await fetch(`${API_BASE}/faq/categories`);
   if (!res.ok) throw new Error(`Gagal memuat kategori (${res.status})`);
   return res.json();
+}
+
+export async function getFaqByCategory(kategori: string): Promise<FaqSummaryItem[]> {
+  const qs = encodeURIComponent(kategori);
+  const res = await fetch(`${API_BASE}/faq/list?kategori=${qs}`);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Gagal memuat FAQ (${res.status})`);
+  }
+  const data = await res.json().catch(() => ({ items: [] }));
+  return data.items || [];
 }
 
 export async function askFaq(payload: AskPayload): Promise<AskResponse> {
@@ -73,6 +92,24 @@ export async function addFaq(payload: AddPayload | FormData): Promise<{ success:
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(data.error || `Gagal menambah FAQ (${res.status})`);
+  }
+  return data;
+}
+
+export async function updateFaq(payload: any | FormData): Promise<{ success: boolean; message: string }>{
+  let res: Response;
+  if (typeof FormData !== 'undefined' && payload instanceof FormData) {
+    res = await fetch(`${API_BASE}/faq/update`, { method: 'POST', body: payload });
+  } else {
+    res = await fetch(`${API_BASE}/faq/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || `Gagal mengupdate FAQ (${res.status})`);
   }
   return data;
 }

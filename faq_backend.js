@@ -320,6 +320,28 @@ app.post('/faq/add', upload.array('videos', 5), async (req, res) => {
     try { console.log('[faq/add] parsed videos count:', videos.length); } catch (_) {}
 
     const newFaq = { pertanyaan: qTrim, jawaban: aTrim };
+    // Variasi pertanyaan (opsional) - bisa dikirim sebagai JSON array atau teks baris-per-baris
+    if (Object.prototype.hasOwnProperty.call(body, 'variasi_pertanyaan')) {
+      let rawVar = body.variasi_pertanyaan;
+      let arr = [];
+      if (Array.isArray(rawVar)) arr = rawVar;
+      else if (typeof rawVar === 'string') {
+        const trimmed = rawVar.trim();
+        if (trimmed) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) arr = parsed;
+            else arr = trimmed.split('\n');
+          } catch (_) {
+            arr = trimmed.split('\n');
+          }
+        }
+      }
+      const cleaned = arr
+        .map(v => (v == null ? '' : String(v)).trim())
+        .filter(Boolean);
+      if (cleaned.length) newFaq.variasi_pertanyaan = cleaned;
+    }
     // Ensure that if the client provided video links in any recognized field,
     // they are persisted even if earlier parsing failed to build structured metadata.
     if (videos.length) {
@@ -335,6 +357,181 @@ app.post('/faq/add', upload.array('videos', 5), async (req, res) => {
     res.json({ success: true, message: 'FAQ berhasil ditambahkan', file: DATA_PATH, totalFaq: kat.faq.length, item: newFaq });
   } catch (err) {
     res.status(500).json({ error: 'Terjadi kesalahan saat menambah FAQ', detail: err && err.message ? err.message : String(err) });
+  }
+});
+
+// Endpoint: ambil daftar FAQ per kategori (untuk admin edit)
+app.get('/faq/list', (req, res) => {
+  try {
+    const kategori = (req.query.kategori || '').toString().trim();
+    const data = loadFaq();
+    if (kategori) {
+      const katObj = data.find(k => (k.kategori || '').toLowerCase() === kategori.toLowerCase());
+      if (!katObj) return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+      const items = Array.isArray(katObj.faq) ? katObj.faq.map((f, idx) => ({
+        index: idx,
+        pertanyaan: f.pertanyaan || '',
+        jawaban: f.jawaban || '',
+        variasi_pertanyaan: Array.isArray(f.variasi_pertanyaan) ? f.variasi_pertanyaan : [],
+        videos: f.videos || [],
+      })) : [];
+      return res.json({ kategori: katObj.kategori, items });
+    }
+    // jika kategori tidak diisi, kembalikan semua kategori + ringkasan FAQ
+    const categories = data.map(k => ({
+      kategori: k.kategori,
+      items: (Array.isArray(k.faq) ? k.faq : []).map((f, idx) => ({
+        index: idx,
+        pertanyaan: f.pertanyaan || '',
+        jawaban: f.jawaban || '',
+        variasi_pertanyaan: Array.isArray(f.variasi_pertanyaan) ? f.variasi_pertanyaan : [],
+        videos: f.videos || [],
+      })),
+    }));
+    return res.json({ categories });
+  } catch (err) {
+    return res.status(500).json({ error: 'Gagal mengambil daftar FAQ', detail: err && err.message ? err.message : String(err) });
+  }
+});
+
+// Endpoint: update pertanyaan/jawaban FAQ + variasi & (opsional) video
+app.post('/faq/update', upload.array('videos', 5), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const kategori = (body.kategori || '').trim();
+    const pertanyaan = (body.pertanyaan || '').trim();
+    const jawaban = (body.jawaban || '').trim();
+    const idxRaw = body.index;
+    const index = typeof idxRaw === 'string' || typeof idxRaw === 'number' ? parseInt(String(idxRaw), 10) : NaN;
+
+    if (!kategori || !pertanyaan || !jawaban) {
+      return res.status(400).json({ error: 'kategori, pertanyaan, dan jawaban wajib diisi' });
+    }
+    if (!Number.isFinite(index) || index < 0) {
+      return res.status(400).json({ error: 'index FAQ tidak valid' });
+    }
+
+    try { fs.accessSync(DATA_PATH, fs.constants.R_OK | fs.constants.W_OK); } catch (e) {
+      return res.status(500).json({ error: 'File data tidak bisa diakses untuk tulis/baca', file: DATA_PATH });
+    }
+
+    const data = loadFaq();
+    const katObj = data.find(k => (k.kategori || '').toLowerCase() === kategori.toLowerCase());
+    if (!katObj || !Array.isArray(katObj.faq)) {
+      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    }
+    if (index >= katObj.faq.length) {
+      return res.status(404).json({ error: 'FAQ dengan index tersebut tidak ditemukan' });
+    }
+    const item = katObj.faq[index];
+    item.pertanyaan = pertanyaan;
+    item.jawaban = jawaban;
+
+    // Update variasi_pertanyaan jika dikirim oleh frontend (satu per baris atau JSON array)
+    if (Object.prototype.hasOwnProperty.call(body, 'variasi_pertanyaan')) {
+      let rawVar = body.variasi_pertanyaan;
+      let arr = [];
+      if (Array.isArray(rawVar)) arr = rawVar;
+      else if (typeof rawVar === 'string') {
+        const trimmed = rawVar.trim();
+        if (trimmed) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) arr = parsed;
+            else arr = trimmed.split('\n');
+          } catch (_) {
+            arr = trimmed.split('\n');
+          }
+        }
+      }
+      item.variasi_pertanyaan = arr
+        .map(v => (v == null ? '' : String(v)).trim())
+        .filter(Boolean);
+    }
+
+    // Opsional: ganti daftar video jika admin mengirim link/file baru
+    const files = req.files || [];
+    const providedVideosRaw = body.videos || body.video_links || body.videoLinks;
+    const shouldReplaceVideos = (files && files.length > 0) ||
+      (typeof providedVideosRaw === 'string' && providedVideosRaw.trim().length > 0) ||
+      (Array.isArray(providedVideosRaw) && providedVideosRaw.length > 0);
+
+    if (shouldReplaceVideos) {
+      let videos = [];
+
+      // 1) Proses link yang dikirim (YouTube / external)
+      if (providedVideosRaw) {
+        let list = [];
+        if (Array.isArray(providedVideosRaw)) list = providedVideosRaw;
+        else if (typeof providedVideosRaw === 'string') {
+          try { list = JSON.parse(providedVideosRaw); }
+          catch (_) { list = providedVideosRaw.split('\n').map(s => s.trim()).filter(Boolean); }
+        }
+        for (const link of list) {
+          const url = (link || '').trim();
+          if (!url) continue;
+          const ytId = extractYouTubeId(url);
+          if (ytId) {
+            videos.push({
+              title: null,
+              url,
+              embed: `https://www.youtube.com/embed/${ytId}`,
+              source: 'youtube',
+              thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
+              mime: 'video/youtube',
+            });
+          } else {
+            videos.push({ title: null, url, source: 'external', thumbnail: null, mime: null });
+          }
+        }
+      }
+
+      // 2) Proses file upload baru (jika ada)
+      for (const f of files) {
+        const origRel = `/assets/videos/${path.basename(f.filename)}`;
+        const meta = {
+          title: f.originalname,
+          url: origRel,
+          original_url: origRel,
+          source: 'local',
+          thumbnail: null,
+          size: f.size,
+          mime: f.mimetype,
+        };
+        try {
+          const srcPath = path.join(UPLOAD_DIR, f.filename);
+          const trans = await transcodeToMp4(srcPath);
+          if (trans && trans.mp4) {
+            meta.original_url = origRel;
+            meta.url = trans.mp4;
+            if (trans.thumbnail) meta.thumbnail = trans.thumbnail;
+            meta.mime = 'video/mp4';
+          }
+        } catch (_) {}
+        videos.push(meta);
+      }
+
+      // Jika ada hasil parsing, ganti item.videos sepenuhnya
+      if (videos.length) {
+        item.videos = videos;
+      } else if (providedVideosRaw) {
+        // fallback: simpan link mentah sebagai external
+        let list = [];
+        if (Array.isArray(providedVideosRaw)) list = providedVideosRaw;
+        else if (typeof providedVideosRaw === 'string') {
+          try { list = JSON.parse(providedVideosRaw); }
+          catch (_) { list = providedVideosRaw.split('\n').map(s => s.trim()).filter(Boolean); }
+        }
+        item.videos = list
+          .map(u => ({ title: null, url: String(u).trim(), source: 'external' }))
+          .filter(v => v.url);
+      }
+    }
+
+    try { saveFaq(data); } catch (e) { return res.status(500).json({ error: 'Gagal menyimpan perubahan ke file', file: DATA_PATH, detail: e.message }); }
+    return res.json({ success: true, message: 'FAQ berhasil diupdate', file: DATA_PATH, kategori: katObj.kategori, index });
+  } catch (err) {
+    return res.status(500).json({ error: 'Terjadi kesalahan saat mengupdate FAQ', detail: err && err.message ? err.message : String(err) });
   }
 });
 
