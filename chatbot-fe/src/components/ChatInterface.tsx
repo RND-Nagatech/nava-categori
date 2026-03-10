@@ -11,6 +11,8 @@ export type Message = {
   timestamp: Date;
   is_read?: boolean;
   videos?: Array<{ title?: string; url: string; thumbnail?: string | null; mime?: string; source?: string; size?: number }>;
+  serverId?: string;
+  persisted?: boolean;
 };
 
 function makeId() {
@@ -35,7 +37,12 @@ export default function ChatInterface() {
             const txt = typeof m.text === 'string'
               ? String(m.text).replace(/\\r\\n/g, '\\n').replace(/\\n/g, '\\n').replace(/\\r/g, '\\n')
               : m.text;
-            return { ...m, text: txt, timestamp: new Date(m.timestamp) };
+            // detect if message likely already persisted in DB
+            const maybeId = typeof m.id === 'string' ? m.id : '';
+            const looksLikeObjectId = /^[a-f0-9]{24}$/i.test(maybeId);
+            const serverId = m.serverId || m.server_id || (looksLikeObjectId ? maybeId : undefined);
+            const persisted = Boolean(m.persisted || serverId);
+            return { ...m, text: txt, timestamp: new Date(m.timestamp), serverId, persisted };
           });
         }
       } catch (_) { /* ignore parse errors */ }
@@ -71,6 +78,8 @@ export default function ChatInterface() {
   const [lastUserMessageId, setLastUserMessageId] = useState<string | null>(null);
   const [showResetLabel, setShowResetLabel] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showDailyResetConfirm, setShowDailyResetConfirm] = useState(false);
+  const [dailyResetChecked, setDailyResetChecked] = useState(false);
   const [userName, setUserName] = useState<string | null>(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('helpdesk_user_name');
     return null;
@@ -173,23 +182,114 @@ export default function ChatInterface() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function sendToHelpdesk(question: string, clientMessageId?: string, userId?: string) {
+  // Check if last saved messages are from previous day — prompt user to start new conversation
+  useEffect(() => {
+    if (dailyResetChecked) return;
+    if (typeof window === 'undefined') { setDailyResetChecked(true); return; }
+    try {
+      const raw = localStorage.getItem('chat_messages');
+      if (!raw) { setDailyResetChecked(true); return; }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) { setDailyResetChecked(true); return; }
+      // find latest timestamp in saved messages
+      let maxTs = 0;
+      parsed.forEach((m: any) => {
+        const t = new Date(m.timestamp).getTime();
+        if (!isNaN(t) && t > maxTs) maxTs = t;
+      });
+      if (maxTs === 0) { setDailyResetChecked(true); return; }
+      const lastYmd = new Date(maxTs).toISOString().slice(0,10);
+      const todayYmd = new Date().toISOString().slice(0,10);
+      if (lastYmd < todayYmd) {
+        setShowDailyResetConfirm(true);
+      }
+    } catch (_) {}
+    setDailyResetChecked(true);
+  }, []);
+
+  async function sendToHelpdesk(question: string, clientMessageId?: string, userId?: string, convoMessages?: Message[]) {
     const body: any = { question };
     if (userId) body.userId = userId;
     if (userName) body.user_name = userName;
+      let unsent: Message[] = [];
+      try {
+        const msgs = Array.isArray(convoMessages) ? convoMessages : messages;
+        // Only send user messages that are not yet persisted on server (no serverId/persisted)
+        unsent = msgs.filter((m) => m.type === 'user' && !m.serverId && !m.persisted);
+        // For context, include the immediate preceding bot reply for each unsent user message
+        const toIncludeBotIds = new Set<string>();
+        for (const um of unsent) {
+          const idx = msgs.findIndex(x => x.id === um.id);
+          if (idx > 0) {
+            // search backwards for nearest bot message
+            for (let j = idx - 1; j >= 0; j--) {
+              const candidate = msgs[j];
+              if (candidate.type === 'bot') {
+                if (!candidate.serverId && !candidate.persisted) toIncludeBotIds.add(candidate.id);
+                break;
+              }
+            }
+          }
+        }
+        const botContext = msgs.filter(m => toIncludeBotIds.has(m.id));
+        // Merge unsent user messages + botContext, preserving original order
+        const combined = [...msgs].filter(m => (unsent.some(u => u.id === m.id) || toIncludeBotIds.has(m.id)));
+        unsent = combined.filter(m => m.type === 'user' || m.type === 'bot');
+      // If nothing unsent but clientMessageId provided, include that specific message (fallback)
+      if (unsent.length === 0 && clientMessageId) {
+        const found = msgs.find((m) => m.id === clientMessageId && m.type === 'user');
+        if (found) unsent = [found];
+      }
+      body.messages = unsent.map(m => ({ id: m.id, type: m.type, text: m.text, timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp }));
+      if (clientMessageId) body.clientMessageId = clientMessageId;
+    } catch (_) { /* ignore serialization errors */ }
+    console.debug('[ChatInterface] sending to helpdesk', { clientMessageId, unsent, messagesSnapshot: messages.slice(-20) });
     const resp = await fetch('/helpdesk/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
     const data = await resp.json();
-    // Jika backend mengembalikan message_id, map temporary client id ke server id
-    if (data && data.message_id && clientMessageId) {
+    console.debug('[ChatInterface] helpdesk response', data);
+    // Jika backend mengembalikan mapping inserted ids, reconcile temporary ids
+    if (data && Array.isArray(data.inserted_map) && data.inserted_map.length) {
+      try {
+        const map = data.inserted_map as Array<{ clientId: string; insertedId: string }>;
+        setMessages((prev) => {
+          let updated = prev;
+          for (const m of map) {
+            updated = updated.map((msg) => (msg.id === m.clientId ? { ...msg, id: m.insertedId, serverId: m.insertedId, persisted: true } : msg));
+          }
+          // dedupe by id/serverId preserving order (keep first occurrence)
+          const seen = new Set<string>();
+          const unique: Message[] = [];
+          for (const msg of updated) {
+            const key = String(msg.serverId || msg.id);
+            if (!seen.has(key)) {
+              seen.add(key);
+              unique.push(msg);
+            }
+          }
+          return unique;
+        });
+        // update lastUserMessageId if mapped
+        if (clientMessageId) {
+          const found = data.inserted_map.find((x: any) => x.clientId === clientMessageId);
+          if (found) setLastUserMessageId(found.insertedId);
+        }
+        console.debug('[ChatInterface] reconciled temp ids with server ids', data.inserted_map);
+      } catch (_) {}
+    } else if (data && data.message_id && clientMessageId) {
       const serverId = String(data.message_id);
-      setMessages((prev) => prev.map((m) => m.id === clientMessageId ? { ...m, id: serverId } : m));
-      // jika lastUserMessageId mengarah ke temporary id, update juga
+      setMessages((prev) => prev.map((m) => m.id === clientMessageId ? { ...m, id: serverId, serverId, persisted: true } : m));
       setLastUserMessageId((prevId) => (prevId === clientMessageId ? serverId : prevId));
       console.debug('[ChatInterface] mapped client id to server id', { clientMessageId, serverId });
+    }
+    // Ensure all messages we attempted to send are marked persisted so they won't be resent
+    if (unsent && unsent.length) {
+      const sentClientIds = unsent.map(m => m.id);
+      console.debug('[ChatInterface] marking messages persisted', sentClientIds);
+      setMessages((prev) => prev.map((m) => (sentClientIds.includes(m.id) ? { ...m, persisted: true, serverId: m.serverId || m.id } : m)));
     }
     // Jika backend memberikan conversation_id (mis. saat membuat/open conversation), simpan ke state + localStorage
     if (data && data.conversation_id) {
@@ -200,6 +300,20 @@ export default function ChatInterface() {
     }
     return data;
   }
+
+  // Close conversation on server so helpdesk marks it closed and frontend stops polling
+  const closeConversationOnServer = async (convId?: string | null) => {
+    if (!convId) return;
+    try {
+      await fetch('/helpdesk/conversation/close', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: convId }),
+      });
+    } catch (e) {
+      console.debug('[ChatInterface] closeConversationOnServer failed', e);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,7 +363,7 @@ export default function ChatInterface() {
       }
     };
 
-    if (conversationId) {
+      if (conversationId) {
       const userIdToSend = userName || undefined;
       // If user hasn't set a name yet, prompt them and do NOT forward to helpdesk,
       // but still process the question through the FAQ flow so the bot replies.
@@ -278,7 +392,8 @@ export default function ChatInterface() {
         return;
       }
       try {
-        await sendToHelpdesk(userMessage.text, userMessage.id, userIdToSend);
+        const msgsToSend = [...messages, userMessage];
+        await sendToHelpdesk(userMessage.text, userMessage.id, userIdToSend, msgsToSend);
       } catch {
         setMessages((prev) => [...prev, {
           id: makeId(),
@@ -325,7 +440,8 @@ export default function ChatInterface() {
     setShowHelpdeskButton(false);
     setIsLoading(true);
     try {
-      const resp = await sendToHelpdesk(lastUserQuestion, lastUserMessageId || undefined);
+      const msgsToSend = messages;
+      const resp = await sendToHelpdesk(lastUserQuestion, lastUserMessageId || undefined, undefined, msgsToSend);
       setMessages((prev) => [...prev, {
         id: makeId(),
         type: 'bot',
@@ -373,6 +489,7 @@ export default function ChatInterface() {
         setMessages((prev) => {
           const backendMsgs: Message[] = msgs.map((m: any): Message => ({
             id: m._id?.$oid || m._id || makeId(),
+            serverId: m._id?.$oid || m._id || null,
             type: m.sender === 'ADMIN' || m.sender === 'SYSTEM' ? 'bot' : 'user',
             text: m.message,
             timestamp: new Date(m.created_at),
@@ -380,19 +497,39 @@ export default function ChatInterface() {
           }));
           // Merge hanya berdasarkan id
                let merged: Message[] = prev.map((msg: Message) => {
-                 const found = backendMsgs.find((bm: Message) => bm.id === msg.id);
+                 // consider match by id or serverId
+                 const found = backendMsgs.find((bm: Message) => bm.id === msg.id || (msg.serverId && bm.id === msg.serverId));
                  return found ? { ...msg, is_read: found.is_read } : msg;
                });
                backendMsgs.forEach((bm: Message) => {
-                 if (!merged.some((msg: Message) => msg.id === bm.id)) {
-                   merged.push({
-                     id: bm.id,
-                     type: bm.type === 'bot' ? 'bot' : 'user',
-                     text: bm.text,
-                     timestamp: bm.timestamp,
-                     is_read: bm.is_read,
+                 // If backend message is a USER message, attempt to avoid re-adding
+                 // when we already have a matching local user message (by serverId
+                 // or by identical text + near timestamp). This prevents duplicate
+                 // user messages appearing after repeated helpdesk submits.
+                 const existsById = merged.some((msg: Message) => msg.id === bm.id || (msg.serverId && msg.serverId === bm.id));
+                 if (existsById) return;
+                 if (bm.type === 'user') {
+                   const foundSimilar = merged.find((msg: Message) => {
+                     if (msg.type !== 'user') return false;
+                     // match by serverId if present
+                     if (msg.serverId && bm.id && String(msg.serverId) === String(bm.id)) return true;
+                     // match by exact text and near timestamp (within 5s)
+                     try {
+                       const dt = Math.abs(new Date(msg.timestamp).getTime() - new Date(bm.timestamp).getTime());
+                       if (String(msg.text).trim() === String(bm.text).trim() && dt <= 5000) return true;
+                     } catch (_) {}
+                     return false;
                    });
+                   if (foundSimilar) return; // skip adding this backend user message
                  }
+                 merged.push({
+                   id: bm.id,
+                   serverId: bm.serverId || undefined,
+                   type: bm.type === 'bot' ? 'bot' : 'user',
+                   text: bm.text,
+                   timestamp: bm.timestamp,
+                   is_read: bm.is_read,
+                 });
                });
 
               // If backend did NOT include a SYSTEM message when conversation closed,
@@ -404,20 +541,30 @@ export default function ChatInterface() {
                 const convUpdated = resp.conversation.updated_at ? new Date(resp.conversation.updated_at) : new Date();
                 const existingNoticeIndex = merged.findIndex(m => m.text === notice);
 
-                if (!hasSystemInResp) {
-                  if (existingNoticeIndex === -1) {
-                    merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated });
-                  } else {
-                    if (merged[existingNoticeIndex].timestamp < convUpdated) {
-                      merged.splice(existingNoticeIndex, 1);
-                      merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated });
+                  if (!hasSystemInResp) {
+                    if (existingNoticeIndex === -1) {
+                      // mark system notice as persisted so it is not forwarded to helpdesk
+                      merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated, persisted: true });
+                    } else {
+                      if (merged[existingNoticeIndex].timestamp < convUpdated) {
+                        merged.splice(existingNoticeIndex, 1);
+                        merged.push({ id: makeId(), type: 'bot', text: notice, timestamp: convUpdated, persisted: true });
+                      }
                     }
                   }
-                }
                 console.debug('[ChatInterface] conversation CLOSED processed in poll; hasSystemInResp=', hasSystemInResp);
               }
 
-          return merged;
+          // dedupe merged by id preserving order
+          const seenIds = new Set<string>();
+          const mergedUnique: Message[] = [];
+          for (const m of merged) {
+            if (!seenIds.has(String(m.id))) {
+              seenIds.add(String(m.id));
+              mergedUnique.push(m);
+            }
+          }
+          return mergedUnique;
         });
 
         // If conversation closed, clear conversationId to route future messages to bot
@@ -867,6 +1014,29 @@ export default function ChatInterface() {
           </div>
         </div>
       </form>
+      {showDailyResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDailyResetConfirm(false)} />
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-6 z-10 w-11/12 max-w-md">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-slate-100">Pemberitahuan</h3>
+            <p className="text-sm text-gray-700 dark:text-slate-300 mb-4">Sesi percakapan sebelumnya telah berakhir. Silakan mulai percakapan baru.</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={async () => {
+                setShowDailyResetConfirm(false);
+                const cid = conversationId;
+                try { await closeConversationOnServer(cid); } catch (_) {}
+                setConversationId(null);
+                try { if (typeof window !== 'undefined') { localStorage.removeItem('conversationId'); localStorage.removeItem('chat_messages'); } } catch(_) {}
+                setShowHelpdeskButton(false);
+                setMessages([
+                  { id: makeId(), type: 'bot', text: 'Halo! Saya siap membantu Anda. Pilih kategori dan ajukan pertanyaan.', timestamp: new Date() }
+                ]);
+              }} className="px-4 py-2 rounded bg-blue-600 text-white">Oke</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showResetConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowResetConfirm(false)} />
@@ -875,8 +1045,10 @@ export default function ChatInterface() {
             <p className="text-sm text-gray-700 dark:text-slate-300 mb-4">Yakin ingin mereset percakapan? Semua pesan akan dihapus.</p>
             <div className="flex justify-end gap-3">
               <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 rounded bg-gray-200 text-gray-800 dark:bg-slate-800 dark:text-slate-100 border border-transparent dark:border-slate-700">Batal</button>
-              <button onClick={() => {
+              <button onClick={async () => {
                 setShowResetConfirm(false);
+                const cid = conversationId;
+                try { await closeConversationOnServer(cid); } catch(_) {}
                 setConversationId(null);
                 try { if (typeof window !== 'undefined') { localStorage.removeItem('conversationId'); localStorage.removeItem('chat_messages'); } } catch(_) {}
                 setShowHelpdeskButton(false);

@@ -807,6 +807,7 @@ app.post('/faq/ask', async (req, res) => {
 app.post('/helpdesk/ask', async (req, res) => {
   // Accept either userId (legacy) or userName / user_name from frontend
   const { userId, userName, user_name, question } = req.body;
+  console.debug && console.debug('[faq_backend] /helpdesk/ask body', { userId: userId || null, userName: userName || user_name || null, hasMessages: Array.isArray(req.body.messages) ? req.body.messages.length : 0 });
   const suppliedUserId = userId || (userName || user_name) || null;
   if (!question) return res.status(400).json({ error: 'Pertanyaan wajib diisi' });
   try {
@@ -822,10 +823,66 @@ app.post('/helpdesk/ask', async (req, res) => {
       conversation_id = 'CONV-' + now.getTime();
       await db.collection('conversations').insertOne({ conversation_id, user_id: suppliedUserId || 'USR001', user_name: (userName || user_name) || null, status: 'PENDING', source: 'chatbot', created_at: now, updated_at: now, assigned_to: null, priority: 'normal' });
     }
-    const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false, user_name: (userName || user_name) || null });
-    // Return inserted message id as string so frontend can map temporary client id to server id
-    const messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
-    res.json({ success: true, conversation_id, message_id: messageId });
+    // If frontend provided a full `messages` array, persist them in order so helpdesk sees history
+    const providedMessages = Array.isArray(req.body.messages) ? req.body.messages : null;
+    let messageId = null;
+    if (providedMessages && providedMessages.length) {
+      // Persist provided messages (both user and bot) so helpdesk sees full context.
+      const msgsToPersist = providedMessages.filter(m => (m.text || '').toString().trim() !== '');
+      console.debug && console.debug('[faq_backend] will persist messages count', msgsToPersist.length);
+      if (msgsToPersist.length) {
+        const docs = msgsToPersist.map((m) => ({
+          conversation_id,
+          // store bot replies as 'ADMIN' so helpdesk UI shows them; keep explicit SYSTEM as system messages
+          sender: (m.type === 'bot') ? 'ADMIN' : (String(m.type).toUpperCase() === 'SYSTEM' ? 'SYSTEM' : 'USER'),
+          message: m.text || '',
+          created_at: m.timestamp ? new Date(m.timestamp) : now,
+          is_read: (m.type === 'bot' || String(m.type).toUpperCase() === 'SYSTEM') ? true : false,
+          user_name: (userName || user_name) || null,
+        }));
+        const insertManyRes = await db.collection('messages').insertMany(docs);
+        // build ordered array of inserted ids
+        const insertedIdsOrdered = Object.keys(insertManyRes.insertedIds)
+          .map(k => ({ idx: Number(k), id: insertManyRes.insertedIds[k] }))
+          .sort((a,b) => a.idx - b.idx)
+          .map(x => x.id);
+        console.debug && console.debug('[faq_backend] insertedIdsOrdered', insertedIdsOrdered.map(String));
+        const inserted_map = [];
+        try {
+          for (let i = 0; i < msgsToPersist.length; i++) {
+            const clientId = msgsToPersist[i].id || null;
+            const ins = insertedIdsOrdered[i] || null;
+            if (clientId && ins) inserted_map.push({ clientId: String(clientId), insertedId: String(ins) });
+          }
+          if (req.body.clientMessageId) {
+            const idx = msgsToPersist.findIndex(pm => pm.id === req.body.clientMessageId);
+            if (idx >= 0) {
+              const insertedId = insertedIdsOrdered[idx];
+              messageId = insertedId ? String(insertedId) : null;
+            }
+          }
+        } catch (_) { /* ignore mapping errors */ }
+        if (!messageId && insertedIdsOrdered.length) {
+          const lastInserted = insertedIdsOrdered[insertedIdsOrdered.length - 1];
+          messageId = lastInserted ? String(lastInserted) : null;
+        }
+        // attach inserted_map to response via outer-scope variable so respBody can include it
+        req.inserted_map = inserted_map; // attach temporarily for later retrieval
+        console.debug && console.debug('[faq_backend] inserted_map', inserted_map);
+      } else {
+        const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false, user_name: (userName || user_name) || null });
+        messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
+        console.debug && console.debug('[faq_backend] fallback single insert id', messageId);
+      }
+    } else {
+      const insertRes = await db.collection('messages').insertOne({ conversation_id, sender: 'USER', message: question, created_at: now, is_read: false, user_name: (userName || user_name) || null });
+      messageId = insertRes.insertedId ? String(insertRes.insertedId) : null;
+    }
+    // include inserted_map when available so frontend can reconcile temporary ids
+    const respBody = { success: true, conversation_id, message_id: messageId };
+    const inserted_map = req.inserted_map || null;
+    if (Array.isArray(inserted_map) && inserted_map.length) respBody.inserted_map = inserted_map;
+    res.json(respBody);
   } catch (err) { res.status(500).json({ error: 'Gagal menyimpan ke MongoDB', detail: String(err) }); }
 });
 
